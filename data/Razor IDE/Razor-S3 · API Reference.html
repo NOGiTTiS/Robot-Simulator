@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<!-- saved from url=(0084)file:///C:/Users/Admin/AppData/Roaming/razor-ide/boards/razor_s4/docs/reference.html -->
+<html lang="th"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Razor-S3 · API Reference</title>
+<style>
+  :root {
+    --bg:       #0f1117;
+    --sidebar:  #161b22;
+    --card:     #1c2128;
+    --border:   #30363d;
+    --accent:   #e05c00;
+    --accent2:  #ff7a29;
+    --blue:     #58a6ff;
+    --green:    #3fb950;
+    --yellow:   #d29922;
+    --purple:   #a371f7;
+    --red:      #f85149;
+    --text:     #e6edf3;
+    --muted:    #8b949e;
+    --code-bg:  #161b22;
+    --tag-bg:   #1f2937;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    width: 260px; min-width: 260px; background: var(--sidebar);
+    border-right: 1px solid var(--border); position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100; display: flex; flex-direction: column;
+  }
+  #sidebar-header { padding: 20px 16px 12px; border-bottom: 1px solid var(--border); }
+  #sidebar-header .logo { font-size: 18px; font-weight: 700; color: var(--accent2); letter-spacing: 1px; }
+  #sidebar-header .subtitle { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  #search-box {
+    margin: 12px 12px 0; padding: 8px 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+    font-size: 13px; width: calc(100% - 24px); outline: none;
+  }
+  #search-box:focus { border-color: var(--accent); }
+  #search-box::placeholder { color: var(--muted); }
+  .nav-section { padding: 16px 0 8px; }
+  .nav-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1px; padding: 0 16px 6px; }
+  .nav-item { display: block; padding: 7px 16px; font-size: 13px; color: var(--muted);
+    text-decoration: none; border-left: 3px solid transparent; transition: all .15s; cursor: pointer; }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,.04); }
+  .nav-item.active { color: var(--accent2); border-left-color: var(--accent); background: rgba(224,92,0,.08); }
+  .nav-item .icon { margin-right: 8px; font-size: 14px; }
+
+  /* ── Main ── */
+  #main { margin-left: 260px; flex: 1; padding: 0 0 80px; }
+  .hero { background: linear-gradient(135deg, #1a0a00 0%, #0f1117 60%);
+    border-bottom: 1px solid var(--border); padding: 48px 48px 40px; }
+  .hero h1 { font-size: 32px; font-weight: 800; color: var(--accent2); }
+  .hero p  { margin-top: 8px; color: var(--muted); font-size: 15px; max-width: 600px; line-height: 1.6; }
+  .hero .badges { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+  .badge-orange { background: rgba(224,92,0,.2); color: var(--accent2); border: 1px solid rgba(224,92,0,.4); }
+  .badge-blue   { background: rgba(88,166,255,.15); color: var(--blue); border: 1px solid rgba(88,166,255,.3); }
+  .badge-green  { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+
+  .content { padding: 0 48px; }
+  .section { padding-top: 48px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .section-icon { font-size: 28px; }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--text); }
+  .section-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Function Card ── */
+  .fn-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 16px; overflow: hidden; transition: border-color .2s;
+  }
+  .fn-card:hover { border-color: var(--accent); }
+  .fn-head {
+    display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px;
+    cursor: pointer; user-select: none;
+  }
+  .fn-name { font-family: 'Consolas', 'Fira Code', monospace; font-size: 15px; font-weight: 700; color: var(--blue); }
+  .fn-return { font-family: 'Consolas', monospace; font-size: 12px; color: var(--purple); margin-right: 8px; }
+  .fn-short { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .fn-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; background: var(--tag-bg); color: var(--muted); }
+  .tag-void    { color: #8b949e; }
+  .tag-float   { color: var(--yellow); }
+  .tag-int     { color: var(--green); }
+  .tag-bool    { color: var(--accent2); }
+  .chevron { margin-left: auto; color: var(--muted); font-size: 12px; transition: transform .2s; }
+  .fn-card.open .chevron { transform: rotate(90deg); }
+
+  .fn-body { display: none; border-top: 1px solid var(--border); padding: 20px; }
+  .fn-card.open .fn-body { display: block; }
+
+  .params-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  .params-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; letter-spacing: .5px;
+    background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border); }
+  .params-table td { padding: 8px 12px; border-bottom: 1px solid rgba(48,54,61,.5); vertical-align: top; }
+  .params-table tr:last-child td { border-bottom: none; }
+  .param-name { font-family: 'Consolas', monospace; color: var(--accent2); }
+  .param-type { font-family: 'Consolas', monospace; color: var(--purple); }
+  .param-default { font-family: 'Consolas', monospace; color: var(--green); font-size: 12px; }
+  .param-desc { color: var(--muted); }
+
+  .returns-box { background: rgba(63,185,80,.08); border: 1px solid rgba(63,185,80,.2);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; }
+  .returns-box strong { color: var(--green); }
+
+  .note-box { background: rgba(88,166,255,.08); border: 1px solid rgba(88,166,255,.2);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .note-box strong { color: var(--blue); }
+
+  .warn-box { background: rgba(210,153,34,.08); border: 1px solid rgba(210,153,34,.2);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .warn-box strong { color: var(--yellow); }
+
+  pre.code {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; overflow-x: auto; font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 13px; line-height: 1.7; color: #cdd9e5;
+  }
+  .code .c  { color: #6e7681; }  /* comment */
+  .code .k  { color: #ff7b72; }  /* keyword */
+  .code .t  { color: var(--purple); }  /* type */
+  .code .f  { color: var(--blue); }    /* function */
+  .code .n  { color: #ffa657; }        /* number */
+  .code .s  { color: var(--green); }   /* string */
+  .code .v  { color: #e6edf3; }        /* variable */
+
+  .code-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* search highlight */
+  .fn-card.hidden { display: none; }
+  mark { background: rgba(224,92,0,.3); color: var(--accent2); border-radius: 3px; padding: 0 2px; }
+
+  /* ── Copy button ── */
+  .copy-btn {
+    background: transparent; border: 1px solid var(--border); border-radius: 5px;
+    color: var(--muted); cursor: pointer; font-size: 11px; padding: 3px 9px;
+    margin-right: 8px; transition: all .15s; white-space: nowrap; flex-shrink: 0;
+    font-family: inherit;
+  }
+  .copy-btn:hover  { background: rgba(255,255,255,.06); color: var(--text); border-color: var(--accent2); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); background: rgba(63,185,80,.1); }
+
+  /* ── Code block copy ── */
+  .code-wrap { position: relative; }
+  .code-copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--muted); cursor: pointer; font-size: 11px; padding: 3px 9px;
+    transition: all .15s; font-family: inherit; opacity: 0;
+  }
+  .code-wrap:hover .code-copy-btn { opacity: 1; }
+  .code-copy-btn:hover  { color: var(--text); border-color: var(--accent2); }
+  .code-copy-btn.copied { color: var(--green); border-color: var(--green); opacity: 1; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #main { margin-left: 0; }
+    .content { padding: 0 20px; }
+    .hero { padding: 28px 20px; }
+  }
+
+  /* ── HuskyLens section text ── */
+  #sec-husky h3 { font-size: 16px; color: var(--text); margin: 30px 0 10px; font-weight: 700; }
+  #sec-husky h4 { font-size: 13px; color: var(--accent2); margin: 16px 0 6px; font-weight: 700; }
+  #sec-husky p  { color: var(--muted); font-size: 13px; line-height: 1.65; margin-bottom: 10px; }
+  #sec-husky p.lead { color: var(--text); }
+  #sec-husky ul { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0 0 12px 22px; }
+  #sec-husky .badge { vertical-align: middle; margin-left: 8px; }
+
+  /* ── Block mockup (จำลองบล็อก Blockly สำหรับคู่มือ) ── */
+  .prog { background: rgba(255,255,255,.02); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px 16px; margin: 6px 0 16px; }
+  .prog-label { font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 4px; }
+  .prog-label:first-child { margin-top: 2px; }
+  .bk { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 7px; width: fit-content;
+    max-width: 100%; padding: 7px 12px; border-radius: 7px; font: 600 13px 'Segoe UI', sans-serif;
+    color: #fff; margin: 3px 0; line-height: 1.3;
+    box-shadow: inset 0 -2px rgba(0,0,0,.20), 0 1px 2px rgba(0,0,0,.30); }
+  .bk-indent  { margin-left: 24px; }
+  .bk-indent2 { margin-left: 48px; }
+  .bk-teal  { background: #0d9488; }
+  .bk-blue  { background: #2563eb; }
+  .bk-red   { background: #d33; }
+  .bk-pink  { background: #be185d; }
+  .bk-amber { background: #d97706; }
+  .bk-gray  { background: #475569; }
+  .bk-cyan  { background: #0891b2; }
+  .bk .dd { background: rgba(0,0,0,.26); border-radius: 5px; padding: 2px 8px; font-size: 12px; font-weight: 600; }
+  .bk .dd::after { content: " ▾"; font-size: 9px; opacity: .85; }
+  .bk .num { background: #eef2f7; color: #1f2937; border-radius: 10px; padding: 1px 9px;
+    font-size: 12px; font-weight: 700; min-width: 10px; text-align: center; }
+  .bk .val { background: rgba(255,255,255,.20); border-radius: 6px 6px 6px 2px; padding: 2px 9px;
+    font-size: 12px; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <div class="logo">⚡ RAZOR-S3</div>
+    <div class="subtitle">API Reference Manual v1.0.7</div>
+  </div>
+  <input id="search-box" type="text" placeholder="🔍  ค้นหาฟังก์ชัน..." oninput="doSearch(this.value)">
+
+  <div class="nav-section">
+    <div class="nav-label">หมวดหมู่</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-setup&#39;,this)"><span class="icon">🚀</span>Setup &amp; เริ่มต้น</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-motor&#39;,this)"><span class="icon">⚙️</span>มอเตอร์</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-servo&#39;,this)"><span class="icon">🦾</span>เซอร์โว</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-imu&#39;,this)"><span class="icon">🧭</span>IMU / ไจโร</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-move&#39;,this)"><span class="icon">🏎️</span>เคลื่อนที่ด้วย IMU</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-loop&#39;,this)"><span class="icon">🔁</span>MOVE_LOOP</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-sonar&#39;,this)"><span class="icon">📡</span>อัลตราโซนิก</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-line&#39;,this)"><span class="icon">📏</span>เซ็นเซอร์เส้น</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-color&#39;,this)"><span class="icon">🎨</span>เซนเซอร์สี (TCS34725)</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-oled&#39;,this)"><span class="icon">📺</span>OLED Display</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-adc&#39;,this)"><span class="icon">🔌</span>ADC (MCP3008)</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-btn&#39;,this)"><span class="icon">🔘</span>ปุ่ม &amp; บัซเซอร์</div>
+    <div class="nav-item active" onclick="navTo(&#39;sec-husky&#39;,this)"><span class="icon">📷</span>HuskyLens (กล้อง AI)</div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Razor-S3 API Reference</h1>
+    <p>คู่มืออ้างอิงฟังก์ชันทั้งหมดสำหรับบอร์ด Razor-S3 (RP2040) — ใช้สำหรับเขียนโค้ดใน Code Mode</p>
+    <div class="badges">
+      <span class="badge badge-orange">RP2040 · Arduino</span>
+      <span class="badge badge-blue">Multi-IMU · 8 ชนิด</span>
+      <span class="badge badge-green">MCP3008 ADC</span>
+      <span class="badge badge-blue">SSD1306 OLED</span>
+      <span class="badge badge-green">TCS34725 Color</span>
+      <span class="badge badge-orange">Battery Comp</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ══════════════════════════════════════
+       1. SETUP
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-setup">
+    <div class="section-header">
+      <span class="section-icon">🚀</span>
+      <div>
+        <div class="section-title">Setup &amp; เริ่มต้นระบบ</div>
+        <div class="section-desc">ฟังก์ชันที่ต้องเรียกใน setup() เพื่อเริ่มต้นบอร์ด</div>
+      </div>
+    </div>
+
+    <!-- razors4 -->
+    <div class="fn-card" id="fn-razors4">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">razors4()</span></div>
+          <div class="fn-short">เริ่มต้นระบบบอร์ดทั้งหมด — OLED, Serial, I2C</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">จำเป็น</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">เริ่มต้น OLED display, Serial port, Wire1 (I2C) ทั้งหมด ต้องเรียกก่อนฟังก์ชันอื่นทุกตัว</p>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();       <span class="c">// เริ่มต้นบอร์ด (ต้องเรียกก่อน)</span>
+  <span class="f">initIMU</span>();       <span class="c">// ถ้าใช้ IMU</span>
+  <span class="f">calibrateYawStart</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- sw_go -->
+    <div class="fn-card" id="fn-sw_go">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">sw_go()</span></div>
+          <div class="fn-short">รอกดปุ่ม SW10 เพื่อเริ่มโปรแกรม + บีป 1 ครั้ง</div>
+          <div class="fn-tags"><span class="tag">blocking</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">หยุดรอจนกว่าจะกดปุ่ม SW10 แล้วบีป 1 ครั้ง เหมาะสำหรับรอสัญญาณเริ่มแข่ง</p>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">loop</span>() {
+  <span class="f">sw_go</span>();    <span class="c">// หยุดรอกดปุ่ม → บีป → ทำงาน</span>
+  <span class="f">fd2</span>(<span class="n">60</span>, <span class="n">60</span>);
+  <span class="f">delay</span>(<span class="n">2000</span>);
+  <span class="f">ao</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- initIMU -->
+    <div class="fn-card" id="fn-initIMU">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">initIMU()</span></div>
+          <div class="fn-short">เริ่มต้นเซ็นเซอร์ IMU ที่เลือกไว้บน I2C</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">IMU</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">เชื่อมต่อเซนเซอร์ IMU ที่เลือกด้วย <code>setIMU()</code> (ค่าเริ่มต้น BNO055 ที่ address <code>0x29</code>) บน Wire1: SDA=GP26, SCL=GP27 — ถ้าหา sensor ไม่เจอจะหยุดโปรแกรมและแสดง error บน OLED</p>
+        <div class="note-box"><strong>💡 หมายเหตุ:</strong> ต้องเรียก <code>razors4()</code> ก่อนเสมอ และถ้าใช้ IMU รุ่นอื่น ให้เรียก <code>setIMU()</code> ก่อน <code>initIMU()</code></div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();
+  <span class="f">initIMU</span>();           <span class="c">// เริ่ม IMU</span>
+  <span class="f">calibrateYawStart</span>();  <span class="c">// ตั้งค่า yaw เริ่มต้น</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-setup -->
+
+
+  <!-- ══════════════════════════════════════
+       2. MOTOR
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-motor">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <div>
+        <div class="section-title">มอเตอร์</div>
+        <div class="section-desc">ควบคุมมอเตอร์ทั้ง 4 ตัว — speed range: -100 ถึง +100 (ลบ = ถอยหลัง)</div>
+      </div>
+    </div>
+
+    <!-- fd2 -->
+    <div class="fn-card" id="fn-fd2">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">fd2(speedL, speedR)</span></div>
+          <div class="fn-short">เดินหน้าพร้อมกำหนดความเร็วซ้าย-ขวาแยกกัน</div>
+          <div class="fn-tags"><span class="tag">motor</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">speedL</td><td class="param-type">int</td><td>—</td><td class="param-desc">ความเร็วล้อซ้าย (-100 ถึง 100)</td></tr>
+          <tr><td class="param-name">speedR</td><td class="param-type">int</td><td>—</td><td class="param-desc">ความเร็วล้อขวา (-100 ถึง 100)</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">fd2</span>(<span class="n">60</span>, <span class="n">60</span>);    <span class="c">// เดินหน้าตรง ความเร็ว 60</span>
+<span class="f">fd2</span>(<span class="n">70</span>, <span class="n">50</span>);    <span class="c">// โค้งขวาเล็กน้อย (ซ้ายเร็วกว่า)</span>
+<span class="f">fd2</span>(<span class="n">60</span>, -<span class="n">60</span>);   <span class="c">// หมุนซ้ายกับที่</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- ao -->
+    <div class="fn-card" id="fn-ao">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">ao()</span></div>
+          <div class="fn-short">หยุดมอเตอร์ทั้งหมดทันที (All Off)</div>
+          <div class="fn-tags"><span class="tag">motor</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">fd2</span>(<span class="n">60</span>, <span class="n">60</span>);
+<span class="f">delay</span>(<span class="n">2000</span>);
+<span class="f">ao</span>();    <span class="c">// หยุดทันที</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- sr / sl -->
+    <div class="fn-card" id="fn-sr">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">sr(speed)</span> &nbsp;/&nbsp; <span class="fn-name">sl(speed)</span></div>
+          <div class="fn-short">หมุนขวา / หมุนซ้าย กับที่ (Spin)</div>
+          <div class="fn-tags"><span class="tag">motor</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">speed</td><td class="param-type">int</td><td class="param-desc">ความเร็ว 0-100</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> <code>sr</code> = ล้อซ้ายหน้า ล้อขวาถอย &nbsp;|&nbsp; <code>sl</code> = ล้อขวาหน้า ล้อซ้ายถอย</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">sr</span>(<span class="n">50</span>);   <span class="c">// หมุนขวากับที่ ความเร็ว 50</span>
+<span class="f">delay</span>(<span class="n">500</span>);
+<span class="f">ao</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- tr / tl -->
+    <div class="fn-card" id="fn-tr">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">tr(speed)</span> &nbsp;/&nbsp; <span class="fn-name">tl(speed)</span></div>
+          <div class="fn-short">เลี้ยวขวา / เลี้ยวซ้าย (Turn — ล้อด้านหนึ่งหยุด)</div>
+          <div class="fn-tags"><span class="tag">motor</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">speed</td><td class="param-type">int</td><td class="param-desc">ความเร็ว 0-100 (ล้อที่เคลื่อนที่)</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">tr</span>(<span class="n">60</span>);   <span class="c">// เลี้ยวขวา (ล้อซ้ายวิ่ง ล้อขวาหยุด)</span>
+<span class="f">tl</span>(<span class="n">60</span>);   <span class="c">// เลี้ยวซ้าย (ล้อขวาวิ่ง ล้อซ้ายหยุด)</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- motorL / motorR -->
+    <div class="fn-card" id="fn-motorL">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">motorL(speed)</span> &nbsp;/&nbsp; <span class="fn-name">motorR(speed)</span></div>
+          <div class="fn-short">ควบคุมมอเตอร์ซ้าย/ขวาโดยตรง (รวม offset)</div>
+          <div class="fn-tags"><span class="tag">motor</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">speed</td><td class="param-type">int</td><td class="param-desc">ความเร็ว -100 ถึง 100</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">motorL</span>(<span class="n">70</span>);    <span class="c">// มอเตอร์ซ้ายเดินหน้า 70%</span>
+<span class="f">motorR</span>(-<span class="n">70</span>);   <span class="c">// มอเตอร์ขวาถอยหลัง 70%</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- setMotorOffset -->
+    <div class="fn-card" id="fn-setMotorOffset">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">setMotorOffset(offsetL, offsetR)</span></div>
+          <div class="fn-short">ปรับ offset มอเตอร์ให้วิ่งตรง</div>
+          <div class="fn-tags"><span class="tag">setup()</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">offsetL</td><td class="param-type">int</td><td class="param-desc">ค่าปรับมอเตอร์ซ้าย (ติดลบ = ช้าลง)</td></tr>
+          <tr><td class="param-name">offsetR</td><td class="param-type">int</td><td class="param-desc">ค่าปรับมอเตอร์ขวา (ติดลบ = ช้าลง)</td></tr>
+        </tbody></table>
+        <div class="warn-box"><strong>⚠️</strong> เรียกครั้งเดียวใน setup() เท่านั้น</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();
+  <span class="f">setMotorOffset</span>(-<span class="n">5</span>, <span class="n">0</span>); <span class="c">// ลดมอเตอร์ซ้ายลง 5 เพื่อวิ่งตรง</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;color:var(--accent2);font-weight:700;margin:34px 0 6px;border-top:1px solid var(--border);padding-top:26px;">🔋 ชดเชยแรงดันแบตเตอรี่ (Battery Compensation)</h3>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:18px;">เมื่อแบตลด มอเตอร์จะอ่อนลงและหุ่นวิ่งช้าลงเรื่อยๆ — โหมดนี้ชดเชยด้วยการปรับ PWM ให้มอเตอร์ "รู้สึก" เหมือนได้ไฟคงที่ตลอด ไม่ต้องใช้ step-down</p>
+
+    <!-- setMotorVoltage -->
+    <div class="fn-card" id="fn-setMotorVoltage">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">setMotorVoltage(vref)</span></div>
+          <div class="fn-short">เปิดโหมดชดเชยแรงดันแบต — ตั้งครั้งเดียวใน setup()</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">มอเตอร์</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">vref</td><td class="param-type">float</td><td class="param-default">7.0</td><td class="param-desc">แรงดันอ้างอิงที่อยากให้มอเตอร์รู้สึก (V) — แบต 2S แนะนำ 7.0</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡 ทำงานยังไง:</strong> แบตเต็ม (เกิน vref) → ลด PWM ลง · แบตลด (ต่ำกว่า vref) → เพิ่ม PWM ชดเชย ทำให้ความเร็วคงที่ตลอดการแข่ง · ตั้ง <code>vref</code> ใกล้ค่ากลางของแบตเพื่อชดเชยได้เกือบเต็มช่วง</div>
+        <div class="warn-box"><strong>⚠ ปิดโหมด:</strong> ไม่เรียกบล็อกนี้ = โหมดปกติ (PWM ตรงๆ) · ถ้าเปิดไว้แล้วอยากปิดกลางคันเรียก <code>disableMotorVoltage()</code></div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();
+  <span class="f">setMotorVoltage</span>(<span class="n">7.0</span>);  <span class="c">// มอเตอร์รู้สึกเหมือนได้ 7V เสมอ</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- battVoltage -->
+    <div class="fn-card" id="fn-battVoltage">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">float</span><span class="fn-name">battVoltage()</span></div>
+          <div class="fn-short">อ่านแรงดันแบตเตอรี่ปัจจุบัน (V)</div>
+          <div class="fn-tags"><span class="tag tag-float">float</span><span class="tag">GP28 / ADC2</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> แรงดันแบตเป็น float เช่น <code>7.84</code> (อ่านผ่าน GP28 / ADC2)</div>
+        <div class="note-box"><strong>💡</strong> ใช้โชว์แบตบน OLED หรือเช็คแบตอ่อนแล้วเตือน/หยุดหุ่นได้</div>
+        <div class="code-label">ตัวอย่าง — โชว์แบตบน OLED</div>
+        <div class="code-wrap"><pre class="code"><span class="t">float</span> <span class="v">v</span> = <span class="f">battVoltage</span>();
+<span class="f">oled</span>(<span class="n">1</span>, <span class="s">"BATT:"</span>, <span class="v">v</span>);
+<span class="k">if</span> (<span class="v">v</span> &lt; <span class="n">6.6</span>) <span class="f">Beep</span>();   <span class="c">// แบตอ่อน เตือน</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- disableMotorVoltage -->
+    <div class="fn-card" id="fn-disableMotorVoltage">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">disableMotorVoltage()</span></div>
+          <div class="fn-short">ปิดโหมดชดเชย กลับไปใช้ PWM ปกติ</div>
+          <div class="fn-tags"><span class="tag">มอเตอร์</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">ยกเลิกการชดเชยแรงดันที่เปิดด้วย <code>setMotorVoltage()</code> — มอเตอร์กลับมารับค่า speed ตรงๆ เหมือนเดิม</p>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">disableMotorVoltage</span>();  <span class="c">// กลับไปโหมด PWM ปกติ</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-motor -->
+
+
+  <!-- ══════════════════════════════════════
+       3. SERVO
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-servo">
+    <div class="section-header">
+      <span class="section-icon">🦾</span>
+      <div>
+        <div class="section-title">เซอร์โว</div>
+        <div class="section-desc">ควบคุม servo สูงสุด 10 ตัว พิน 4-8 — มุม 0-180°</div>
+      </div>
+    </div>
+
+    <!-- servo -->
+    <div class="fn-card" id="fn-servo">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">servo(pin, angle, speedDelay)</span></div>
+          <div class="fn-short">หมุน servo ไปมุมที่กำหนด แบบค่อยๆ หมุน (smooth)</div>
+          <div class="fn-tags"><span class="tag">servo</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">pin</td><td class="param-type">int</td><td>—</td><td class="param-desc">พินที่ต่อ servo (4-8)</td></tr>
+          <tr><td class="param-name">angle</td><td class="param-type">int</td><td>—</td><td class="param-desc">มุมปลายทาง 0-180°</td></tr>
+          <tr><td class="param-name">speedDelay</td><td class="param-type">int</td><td class="param-default">10</td><td class="param-desc">หน่วง ms ต่อ 1° (1=เร็ว, 20=ช้า)</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">servo</span>(<span class="n">4</span>, <span class="n">90</span>);       <span class="c">// พิน 4 → 90° ความเร็วปกติ</span>
+<span class="f">servo</span>(<span class="n">5</span>, <span class="n">0</span>, <span class="n">5</span>);     <span class="c">// พิน 5 → 0° เร็ว</span>
+<span class="f">servo</span>(<span class="n">6</span>, <span class="n">180</span>, <span class="n">20</span>);  <span class="c">// พิน 6 → 180° ช้ามาก</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- servoFast -->
+    <div class="fn-card" id="fn-servoFast">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">servoFast(pin, angle)</span></div>
+          <div class="fn-short">สั่ง servo ไปมุมเป้าหมายทันที (ไม่ smooth)</div>
+          <div class="fn-tags"><span class="tag">servo</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">pin</td><td class="param-type">int</td><td class="param-desc">พินที่ต่อ servo (4-8)</td></tr>
+          <tr><td class="param-name">angle</td><td class="param-type">int</td><td class="param-desc">มุมปลายทาง 0-180°</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">servoFast</span>(<span class="n">4</span>, <span class="n">0</span>);    <span class="c">// ปล่อยของ — servo พิน 4 ไป 0° ทันที</span>
+<span class="f">servoFast</span>(<span class="n">5</span>, <span class="n">90</span>);   <span class="c">// servo พิน 5 ไป 90° ทันที</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-servo -->
+
+
+  <!-- ══════════════════════════════════════
+       4. IMU
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-imu">
+    <div class="section-header">
+      <span class="section-icon">🧭</span>
+      <div>
+        <div class="section-title">IMU / ไจโร (เลือกได้ 8 ชนิด)</div>
+        <div class="section-desc">อ่านมุม yaw และหมุนหุ่นยนต์ด้วยมุมที่แม่นยำ — รองรับ BNO055 · BNO085 · ICM-20948 · MPU6050 · GY-91 (เลือกด้วย <code>setIMU()</code>)</div>
+      </div>
+    </div>
+
+    <!-- setIMU -->
+    <div class="fn-card" id="fn-setIMU">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">setIMU(type)</span></div>
+          <div class="fn-short">เลือกชนิดเซนเซอร์ IMU — วางบนสุดของ setup() ก่อน initIMU()</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">IMU</span><span class="tag">เลือกได้ 8 ชนิด</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">บอกระบบว่าใช้เซนเซอร์ IMU รุ่นไหน — เรียก<strong>ก่อน</strong> <code>initIMU()</code> / <code>calibrateYawStart()</code> เสมอ ถ้าไม่เรียกบล็อกนี้ ระบบจะใช้ <code>BNO055</code> เป็นค่าเริ่มต้น</p>
+        <table class="params-table">
+          <tbody><tr><th>ค่า type</th><th>เซนเซอร์</th><th>หมายเหตุ</th></tr>
+          <tr><td class="param-name">IMU_BNO055</td><td class="param-desc">BNO055</td><td class="param-desc">ค่าเริ่มต้น — fusion ในตัว นิ่งสุด</td></tr>
+          <tr><td class="param-name">IMU_BNO055_MAG</td><td class="param-desc">BNO055 + เข็มทิศ</td><td class="param-desc">ใช้ magnetometer ช่วยยึดทิศ (absolute)</td></tr>
+          <tr><td class="param-name">IMU_BNO055_ZUPT</td><td class="param-desc">BNO055 ZUPT</td><td class="param-desc">อ่าน gyro ดิบข้าม fusion + หยุดนิ่งรีเซ็ต drift (ZUPT)</td></tr>
+          <tr><td class="param-name">IMU_MPU6050</td><td class="param-desc">MPU6050</td><td class="param-desc">ราคาประหยัด gyro 6 แกน</td></tr>
+          <tr><td class="param-name">IMU_GY91</td><td class="param-desc">GY-91 (MPU9250)</td><td class="param-desc">9 แกน รวม magnetometer</td></tr>
+          <tr><td class="param-name">IMU_BNO085</td><td class="param-desc">BNO085</td><td class="param-desc">fusion รุ่นใหม่ ตอบสนองไว</td></tr>
+          <tr><td class="param-name">IMU_BNO085_MAG</td><td class="param-desc">BNO085 + เข็มทิศ</td><td class="param-desc">BNO085 พร้อม magnetometer</td></tr>
+          <tr><td class="param-name">IMU_ICM20948</td><td class="param-desc">ICM-20948</td><td class="param-desc">9 แกน — เล่น gyro ล้วน (ต้องจูน scale ดู <code>icm_scaleCalibrate()</code>)</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡 หมายเหตุ:</strong> ค่า type เป็นค่าคงที่ (constant) พิมพ์ตามตารางได้เลย ไม่ต้องใส่เครื่องหมายคำพูด</div>
+        <div class="code-label">ตัวอย่าง — ใช้ ICM-20948</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();
+  <span class="f">setIMU</span>(<span class="v">IMU_ICM20948</span>);  <span class="c">// เลือกก่อน initIMU เสมอ</span>
+  <span class="f">initIMU</span>();
+  <span class="f">calibrateYawStart</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- icm_scaleCalibrate -->
+    <div class="fn-card" id="fn-icm_scaleCalibrate">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">icm_scaleCalibrate(turns)</span></div>
+          <div class="fn-short">จูน scale-factor ของ gyro — เฉพาะ ICM-20948 (จูนครั้งเดียว เก็บถาวรใน EEPROM)</div>
+          <div class="fn-tags"><span class="tag">ICM-20948</span><span class="tag">calibrate</span><span class="tag">EEPROM</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">turns</td><td class="param-type">int</td><td class="param-default">5</td><td class="param-desc">จำนวนรอบที่จะหมุนหุ่นด้วยมือ (มากรอบ = แม่นกว่า)</td></tr>
+        </tbody></table>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">เทียบมุมที่ gyro วัดได้กับมุมหมุนจริง แล้วเก็บค่าตัวคูณแก้ไว้ — ทำให้ ICM-20948 อ่านมุมตรง ขั้นตอนใช้งาน:</p>
+        <ol style="color:var(--muted);font-size:13px;line-height:1.8;margin:0 0 16px 20px;">
+          <li>บอร์ดบี๊บ 1 ครั้ง → เริ่มจับมุม</li>
+          <li>หมุนหุ่นด้วยมือ <strong>N รอบเต็ม</strong> กลับมาจุดเดิม (ตรงเป๊ะ)</li>
+          <li>กดปุ่ม <strong>Go (SW10 / pin10)</strong></li>
+          <li>บี๊บ 2 ครั้ง = คำนวณเสร็จ เก็บลง EEPROM แล้ว</li>
+        </ol>
+        <div class="warn-box"><strong>⚠ วางชั่วคราว:</strong> จูนครั้งเดียวพอ (ค่าอยู่ถาวร) — จูนเสร็จให้<strong>เอาบล็อก/บรรทัดนี้ออก</strong> ไม่งั้นจะรอกดปุ่มทุกครั้งที่เปิดเครื่อง</div>
+        <div class="code-label">ตัวอย่าง — จูน 5 รอบ</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();
+  <span class="f">setIMU</span>(<span class="v">IMU_ICM20948</span>);
+  <span class="f">initIMU</span>();
+  <span class="f">icm_scaleCalibrate</span>(<span class="n">5</span>);  <span class="c">// จูนเสร็จแล้วลบบรรทัดนี้ทิ้ง</span>
+  <span class="f">calibrateYawStart</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- getYaw -->
+    <div class="fn-card" id="fn-getYaw">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">float</span><span class="fn-name">getYaw()</span></div>
+          <div class="fn-short">อ่านมุม yaw ปัจจุบัน (หักลบ offset ที่ calibrate ไว้แล้ว)</div>
+          <div class="fn-tags"><span class="tag tag-float">float</span><span class="tag">0-360°</span><span class="tag">World Frame</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> มุม 0.0 – 360.0° (World Frame — ทิศที่ calibrate ไว้ = 0°)</div>
+        <div class="note-box"><strong>💡</strong> ใช้ตัวนี้ในการทำงานปกติ เพราะ offset ถูกหักออกแล้ว ทิศที่ตั้งไว้ตอน <code>calibrateYawStart()</code> จะเป็น 0°</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="t">float</span> <span class="v">angle</span> = <span class="f">getYaw</span>();
+<span class="f">oled</span>(<span class="n">1</span>, <span class="s">"Yaw:"</span>, <span class="v">angle</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- getYawRaw -->
+    <div class="fn-card" id="fn-getYawRaw">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">float</span><span class="fn-name">getYawRaw()</span></div>
+          <div class="fn-short">อ่านมุม yaw ดิบจากเซ็นเซอร์ (ไม่หักลบ offset)</div>
+          <div class="fn-tags"><span class="tag tag-float">float</span><span class="tag">0-360°</span><span class="tag">Raw</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> มุม 0.0 – 360.0° จากเซ็นเซอร์โดยตรง ไม่ขึ้นกับ offset</div>
+        <div class="note-box"><strong>💡</strong> ใช้เมื่อต้องการมุมจริงๆ จาก North โดยไม่ต้องการ reset ทิศ</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="t">float</span> <span class="v">raw</span> = <span class="f">getYawRaw</span>();
+<span class="f">oled</span>(<span class="n">1</span>, <span class="s">"Raw:"</span>, <span class="v">raw</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- calibrateYawStart -->
+    <div class="fn-card" id="fn-calibrateYawStart">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">calibrateYawStart()</span></div>
+          <div class="fn-short">ตั้งทิศปัจจุบันเป็น 0° (เฉลี่ย 20 ตัวอย่าง ~40ms)</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">calibrate</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">บันทึก yaw ปัจจุบันเป็นจุดอ้างอิง (offset) ทำให้ <code>getYaw()</code> คืนค่า 0° เมื่ออยู่ในทิศเดิม เรียกใน <code>setup()</code> หลัง initIMU()</p>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">initIMU</span>();
+<span class="f">calibrateYawStart</span>(); <span class="c">// ทิศนี้ = 0° ตลอดโปรแกรม</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- resetYaw -->
+    <div class="fn-card" id="fn-resetYaw">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">resetYaw(samples)</span></div>
+          <div class="fn-short">รีเซ็ต yaw offset ณ ตำแหน่งปัจจุบัน</div>
+          <div class="fn-tags"><span class="tag">calibrate</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">samples</td><td class="param-type">int</td><td class="param-default">10</td><td class="param-desc">จำนวนตัวอย่างที่เฉลี่ย 1-20 (มากกว่า = แม่นยำกว่า ~2ms/ตัวอย่าง)</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="c">// หลังหมุนครบแล้ว รีเซ็ตทิศใหม่</span>
+<span class="f">spinTo</span>(<span class="n">90</span>);
+<span class="f">resetYaw</span>();    <span class="c">// ทิศ 90° เก่า กลายเป็น 0° ใหม่</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- normalizeAngle -->
+    <div class="fn-card" id="fn-normalizeAngle">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">float</span><span class="fn-name">normalizeAngle(angle)</span></div>
+          <div class="fn-short">แปลงมุมให้อยู่ในช่วง -180° ถึง +180°</div>
+          <div class="fn-tags"><span class="tag tag-float">float</span><span class="tag">utility</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">angle</td><td class="param-type">float</td><td class="param-desc">มุมใดๆ (อาจเกิน 360 หรือติดลบได้)</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> มุมในช่วง -180.0 ถึง +180.0°</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">normalizeAngle</span>(<span class="n">270</span>)   <span class="c">// → -90</span>
+<span class="f">normalizeAngle</span>(-<span class="n">200</span>)  <span class="c">// → 160</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- shortestAngle -->
+    <div class="fn-card" id="fn-shortestAngle">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">float</span><span class="fn-name">shortestAngle(current, target)</span></div>
+          <div class="fn-short">คำนวณระยะหมุนที่สั้นที่สุดจาก current ไป target</div>
+          <div class="fn-tags"><span class="tag tag-float">float</span><span class="tag">utility</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">current</td><td class="param-type">float</td><td class="param-desc">มุมปัจจุบัน (°)</td></tr>
+          <tr><td class="param-name">target</td><td class="param-type">float</td><td class="param-desc">มุมเป้าหมาย (°)</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> ระยะ (มีเครื่องหมาย) บวก=ขวา ลบ=ซ้าย</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">shortestAngle</span>(<span class="n">350</span>, <span class="n">10</span>)  <span class="c">// → +20 (หมุนขวา 20°)</span>
+<span class="f">shortestAngle</span>(<span class="n">10</span>, <span class="n">350</span>)  <span class="c">// → -20 (หมุนซ้าย 20°)</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- spinTo -->
+    <div class="fn-card" id="fn-spinTo">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">spinTo(targetYaw, errorThreshold, timeout_ms, spdMin, spdMax)</span></div>
+          <div class="fn-short">หมุนไปทิศที่กำหนด (World Frame) ด้วย Adaptive PD</div>
+          <div class="fn-tags"><span class="tag">spin</span><span class="tag">PD</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">targetYaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">ทิศเป้าหมาย 0-360° (World Frame)</td></tr>
+          <tr><td class="param-name">errorThreshold</td><td class="param-type">float</td><td class="param-default">1.5</td><td class="param-desc">ค่าผิดพลาดที่ยอมรับ (°)</td></tr>
+          <tr><td class="param-name">timeout_ms</td><td class="param-type">int</td><td class="param-default">200</td><td class="param-desc">เวลาสูงสุด (ms) ที่ยอมให้รอ</td></tr>
+          <tr><td class="param-name">spdMin</td><td class="param-type">int</td><td class="param-default">40</td><td class="param-desc">ความเร็วต่ำสุด</td></tr>
+          <tr><td class="param-name">spdMax</td><td class="param-type">int</td><td class="param-default">70</td><td class="param-desc">ความเร็วสูงสุด</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> หยุดเมื่อ error &lt; threshold ติดต่อกัน 5 รอบ — ใช้ <code>setSpinConfig()</code> ปรับ gain</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">spinTo</span>(<span class="n">90</span>);              <span class="c">// หมุนไปทิศ 90°</span>
+<span class="f">spinTo</span>(<span class="n">180</span>, <span class="n">2.0</span>, <span class="n">300</span>);  <span class="c">// ทนผิดพลาด 2° รอสูงสุด 300ms</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- setSpinConfig -->
+    <div class="fn-card" id="fn-setSpinConfig">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">setSpinConfig(kp_fast, kp_mid, kp_slow, kd)</span></div>
+          <div class="fn-short">ปรับ PD gain ของ spinTo()</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">tuning</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">kp_fast</td><td class="param-type">float</td><td class="param-default">6.0</td><td class="param-desc">Kp เมื่อ error มาก (เร่งเร็ว)</td></tr>
+          <tr><td class="param-name">kp_mid</td><td class="param-type">float</td><td class="param-default">3.5</td><td class="param-desc">Kp เมื่อ error กลาง</td></tr>
+          <tr><td class="param-name">kp_slow</td><td class="param-type">float</td><td class="param-default">1.5</td><td class="param-desc">Kp เมื่อ error น้อย (ชะลอ)</td></tr>
+          <tr><td class="param-name">kd</td><td class="param-type">float</td><td class="param-default">0.3</td><td class="param-desc">Kd ลด overshoot</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">void</span> <span class="f">setup</span>() {
+  <span class="f">razors4</span>();
+  <span class="f">initIMU</span>();
+  <span class="f">calibrateYawStart</span>();
+  <span class="f">setSpinConfig</span>(<span class="n">8.0</span>, <span class="n">4.0</span>, <span class="n">2.0</span>, <span class="n">0.5</span>); <span class="c">// เร็วขึ้น</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- turnByAngle -->
+    <div class="fn-card" id="fn-turnByAngle">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">turnByAngle(angle, kp, kd, speedMin, speedMax)</span></div>
+          <div class="fn-short">หมุนสัมพัทธ์ตามองศาที่กำหนด (relative)</div>
+          <div class="fn-tags"><span class="tag">spin</span><span class="tag">relative</span><span class="tag">PD</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">angle</td><td class="param-type">float</td><td class="param-desc">มุมที่ต้องการหมุน (°) บวก=ขวา ลบ=ซ้าย</td></tr>
+          <tr><td class="param-name">kp</td><td class="param-type">float</td><td class="param-desc">Proportional gain</td></tr>
+          <tr><td class="param-name">kd</td><td class="param-type">float</td><td class="param-desc">Derivative gain</td></tr>
+          <tr><td class="param-name">speedMin</td><td class="param-type">int</td><td class="param-desc">ความเร็วต่ำสุด</td></tr>
+          <tr><td class="param-name">speedMax</td><td class="param-type">int</td><td class="param-desc">ความเร็วสูงสุด</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">turnByAngle</span>(<span class="n">90</span>, <span class="n">2.0</span>, <span class="n">0.3</span>, <span class="n">35</span>, <span class="n">70</span>);   <span class="c">// หมุนขวา 90°</span>
+<span class="f">turnByAngle</span>(-<span class="n">45</span>, <span class="n">2.0</span>, <span class="n">0.3</span>, <span class="n">35</span>, <span class="n">70</span>);  <span class="c">// หมุนซ้าย 45°</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-imu -->
+
+
+  <!-- ══════════════════════════════════════
+       5. MOVE (IMU movement)
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-move">
+    <div class="section-header">
+      <span class="section-icon">🏎️</span>
+      <div>
+        <div class="section-title">เคลื่อนที่ด้วย IMU (MOVE)</div>
+        <div class="section-desc">วิ่งตรงด้วย IMU ยึดทิศ พร้อม ramp-up/down และ wall tracking</div>
+      </div>
+    </div>
+
+    <!-- MOVE -->
+    <div class="fn-card" id="fn-MOVE">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">MOVE(dir, targetYaw, speedBase, duration, kp, ki, kd, rampUp, rampDown, startSpeed)</span></div>
+          <div class="fn-short">วิ่งตรงยึดทิศ IMU ด้วย PID — มี ramp เร่ง/ชะลอ</div>
+          <div class="fn-tags"><span class="tag">move</span><span class="tag">PID</span><span class="tag">blocking</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">dir</td><td class="param-type">int</td><td>—</td><td class="param-desc">ทิศทาง: <code>0</code>=หน้า, <code>1</code>=หลัง</td></tr>
+          <tr><td class="param-name">targetYaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">ทิศที่ต้องการยึด (World Frame °)</td></tr>
+          <tr><td class="param-name">speedBase</td><td class="param-type">int</td><td>—</td><td class="param-desc">ความเร็วหลัก 0-100</td></tr>
+          <tr><td class="param-name">duration</td><td class="param-type">float</td><td>—</td><td class="param-desc">ระยะเวลาวิ่ง (ms)</td></tr>
+          <tr><td class="param-name">kp</td><td class="param-type">float</td><td>—</td><td class="param-desc">PID Kp สำหรับยึดทิศ</td></tr>
+          <tr><td class="param-name">ki</td><td class="param-type">float</td><td>—</td><td class="param-desc">PID Ki</td></tr>
+          <tr><td class="param-name">kd</td><td class="param-type">float</td><td>—</td><td class="param-desc">PID Kd</td></tr>
+          <tr><td class="param-name">rampUp_ms</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">เวลาเร่งความเร็ว (ms)</td></tr>
+          <tr><td class="param-name">rampDown_ms</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">เวลาชะลอก่อนหยุด (ms)</td></tr>
+          <tr><td class="param-name">startSpeed</td><td class="param-type">int</td><td class="param-default">30</td><td class="param-desc">ความเร็วเริ่มต้นช่วง ramp</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="c">// วิ่งหน้าทิศ 0° ความเร็ว 70 นาน 1500ms</span>
+<span class="f">MOVE</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">70</span>, <span class="n">1500</span>, <span class="n">1.5</span>, <span class="n">0</span>, <span class="n">0.2</span>);
+
+<span class="c">// วิ่งหน้า พร้อม ramp เร่ง 300ms และชะลอ 200ms</span>
+<span class="f">MOVE</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">80</span>, <span class="n">2000</span>, <span class="n">1.5</span>, <span class="n">0</span>, <span class="n">0.2</span>, <span class="n">300</span>, <span class="n">200</span>, <span class="n">30</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- MOVE_WALL -->
+    <div class="fn-card" id="fn-MOVE_WALL">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">MOVE_WALL(dir, targetYaw, speedBase, duration, kp_yaw, kp_wall, targetDist, trig, echo, ...)</span></div>
+          <div class="fn-short">วิ่งตรงยึดทิศ + ยึดระยะจากผนัง (Ultrasonic)</div>
+          <div class="fn-tags"><span class="tag">move</span><span class="tag">wall</span><span class="tag">PID</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">dir</td><td class="param-type">int</td><td>—</td><td class="param-desc">0=หน้า, 1=หลัง</td></tr>
+          <tr><td class="param-name">targetYaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">ทิศที่ยึด (°)</td></tr>
+          <tr><td class="param-name">speedBase</td><td class="param-type">int</td><td>—</td><td class="param-desc">ความเร็วหลัก</td></tr>
+          <tr><td class="param-name">duration</td><td class="param-type">float</td><td>—</td><td class="param-desc">เวลาวิ่ง (ms)</td></tr>
+          <tr><td class="param-name">kp_yaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">Kp ยึดทิศ</td></tr>
+          <tr><td class="param-name">kp_wall</td><td class="param-type">float</td><td>—</td><td class="param-desc">Kp ยึดระยะผนัง</td></tr>
+          <tr><td class="param-name">targetDist</td><td class="param-type">float</td><td>—</td><td class="param-desc">ระยะห่างผนังที่ต้องการ (cm)</td></tr>
+          <tr><td class="param-name">trigPin</td><td class="param-type">int</td><td>—</td><td class="param-desc">พิน Trig ของ HC-SR04</td></tr>
+          <tr><td class="param-name">echoPin</td><td class="param-type">int</td><td>—</td><td class="param-desc">พิน Echo ของ HC-SR04</td></tr>
+          <tr><td class="param-name">rampUp_ms</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">เวลาเร่ง (ms)</td></tr>
+          <tr><td class="param-name">rampDown_ms</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">เวลาชะลอ (ms)</td></tr>
+          <tr><td class="param-name">startSpeed</td><td class="param-type">int</td><td class="param-default">30</td><td class="param-desc">ความเร็วเริ่ม ramp</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="c">// วิ่งหน้า ยึดทิศ 0° + รักษาระยะ 15cm จากผนัง</span>
+<span class="f">MOVE_WALL</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">70</span>, <span class="n">2000</span>,
+          <span class="n">1.5</span>,   <span class="c">// kp_yaw</span>
+          <span class="n">2.0</span>,   <span class="c">// kp_wall</span>
+          <span class="n">15.0</span>,  <span class="c">// targetDist = 15cm</span>
+          <span class="n">6</span>, <span class="n">7</span>); <span class="c">// trig=pin6, echo=pin7</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-move -->
+
+
+  <!-- ══════════════════════════════════════
+       6. MOVE_LOOP
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-loop">
+    <div class="section-header">
+      <span class="section-icon">🔁</span>
+      <div>
+        <div class="section-title">MOVE_LOOP (Non-blocking)</div>
+        <div class="section-desc">เรียกซ้ำใน loop() — ไม่บล็อกโปรแกรม เหมาะสำหรับทำหลายอย่างพร้อมกัน</div>
+      </div>
+    </div>
+
+    <!-- MOVE_LOOP_RESET -->
+    <div class="fn-card" id="fn-MOVE_LOOP_RESET">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">MOVE_LOOP_RESET()</span></div>
+          <div class="fn-short">รีเซ็ต state ของ MOVE_LOOP — เรียกก่อนเริ่ม loop ใหม่</div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">MOVE_LOOP_RESET</span>();   <span class="c">// reset ก่อนเริ่ม</span>
+<span class="k">while</span> (<span class="k">true</span>) {
+  <span class="f">MOVE_LOOP</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">60</span>, <span class="n">1.5</span>);
+  <span class="c">// อ่าน sensor อื่นได้ที่นี่</span>
+  <span class="t">float</span> <span class="v">dist</span> = <span class="f">sonarRead</span>(<span class="n">6</span>, <span class="n">7</span>);
+  <span class="k">if</span> (<span class="v">dist</span> &lt; <span class="n">20</span>) <span class="k">break</span>;
+}
+<span class="f">ao</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- MOVE_LOOP -->
+    <div class="fn-card" id="fn-MOVE_LOOP">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">MOVE_LOOP(dir, targetYaw, speedBase, kp_yaw, kd_yaw, startSpeed)</span></div>
+          <div class="fn-short">1 รอบของการวิ่งตรงยึดทิศ (~4ms ต่อรอบ)</div>
+          <div class="fn-tags"><span class="tag">non-blocking</span><span class="tag">loop</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">dir</td><td class="param-type">int</td><td>—</td><td class="param-desc">0=หน้า, 1=หลัง</td></tr>
+          <tr><td class="param-name">targetYaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">ทิศที่ยึด (°)</td></tr>
+          <tr><td class="param-name">speedBase</td><td class="param-type">int</td><td>—</td><td class="param-desc">ความเร็วหลัก 0-100</td></tr>
+          <tr><td class="param-name">kp_yaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">Kp ยึดทิศ</td></tr>
+          <tr><td class="param-name">kd_yaw</td><td class="param-type">float</td><td class="param-default">0</td><td class="param-desc">Kd ยึดทิศ</td></tr>
+          <tr><td class="param-name">startSpeed</td><td class="param-type">int</td><td class="param-default">10</td><td class="param-desc">ความเร็ว ramp เริ่มต้น</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> ต้องเรียก <code>MOVE_LOOP_RESET()</code> ก่อนทุกครั้งที่เริ่มลูปใหม่</div>
+        <div class="code-label">ตัวอย่าง — วิ่งจนเจอเส้น</div>
+        <div class="code-wrap"><pre class="code"><span class="f">MOVE_LOOP_RESET</span>();
+<span class="k">while</span> (<span class="k">true</span>) {
+  <span class="f">MOVE_LOOP</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">70</span>, <span class="n">1.5</span>, <span class="n">0.1</span>);
+  <span class="k">if</span> (<span class="f">sensorOnLine</span>(<span class="n">3</span>)) <span class="k">break</span>; <span class="c">// หยุดเมื่อเจอเส้น ch3</span>
+}
+<span class="f">ao</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- MOVE_WALL_LOOP -->
+    <div class="fn-card" id="fn-MOVE_WALL_LOOP">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">MOVE_WALL_LOOP(dir, targetYaw, speedBase, kp_yaw, kp_wall, targetDist, trig, echo, startSpeed)</span></div>
+          <div class="fn-short">1 รอบของการวิ่งตรง + ยึดระยะผนัง</div>
+          <div class="fn-tags"><span class="tag">non-blocking</span><span class="tag">wall</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">dir</td><td class="param-type">int</td><td>—</td><td class="param-desc">0=หน้า, 1=หลัง</td></tr>
+          <tr><td class="param-name">targetYaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">ทิศที่ยึด (°)</td></tr>
+          <tr><td class="param-name">speedBase</td><td class="param-type">int</td><td>—</td><td class="param-desc">ความเร็วหลัก</td></tr>
+          <tr><td class="param-name">kp_yaw</td><td class="param-type">float</td><td>—</td><td class="param-desc">Kp ยึดทิศ</td></tr>
+          <tr><td class="param-name">kp_wall</td><td class="param-type">float</td><td>—</td><td class="param-desc">Kp ยึดระยะผนัง</td></tr>
+          <tr><td class="param-name">targetDist</td><td class="param-type">float</td><td>—</td><td class="param-desc">ระยะห่างผนัง (cm)</td></tr>
+          <tr><td class="param-name">trigPin</td><td class="param-type">int</td><td>—</td><td class="param-desc">พิน Trig</td></tr>
+          <tr><td class="param-name">echoPin</td><td class="param-type">int</td><td>—</td><td class="param-desc">พิน Echo</td></tr>
+          <tr><td class="param-name">startSpeed</td><td class="param-type">int</td><td class="param-default">30</td><td class="param-desc">ความเร็ว ramp เริ่มต้น</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">MOVE_LOOP_RESET</span>();
+<span class="k">while</span> (<span class="k">true</span>) {
+  <span class="f">MOVE_WALL_LOOP</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">65</span>, <span class="n">1.5</span>, <span class="n">2.0</span>, <span class="n">15.0</span>, <span class="n">6</span>, <span class="n">7</span>);
+  <span class="k">if</span> (<span class="f">sonarRead</span>(<span class="n">4</span>, <span class="n">5</span>) &lt; <span class="n">10</span>) <span class="k">break</span>; <span class="c">// หยุดเมื่อชนผนังหน้า</span>
+}
+<span class="f">ao</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-loop -->
+
+
+  <!-- ══════════════════════════════════════
+       7. SONAR
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-sonar">
+    <div class="section-header">
+      <span class="section-icon">📡</span>
+      <div>
+        <div class="section-title">อัลตราโซนิก (HC-SR04)</div>
+        <div class="section-desc">วัดระยะด้วยคลื่นเสียง — ระยะสูงสุด ~500cm</div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-sonarRead">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">float</span><span class="fn-name">sonarRead(trigPin, echoPin)</span></div>
+          <div class="fn-short">วัดระยะจาก HC-SR04 — คืนค่า cm หรือ -1 ถ้าไม่เจอสิ่งกีดขวาง</div>
+          <div class="fn-tags"><span class="tag tag-float">float</span><span class="tag">cm</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">trigPin</td><td class="param-type">int</td><td class="param-desc">พิน Trigger (ส่งคลื่น)</td></tr>
+          <tr><td class="param-name">echoPin</td><td class="param-type">int</td><td class="param-desc">พิน Echo (รับคลื่น)</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> ระยะ (cm) — คืนค่า <code>-1</code> ถ้าไม่มีสิ่งกีดขวางในระยะ 500cm</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="t">float</span> <span class="v">d</span> = <span class="f">sonarRead</span>(<span class="n">6</span>, <span class="n">7</span>); <span class="c">// trig=pin6 echo=pin7</span>
+<span class="k">if</span> (<span class="v">d</span> &gt; <span class="n">0</span> &amp;&amp; <span class="v">d</span> &lt; <span class="n">20</span>) {
+  <span class="f">ao</span>();  <span class="c">// หยุดเมื่อใกล้วัตถุ &lt; 20cm</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-sonar -->
+
+
+  <!-- ══════════════════════════════════════
+       8. LINE SENSOR
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-line">
+    <div class="section-header">
+      <span class="section-icon">📏</span>
+      <div>
+        <div class="section-title">เซ็นเซอร์เส้น</div>
+        <div class="section-desc">8 ช่อง (ch 0-7) ผ่าน MCP3008 ADC — รองรับ calibration อัตโนมัติ</div>
+      </div>
+    </div>
+
+    <!-- autoScanSensor -->
+    <div class="fn-card" id="fn-autoScanSensor">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">autoScanSensor(chipType, duration_ms)</span></div>
+          <div class="fn-short">Calibrate เซ็นเซอร์อัตโนมัติ — ลากหุ่นยนต์ข้ามเส้น</div>
+          <div class="fn-tags"><span class="tag">setup()</span><span class="tag">calibrate</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">chipType</td><td class="param-type">int</td><td>—</td><td class="param-desc"><code>8</code>=MCP3008 (10-bit), <code>12</code>=MCP3208 (12-bit)</td></tr>
+          <tr><td class="param-name">duration_ms</td><td class="param-type">int</td><td class="param-default">5000</td><td class="param-desc">เวลา scan (ms) — แนะนำ 3000-5000</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> บันทึกลง EEPROM อัตโนมัติ ไม่ต้อง calibrate ใหม่ทุกครั้ง</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">autoScanSensor</span>(<span class="n">8</span>); <span class="c">// scan 5 วิ แล้วบันทึก</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- sensorOnLine -->
+    <div class="fn-card" id="fn-sensorOnLine">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">bool</span><span class="fn-name">sensorOnLine(ch, lineType)</span></div>
+          <div class="fn-short">ตรวจว่า sensor ช่องนั้นอยู่บนเส้นหรือไม่</div>
+          <div class="fn-tags"><span class="tag tag-bool">bool</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">ch</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่อง 0-7</td></tr>
+          <tr><td class="param-name">lineType</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc"><code>0</code>=เส้นดำบนพื้นขาว, <code>1</code>=เส้นขาวบนพื้นดำ</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> <code>true</code> = อยู่บนเส้น</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">if</span> (<span class="f">sensorOnLine</span>(<span class="n">3</span>)) {       <span class="c">// ch 3 เจอเส้นดำ</span>
+  <span class="f">ao</span>();
+}
+<span class="k">if</span> (<span class="f">sensorOnLine</span>(<span class="n">0</span>, <span class="n">1</span>)) {    <span class="c">// ch 0 เจอเส้นขาว</span>
+  <span class="f">spinTo</span>(<span class="n">90</span>);
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- linePosition -->
+    <div class="fn-card" id="fn-linePosition">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">int</span><span class="fn-name">linePosition(chFrom, chTo, lineType)</span></div>
+          <div class="fn-short">คำนวณตำแหน่งเส้น -100 (ซ้ายสุด) ถึง +100 (ขวาสุด)</div>
+          <div class="fn-tags"><span class="tag tag-int">int</span><span class="tag">PID line follower</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">chFrom</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่องเริ่ม</td></tr>
+          <tr><td class="param-name">chTo</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่องสิ้นสุด</td></tr>
+          <tr><td class="param-name">lineType</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">0=ดำ, 1=ขาว</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> ตำแหน่ง -100 (ซ้ายสุด) · 0 (กลาง) · +100 (ขวาสุด)</div>
+        <div class="code-label">ตัวอย่าง — Line Follower PID</div>
+        <div class="code-wrap"><pre class="code"><span class="t">float</span> <span class="v">kp</span> = <span class="n">0.4</span>, <span class="v">lastErr</span> = <span class="n">0</span>;
+<span class="k">while</span> (<span class="k">true</span>) {
+  <span class="t">int</span> <span class="v">pos</span>   = <span class="f">linePosition</span>(<span class="n">0</span>, <span class="n">7</span>);  <span class="c">// -100 ถึง +100</span>
+  <span class="t">float</span> <span class="v">err</span>  = <span class="v">pos</span>;
+  <span class="t">float</span> <span class="v">corr</span> = <span class="v">kp</span> * <span class="v">err</span>;
+  <span class="f">fd2</span>(<span class="n">60</span> - <span class="v">corr</span>, <span class="n">60</span> + <span class="v">corr</span>);
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+        <div class="note-box"><strong>💡</strong> ไม่อยากเขียน PID เอง? ใช้บล็อก <code>setupLineFront</code> + <code>linePID_front</code> ด้านล่างแทนได้เลย</div>
+      </div>
+    </div>
+
+    <!-- setupLineFront -->
+    <div class="fn-card" id="fn-setupLineFront">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">setupLineFront(from, to, type)</span></div>
+          <div class="fn-short">ตั้งค่าเซนเซอร์ชุดหน้า — ใส่ใน Setup ครั้งเดียว</div>
+          <div class="fn-tags"><span class="tag">PID ตามเส้น</span><span class="tag">Setup</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">from</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่องเริ่มของชุดหน้า (0-7)</td></tr>
+          <tr><td class="param-name">to</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่องสิ้นสุด (8 ตัว=0..7, 4 ตัวหน้า=0..3)</td></tr>
+          <tr><td class="param-name">type</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">0=เส้นดำ/พื้นขาว, 1=เส้นขาว/พื้นดำ</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> ต้อง <code>loadCalibration()</code> หรือ <code>autoScanSensor()</code> ก่อน — ใช้คู่กับ <code>linePID_front()</code></div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">setupLineFront</span>(<span class="n">0</span>, <span class="n">7</span>, <span class="n">0</span>); <span class="c">// หน้า A0-A7 (8 ตัว) เส้นดำ</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- setupLineBack -->
+    <div class="fn-card" id="fn-setupLineBack">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">setupLineBack(from, to, type, backFlip)</span></div>
+          <div class="fn-short">ตั้งค่าเซนเซอร์ชุดหลัง (สำหรับถอยตามเส้น)</div>
+          <div class="fn-tags"><span class="tag">PID ตามเส้น</span><span class="tag">Setup</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">from</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่องเริ่มของชุดหลัง (เช่น 4)</td></tr>
+          <tr><td class="param-name">to</td><td class="param-type">int</td><td>—</td><td class="param-desc">ช่องสิ้นสุด (เช่น 7 → A4-A7)</td></tr>
+          <tr><td class="param-name">type</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">0=เส้นดำ, 1=เส้นขาว</td></tr>
+          <tr><td class="param-name">backFlip</td><td class="param-type">int</td><td class="param-default">0</td><td class="param-desc">0=ปกติ, 1=กลับซ้าย-ขวา (ถ้าถอยแล้วแก้เส้นผิดทาง)</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> ใช้คู่กับ <code>linePID_back()</code> — แบ่ง 4 หน้า 4 หลังก็เซ็ตทั้งสองบล็อก</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">setupLineFront</span>(<span class="n">0</span>, <span class="n">3</span>, <span class="n">0</span>);    <span class="c">// หน้า A0-A3</span>
+<span class="f">setupLineBack</span>(<span class="n">4</span>, <span class="n">7</span>, <span class="n">0</span>, <span class="n">0</span>); <span class="c">// หลัง A4-A7</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- linePID_front -->
+    <div class="fn-card" id="fn-linePID_front">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">linePID_front(speed, kp, kd)</span></div>
+          <div class="fn-short">เดินหน้าตามเส้น PID 1 รอบ — ใส่ใน loop เอง</div>
+          <div class="fn-tags"><span class="tag">PID ตามเส้น</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">speed</td><td class="param-type">int</td><td class="param-default">50</td><td class="param-desc">ความเร็วฐาน 0-100</td></tr>
+          <tr><td class="param-name">kp</td><td class="param-type">float</td><td class="param-default">0.5</td><td class="param-desc">ความแรงในการแก้เส้น</td></tr>
+          <tr><td class="param-name">kd</td><td class="param-type">float</td><td class="param-default">2.0</td><td class="param-desc">กันส่าย/แกว่ง</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>⚠️</strong> หลุดเส้น (ไม่เจอเลย) ตำแหน่งคืน 0 เท่ากับ "อยู่กลาง" — เช็ค <code>countSensors=0</code> เพื่อรู้ว่าหลุด แล้ว <code>break</code> เอง</div>
+        <div class="code-label">ตัวอย่าง — เดินหน้าตามเส้นจนหลุด</div>
+        <div class="code-wrap"><pre class="code"><span class="c">// ── ใน Setup ──</span>
+<span class="f">loadCalibration</span>();
+<span class="f">setupLineFront</span>(<span class="n">0</span>, <span class="n">7</span>, <span class="n">0</span>);
+
+<span class="c">// ── ใน loop ──</span>
+<span class="k">while</span> (<span class="k">true</span>) {
+  <span class="f">linePID_front</span>(<span class="n">50</span>, <span class="n">0.5</span>, <span class="n">2.0</span>);
+  <span class="k">if</span> (<span class="f">countSensors</span>(<span class="n">0</span>, <span class="n">7</span>) == <span class="n">0</span>) { <span class="f">ao</span>(); <span class="k">break</span>; }
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- linePID_back -->
+    <div class="fn-card" id="fn-linePID_back">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">linePID_back(speed, kp, kd)</span></div>
+          <div class="fn-short">ถอยหลังตามเส้น PID 1 รอบ — ใช้เซนเซอร์ชุดหลัง</div>
+          <div class="fn-tags"><span class="tag">PID ตามเส้น</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">speed</td><td class="param-type">int</td><td class="param-default">50</td><td class="param-desc">ความเร็วฐาน 0-100</td></tr>
+          <tr><td class="param-name">kp</td><td class="param-type">float</td><td class="param-default">0.5</td><td class="param-desc">ความแรงในการแก้เส้น</td></tr>
+          <tr><td class="param-name">kd</td><td class="param-type">float</td><td class="param-default">2.0</td><td class="param-desc">กันส่าย/แกว่ง</td></tr>
+        </tbody></table>
+        <div class="note-box"><strong>💡</strong> สั่งถอย (<code>bk</code>) อ่านเซนเซอร์ชุดหลัง — ถ้าแก้เส้นผิดทาง ตั้ง <code>backFlip=1</code> ใน <code>setupLineBack()</code></div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">while</span> (<span class="k">true</span>) {
+  <span class="f">linePID_back</span>(<span class="n">50</span>, <span class="n">0.5</span>, <span class="n">2.0</span>);
+  <span class="k">if</span> (<span class="f">sensorOnLine</span>(<span class="n">5</span>)) { <span class="f">ao</span>(); <span class="k">break</span>; }
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- countSensors -->
+    <div class="fn-card" id="fn-countSensors">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">int</span><span class="fn-name">countSensors(chFrom, chTo, lineType)</span></div>
+          <div class="fn-short">นับจำนวน sensor ที่เจอเส้นในช่วง chFrom-chTo</div>
+          <div class="fn-tags"><span class="tag tag-int">int</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> จำนวน sensor ที่เจอเส้น (0 ถึง chTo-chFrom+1)</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">if</span> (<span class="f">countSensors</span>(<span class="n">0</span>, <span class="n">7</span>) &gt;= <span class="n">4</span>) {
+  <span class="c">// เส้นกว้าง → ถึงจุดหยุด</span>
+  <span class="f">ao</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- showSensors -->
+    <div class="fn-card" id="fn-showSensors">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">showSensors(chFrom, chTo, row, lineType)</span></div>
+          <div class="fn-short">แสดงสถานะ sensor เป็น ●/○ บน OLED</div>
+          <div class="fn-tags"><span class="tag">OLED</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">chFrom</td><td class="param-type">int</td><td class="param-desc">ช่องเริ่ม</td></tr>
+          <tr><td class="param-name">chTo</td><td class="param-type">int</td><td class="param-desc">ช่องสิ้นสุด</td></tr>
+          <tr><td class="param-name">row</td><td class="param-type">int</td><td class="param-desc">แถวบน OLED (0-3)</td></tr>
+          <tr><td class="param-name">lineType</td><td class="param-type">int</td><td class="param-desc">0=ดำ, 1=ขาว</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">showSensors</span>(<span class="n">0</span>, <span class="n">7</span>, <span class="n">2</span>); <span class="c">// แสดง ch0-7 บนแถวที่ 2 ของ OLED</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-line -->
+
+  <div class="section" id="sec-color">
+    <div class="section-header">
+      <span class="section-icon">🎨</span>
+      <div>
+        <div class="section-title">เซนเซอร์สี (TCS34725)</div>
+        <div class="section-desc">อ่านสีพื้น — I2C address 0x29 บนบัส Wire1 (SDA=GP26, SCL=GP27) · ใช้คู่กับบล็อกหมวด Sensor 🎨 Color</div>
+      </div>
+    </div>
+
+    <div class="returns-box" style="margin-bottom:18px">
+      <strong>ใช้จริงแค่ 3 บล็อก:</strong> 🎨 เริ่มเซนเซอร์สี (<code>tcs_begin</code>) →
+      🎓 คาลิเบรตสอนสี + EEPROM (<code>tcs_calibrate</code>) → 🔍 สีพื้นคือ (<code>tcs_readColor</code>) ·
+      ฟังก์ชัน <code>tcs_*</code> ที่เหลือด้านล่างเป็นตัวย่อย/ขั้นสูง เรียกเองได้ถ้าต้องการ
+    </div>
+
+    <div class="fn-card" id="fn-tcs_begin">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">bool</span><span class="fn-name">tcs_begin(integ, gain)</span></div>
+          <div class="fn-short">เริ่มต้นเซนเซอร์บน Wire1 — ใส่ใน Setup หลัง razors4() · คืน true ถ้าเจอเซนเซอร์</div>
+          <div class="fn-tags"><span class="tag tag-bool">bool</span><span class="tag">Setup</span><span class="tag">I2C 0x29</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">integ</td><td class="param-type">uint8_t</td><td class="param-desc">integration time (ค่าเริ่มต้น 0xEB ≈ 50ms) — มากขึ้น = ไวแสง+ช้าลง</td></tr>
+          <tr><td class="param-name">gain</td><td class="param-type">uint8_t</td><td class="param-desc">0=1x, 1=4x (แนะนำ), 2=16x, 3=60x — พื้นมืดใช้ gain สูง</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> <code>true</code> ถ้าเจอเซนเซอร์ (ID = 0x44/0x4D), <code>false</code> ถ้าต่อสายผิด</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">if</span> (!<span class="f">tcs_begin</span>(<span class="n">0xEB</span>, <span class="n">1</span>)) {   <span class="c">// gain 4x</span>
+  <span class="f">oled</span>(<span class="n">0</span>, <span class="s">"NO COLOR SENSOR"</span>);
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_teach">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">tcs_teach(slot, name)</span></div>
+          <div class="fn-short">สอนสี — วางเซนเซอร์บนสีจริงแล้วเรียก เก็บค่าเข้าช่อง 0–7 (สอนหน้างานทุกครั้ง!)</div>
+          <div class="fn-tags"><span class="tag">Calibrate</span><span class="tag">slot 0-7</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">slot</td><td class="param-type">int</td><td class="param-desc">ช่องเก็บสี 0–7 (เรียงตามลำดับที่สอน)</td></tr>
+          <tr><td class="param-name">name</td><td class="param-type">const char*</td><td class="param-desc">ชื่อสี ≤9 ตัวอักษร เช่น "RED" (ไว้แสดงผล)</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>หมายเหตุ:</strong> เก็บค่าเป็น normalize-RGB เฉลี่ย 10 ครั้ง ค่าอยู่ใน RAM — สอนใหม่ทุกครั้งที่เปิดเครื่อง เพราะแสงสนามต่างจากที่ซ้อม</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="c">// วางบนแต่ละสีจริง แล้วกดปุ่มทีละสี</span>
+<span class="f">tcs_teach</span>(<span class="n">0</span>, <span class="s">"WHITE"</span>);
+<span class="f">tcs_teach</span>(<span class="n">1</span>, <span class="s">"RED"</span>);
+<span class="f">tcs_teach</span>(<span class="n">2</span>, <span class="s">"GREEN"</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_readColor">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">int</span><span class="fn-name">tcs_readColor()</span></div>
+          <div class="fn-short">อ่านสีพื้นปัจจุบัน — คืนเลขช่องสีที่ใกล้ที่สุด หรือ -1 ถ้าไม่รู้จัก</div>
+          <div class="fn-tags"><span class="tag tag-int">int</span><span class="tag">slot / -1</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> เลขช่องสี (เท่ากับ slot ที่สอนไว้) — คืน <code>-1</code> ถ้าสีห่างจากทุกสีที่สอนเกิน threshold</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">int</span> <span class="v">c</span> = <span class="f">tcs_readColor</span>();
+<span class="k">if</span> (<span class="v">c</span> == <span class="n">1</span>) {     <span class="c">// 1 = RED (จุดปล่อยสีแดง)</span>
+  <span class="f">ao</span>();
+  <span class="f">Beep</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_colorName">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">char*</span><span class="fn-name">tcs_colorName(slot)</span></div>
+          <div class="fn-short">คืนชื่อสีที่สอนไว้ของช่องนั้น — ไว้แสดงบน OLED</div>
+          <div class="fn-tags"><span class="tag">ข้อความ</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">slot</td><td class="param-type">int</td><td class="param-desc">เลขช่องสี (มักรับมาจาก tcs_readColor())</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>คืนค่า:</strong> ชื่อสี เช่น <code>"RED"</code> — คืน <code>"?"</code> ถ้า slot ว่าง/ไม่ถูกต้อง</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">oled_xy</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="f">tcs_colorName</span>(<span class="f">tcs_readColor</span>()), <span class="n">2</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_hsv">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">int</span><span class="fn-name">tcs_r() · tcs_g() · tcs_b() · tcs_lux() · tcs_hue() · tcs_sat() · tcs_clear()</span></div>
+          <div class="fn-short">อ่านค่าเดี่ยว ไว้ทำเงื่อนไขเอง / debug (บล็อก 📊 ค่าสี)</div>
+          <div class="fn-tags"><span class="tag tag-int">int</span><span class="tag">R/G/B 0-255</span><span class="tag">Lux</span><span class="tag">HSV</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> <code>tcs_r()/g()/b()</code> สี 0–255 (เทียบพื้นขาว: ขาว≈255 ดำ≈0 แดง≈255,น้อย,น้อย) · <code>tcs_lux()</code> ความสว่างโดยประมาณ · <code>tcs_hue()</code> เฉดสี 0–360 · <code>tcs_sat()</code> ความสด 0–100 · <code>tcs_clear()</code> ความสว่างดิบ</div>
+        <div class="note-box"><strong>R/G/B 0-255:</strong> สอน ⬜ ขาว (ช่อง 0) ก่อน เพื่อให้ขาว = 255 จริง · ถ้ายังไม่สอนขาว จะเทียบกับเต็มสเกล ADC (ขาวจะ &lt; 255)</div>
+        <div class="code-label">ตัวอย่าง — ทำเงื่อนไขเองจาก R/G/B</div>
+        <div class="code-wrap"><pre class="code"><span class="k">int</span> <span class="v">R</span> = <span class="f">tcs_r</span>(), <span class="v">G</span> = <span class="f">tcs_g</span>(), <span class="v">B</span> = <span class="f">tcs_b</span>();
+<span class="k">if</span> (<span class="v">R</span> &gt; <span class="n">180</span> &amp;&amp; <span class="v">G</span> &lt; <span class="n">100</span> &amp;&amp; <span class="v">B</span> &lt; <span class="n">100</span>) {   <span class="c">// แดงเข้ม</span>
+  <span class="f">ao</span>();
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_readRaw">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">tcs_readRaw(&amp;r, &amp;g, &amp;b, &amp;c)</span></div>
+          <div class="fn-short">อ่านค่าดิบ 16-bit ทั้ง 4 แชนแนล (Red, Green, Blue, Clear) ผ่านตัวแปรอ้างอิง</div>
+          <div class="fn-tags"><span class="tag">16-bit</span><span class="tag">R G B C</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">r, g, b, c</td><td class="param-type">uint16_t&amp;</td><td class="param-desc">ตัวแปรรับค่าดิบ 0–65535 ของแต่ละแชนแนล</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>หมายเหตุ:</strong> มี <code>tcs_readAvg(r,g,b,c,n)</code> สำหรับอ่านเฉลี่ย n ครั้ง (กันค่าแกว่งตอนหุ่นสั่น)</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">uint16_t</span> <span class="v">r</span>, <span class="v">g</span>, <span class="v">b</span>, <span class="v">c</span>;
+<span class="f">tcs_readRaw</span>(<span class="v">r</span>, <span class="v">g</span>, <span class="v">b</span>, <span class="v">c</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_setReject">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">tcs_setReject(d)</span></div>
+          <div class="fn-short">ตั้งความเข้มงวดในการตัดสินสี — ค่ายิ่งเล็กยิ่งเข้มงวด (ค่าเริ่มต้น 0.35)</div>
+          <div class="fn-tags"><span class="tag">0.0 – 2.0</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">d</td><td class="param-type">float</td><td class="param-desc">ระยะสูงสุดที่ยังถือว่า "ใช่สีนั้น" — ถ้าไกลกว่านี้ tcs_readColor() คืน -1</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>เคล็ดลับ:</strong> ถ้าสองสีถูกอ่านสลับกัน ลดค่าลง (เช่น 0.25) ให้เข้มงวดขึ้น · ถ้าชอบขึ้น -1 บ่อย (เช่น ขาวกลายเป็น -1 ตอนแสงน้อย) เพิ่มค่าขึ้น (เช่น 0.45)</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">tcs_setReject</span>(<span class="n">0.25</span>);  <span class="c">// เข้มงวดขึ้นจากค่าเริ่มต้น</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:26px">บันทึก/โหลด EEPROM + โหมดแข่ง</h3>
+    <div class="returns-box" style="margin-bottom:14px">
+      <strong>แผนผัง EEPROM ของบอร์ด</strong> (ทุกตัวใช้ขนาด 256 เท่ากัน ไม่งั้น commit ลบกัน):
+      <code>0–31</code> Line sensor · <code>32–63</code> IMU scale · <code>64–127</code> Color sensor (ของเรา) —
+      จึงไม่ชนค่าที่เซนเซอร์อื่นจองไว้
+    </div>
+
+    <div class="fn-card" id="fn-tcs_bootHeld">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">bool</span><span class="fn-name">tcs_bootHeld(holdMs)</span></div>
+          <div class="fn-short">true ถ้ากดปุ่ม SW10 "ค้าง" ตอนเปิดเครื่อง — ใช้แยกเข้าโหมดสอนสี</div>
+          <div class="fn-tags"><span class="tag tag-bool">bool</span><span class="tag">Boot</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>สำคัญ:</strong> "กดค้างตอนเปิด" เป็นคนละจังหวะกับ "ปุ่มเริ่มแข่ง" (แตะครั้งเดียวหลังเปิด) — วันแข่งจึงไม่ต้องสอนสี แค่เปิดเครื่องแล้วกดเริ่มครั้งเดียว</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">if</span> (<span class="f">tcs_bootHeld</span>()) {     <span class="c">// กดค้างตอนเปิด = โหมดสอน (ตอนซ้อม)</span>
+  <span class="f">tcs_teachAll</span>(<span class="n">6</span>);          <span class="c">// 6 สี: ขาว..ดำ (ต้องเริ่มที่ขาว)</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_teachAll">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">tcs_teachAll(count)</span></div>
+          <div class="fn-short">สอนสีทั้งชุดทีละสี (กด SW10) แล้วบันทึก EEPROM อัตโนมัติ — ทำตอนซ้อม</div>
+          <div class="fn-tags"><span class="tag">Teach</span><span class="tag">+ Save</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-desc">จำนวนสีที่สอน (6 = ขาว/แดง/เขียว/น้ำเงิน/เหลือง/ดำ — เริ่มที่ขาวเสมอ)</td></tr>
+        </tbody></table>
+        <div class="returns-box"><strong>หมายเหตุ:</strong> วางเซนเซอร์บนแต่ละสีตามที่จอบอก กด SW10 ทีละสี · เสร็จแล้วบันทึก EEPROM และ <strong>หยุดค้าง</strong> (ให้ปิด-เปิดเครื่องใหม่เข้าโหมดแข่ง) กันวิ่งโดยบังเอิญ</div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_loadCal">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">bool</span><span class="fn-name">tcs_loadCal()</span></div>
+          <div class="fn-short">โหลดค่าสีที่บันทึกไว้จาก EEPROM มาใช้ — ใส่ใน Setup โหมดแข่ง</div>
+          <div class="fn-tags"><span class="tag tag-bool">bool</span><span class="tag">EEPROM</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> <code>true</code> ถ้ามีค่าสีบันทึกไว้ · <code>false</code> ถ้ายังไม่เคยสอน (ควรขึ้นเตือน ไม่สอนอัตโนมัติกลางสนาม)</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="k">if</span> (!<span class="f">tcs_loadCal</span>()) {
+  <span class="f">oled</span>(<span class="n">0</span>, <span class="s">"NO COLOR CAL!"</span>);  <span class="c">// ยังไม่เคยสอน</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-tcs_saveCal">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">tcs_saveCal() · tcs_hasCal()</span></div>
+          <div class="fn-short">บันทึกค่าสีลง EEPROM · เช็คว่ามีค่าบันทึกไว้ไหม (โดยไม่โหลด)</div>
+          <div class="fn-tags"><span class="tag">EEPROM</span><span class="tag">offset 64</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> <code>tcs_saveCal()</code> บันทึกค่าสีปัจจุบันทั้งหมด · <code>tcs_hasCal()</code> คืน <code>true</code> ถ้าเคยบันทึกแล้ว</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">tcs_teach</span>(<span class="n">1</span>, <span class="s">"RED"</span>);
+<span class="f">tcs_saveCal</span>();   <span class="c">// เก็บถาวร เปิดเครื่องใหม่ก็ยังอยู่</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:26px">ตัวอย่างใช้งานจริง — แค่ 3 บล็อก</h3>
+    <p><strong>ตอนทดสอบสนาม</strong> กดปุ่ม SW10 <strong>ค้าง</strong> ตอนเปิด → บล็อกคาลิเบรตจะสอนสีทุกสีแล้วเซฟ EEPROM ·
+    <strong>ตอนแข่ง</strong> เปิดเครื่องปกติ → โหลดสีเอง → กดเริ่ม <strong>ครั้งเดียว</strong> → วิ่ง</p>
+    <div class="prog">
+      <div class="prog-label">Setup</div>
+      <div class="bk bk-cyan">🎨 เริ่มเซนเซอร์สี gain <span class="dd">4x</span></div>
+      <div class="bk bk-cyan">🎓 คาลิเบรตสอนสี + EEPROM <span class="dd">6 สี (รวมดำ)</span></div>
+      <div class="bk bk-green">รอปุ่มเริ่ม (กดครั้งเดียว)</div>
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-pink">ถ้า <span class="val">🔍 สีพื้นคือ 🟥 แดง</span> ทำ</div>
+      <div class="bk bk-red bk-indent">หยุด</div>
+      <div class="bk bk-amber bk-indent">Beep</div>
+    </div>
+    <p>บล็อก <span class="val">🎓 คาลิเบรตสอนสี + EEPROM</span> ฉลาดในตัว — กดปุ่มค้างตอนเปิด = สอน+เซฟ,
+    เปิดปกติ = โหลดของเดิม จึงไม่ต้องมีบล็อกแยกหลายอัน · บล็อก <span class="val">🔍 สีพื้นคือ</span>
+    เปลี่ยนสีใน dropdown เพื่อตรวจจุดปล่อยสีอื่นได้</p>
+
+    <h3 style="margin-top:26px">การอ่านสี (nearest-neighbor)</h3>
+    <p>เวลาใช้งาน <code>tcs_readColor()</code> จะเทียบใน space 4 มิติ แล้วหาสีที่สอนไว้ซึ่ง "ใกล้ที่สุด":</p>
+    <ul style="color:var(--muted);font-size:13px;line-height:1.8;margin:6px 0 10px 18px">
+      <li><strong>สัดส่วน R:G:B (chromaticity)</strong> — แยกสีมีสี (แดง/เขียว/น้ำเงิน/เหลือง) และ <em>ทนต่อความสว่างที่ต่างกัน</em></li>
+      <li><strong>ความสว่างเทียบขาว (L = Clear ÷ Clear-ของขาว)</strong> — แยก <em>ขาว/ดำ/เทา</em> ที่สัดส่วน R:G:B เหมือนกันหมด (ขาว L≈1, ดำ L≈0)</li>
+    </ul>
+    <p>ถ้าใกล้พอ (ภายใน threshold ของ <code>tcs_setReject()</code>, เริ่มต้น 0.35) คืนเลขช่องนั้น ถ้าไกลทุกสีคืน <code>-1</code></p>
+    <div class="warn-box"><strong>ต้องสอน ⬜ ขาว (ช่อง 0) ก่อนเสมอ</strong> — ใช้เป็นค่าอ้างอิงแสงของแกน L ถ้าไม่สอนขาวจะใช้เต็มสเกล ADC แทน (แยกขาว/ดำได้หยาบกว่า) · บล็อก <span class="val">🎓 คาลิเบรตสอนสี</span> สอนขาวเป็นสีแรกอยู่แล้ว</div>
+
+  </div><!-- /sec-color -->
+
+
+  <!-- ══════════════════════════════════════
+       9. OLED
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-oled">
+    <div class="section-header">
+      <span class="section-icon">📺</span>
+      <div>
+        <div class="section-title">OLED Display (128×64)</div>
+        <div class="section-desc">SSD1306 บน I2C — พิมพ์ข้อความ วาดกราฟิก แสดงค่า real-time</div>
+      </div>
+    </div>
+
+    <!-- oled line -->
+    <div class="fn-card" id="fn-oled">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">oled(line, value)</span> &nbsp;/&nbsp; <span class="fn-name">oled(line, label, value)</span></div>
+          <div class="fn-short">พิมพ์ค่าที่บรรทัดที่กำหนด (1-based)</div>
+          <div class="fn-tags"><span class="tag">display</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">line</td><td class="param-type">int</td><td>—</td><td class="param-desc">บรรทัด 1-8 (ที่ size=1)</td></tr>
+          <tr><td class="param-name">label</td><td class="param-type">String</td><td>—</td><td class="param-desc">ข้อความนำหน้า (optional)</td></tr>
+          <tr><td class="param-name">value</td><td class="param-type">any</td><td>—</td><td class="param-desc">ค่าที่จะแสดง (int, float, String, bool)</td></tr>
+          <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-default">1</td><td class="param-desc">ขนาดตัวอักษร (1=เล็ก, 2=ใหญ่)</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">oled</span>(<span class="n">1</span>, <span class="s">"Yaw:"</span>, <span class="f">getYaw</span>());     <span class="c">// บรรทัด 1: "Yaw: 45.2"</span>
+<span class="f">oled</span>(<span class="n">2</span>, <span class="s">"Dist:"</span>, <span class="f">sonarRead</span>(<span class="n">6</span>,<span class="n">7</span>)); <span class="c">// บรรทัด 2: "Dist: 23.1"</span>
+<span class="f">oled</span>(<span class="n">3</span>, <span class="s">"READY"</span>);              <span class="c">// บรรทัด 3: "READY"</span>
+<span class="f">oled</span>(<span class="n">4</span>, <span class="s">"Score"</span>, <span class="n">99</span>, <span class="n">2</span>);      <span class="c">// บรรทัด 4: ตัวใหญ่ size 2</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- oled_xy -->
+    <div class="fn-card" id="fn-oled_xy">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">oled_xy(x, y, value, size)</span></div>
+          <div class="fn-short">พิมพ์ที่พิกัด pixel (x, y)</div>
+          <div class="fn-tags"><span class="tag">display</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>ค่าเริ่มต้น</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">x</td><td class="param-type">int</td><td>—</td><td class="param-desc">พิกัด x (0-127)</td></tr>
+          <tr><td class="param-name">y</td><td class="param-type">int</td><td>—</td><td class="param-desc">พิกัด y (0-63)</td></tr>
+          <tr><td class="param-name">value</td><td class="param-type">any</td><td>—</td><td class="param-desc">ค่าที่แสดง</td></tr>
+          <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-default">1</td><td class="param-desc">ขนาดตัวอักษร</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">oled_clear</span>();
+<span class="f">oled_xy</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="s">"X:"</span>);
+<span class="f">oled_xy</span>(<span class="n">20</span>, <span class="n">0</span>, <span class="f">getYaw</span>(), <span class="n">2</span>);
+<span class="f">oled_update</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- oled_clear / oled_update -->
+    <div class="fn-card" id="fn-oled_clear">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">oled_clear()</span> &nbsp;/&nbsp; <span class="fn-name">oled_update()</span></div>
+          <div class="fn-short">ล้าง buffer / ส่งข้อมูลไปหน้าจอ</div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="note-box"><strong>💡</strong> <code>oled_clear()</code> ล้าง buffer เท่านั้น ต้องเรียก <code>oled_update()</code> ด้วยถึงจะเห็นการเปลี่ยนแปลง</div>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">oled_clear</span>();
+<span class="f">oled_xy</span>(<span class="n">30</span>, <span class="n">20</span>, <span class="s">"Hello!"</span>, <span class="n">2</span>);
+<span class="f">oled_update</span>();  <span class="c">// ส่งไปหน้าจอ</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- drawing -->
+    <div class="fn-card" id="fn-oled_draw">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">oled_line / oled_rect / oled_fill_rect / oled_circle / oled_fill_circle</span></div>
+          <div class="fn-short">วาดเส้น สี่เหลี่ยม วงกลม บน OLED</div>
+          <div class="fn-tags"><span class="tag">graphics</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>ฟังก์ชัน</th><th>พารามิเตอร์</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">oled_line</td><td class="param-type">(x1,y1,x2,y2)</td><td class="param-desc">วาดเส้นจาก (x1,y1) ถึง (x2,y2)</td></tr>
+          <tr><td class="param-name">oled_rect</td><td class="param-type">(x,y,w,h)</td><td class="param-desc">วาดกรอบสี่เหลี่ยม</td></tr>
+          <tr><td class="param-name">oled_fill_rect</td><td class="param-type">(x,y,w,h)</td><td class="param-desc">วาดสี่เหลี่ยมทึบ</td></tr>
+          <tr><td class="param-name">oled_circle</td><td class="param-type">(x,y,r)</td><td class="param-desc">วาดวงกลมกรอบ</td></tr>
+          <tr><td class="param-name">oled_fill_circle</td><td class="param-type">(x,y,r)</td><td class="param-desc">วาดวงกลมทึบ</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">oled_clear</span>();
+<span class="f">oled_rect</span>(<span class="n">0</span>, <span class="n">0</span>, <span class="n">128</span>, <span class="n">64</span>);          <span class="c">// กรอบรอบหน้าจอ</span>
+<span class="f">oled_fill_circle</span>(<span class="n">64</span>, <span class="n">32</span>, <span class="n">10</span>);      <span class="c">// วงกลมตรงกลาง</span>
+<span class="f">oled_line</span>(<span class="n">0</span>, <span class="n">32</span>, <span class="n">128</span>, <span class="n">32</span>);         <span class="c">// เส้นแนวนอน</span>
+<span class="f">oled_update</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <!-- oled_progress -->
+    <div class="fn-card" id="fn-oled_progress">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">oled_progress(x, y, w, h, value)</span></div>
+          <div class="fn-short">วาด progress bar 0-100%</div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">x, y</td><td class="param-type">int</td><td class="param-desc">ตำแหน่งมุมบนซ้าย</td></tr>
+          <tr><td class="param-name">w, h</td><td class="param-type">int</td><td class="param-desc">ขนาด (กว้าง × สูง)</td></tr>
+          <tr><td class="param-name">value</td><td class="param-type">int</td><td class="param-desc">ค่า 0-100</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="t">int</span> <span class="v">pct</span> = <span class="f">map</span>(<span class="f">getYaw</span>(), <span class="n">0</span>, <span class="n">360</span>, <span class="n">0</span>, <span class="n">100</span>);
+<span class="f">oled_progress</span>(<span class="n">10</span>, <span class="n">50</span>, <span class="n">108</span>, <span class="n">10</span>, <span class="v">pct</span>);
+<span class="f">oled_update</span>();</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-oled -->
+
+
+  <!-- ══════════════════════════════════════
+       10. ADC
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-adc">
+    <div class="section-header">
+      <span class="section-icon">🔌</span>
+      <div>
+        <div class="section-title">ADC — MCP3008 / MCP3208</div>
+        <div class="section-desc">อ่าน analog 8 ช่อง ผ่าน SPI — 10-bit หรือ 12-bit</div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-analog3008">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">int</span><span class="fn-name">analog3008(channel)</span> &nbsp;/&nbsp; <span class="fn-return">float</span><span class="fn-name">analogVolt3008(channel)</span></div>
+          <div class="fn-short">อ่าน MCP3008 (10-bit) — คืนค่า 0-1023 หรือ 0.0-3.3V</div>
+          <div class="fn-tags"><span class="tag">ADC</span><span class="tag">10-bit</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <table class="params-table">
+          <tbody><tr><th>พารามิเตอร์</th><th>ชนิด</th><th>คำอธิบาย</th></tr>
+          <tr><td class="param-name">channel</td><td class="param-type">int</td><td class="param-desc">ช่อง ADC 0-7</td></tr>
+        </tbody></table>
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="t">int</span>   <span class="v">raw</span>  = <span class="f">analog3008</span>(<span class="n">0</span>);      <span class="c">// 0-1023</span>
+<span class="t">float</span> <span class="v">volt</span> = <span class="f">analogVolt3008</span>(<span class="n">0</span>);   <span class="c">// 0.0-3.3V</span>
+<span class="f">oled</span>(<span class="n">1</span>, <span class="s">"V:"</span>, <span class="v">volt</span>);</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-analog3208">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">int</span><span class="fn-name">analog3208(channel)</span> &nbsp;/&nbsp; <span class="fn-return">float</span><span class="fn-name">analogVolt3208(channel)</span></div>
+          <div class="fn-short">อ่าน MCP3208 (12-bit) — คืนค่า 0-4095 หรือ 0.0-3.3V</div>
+          <div class="fn-tags"><span class="tag">ADC</span><span class="tag">12-bit</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="t">int</span>   <span class="v">raw</span>  = <span class="f">analog3208</span>(<span class="n">2</span>);      <span class="c">// 0-4095</span>
+<span class="t">float</span> <span class="v">volt</span> = <span class="f">analogVolt3208</span>(<span class="n">2</span>);   <span class="c">// 0.0-3.3V (12-bit)</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-adc -->
+
+
+  <!-- ══════════════════════════════════════
+       11. BUTTON / BUZZER
+  ══════════════════════════════════════ -->
+  <div class="section" id="sec-btn">
+    <div class="section-header">
+      <span class="section-icon">🔘</span>
+      <div>
+        <div class="section-title">ปุ่ม &amp; บัซเซอร์</div>
+        <div class="section-desc">SW10 (pin 10) และ Buzzer (pin 9)</div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-SW10">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">bool</span><span class="fn-name">SW10()</span></div>
+          <div class="fn-short">อ่านสถานะปุ่ม SW10 — true ถ้ากดอยู่</div>
+          <div class="fn-tags"><span class="tag tag-bool">bool</span></div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="returns-box"><strong>คืนค่า:</strong> <code>true</code> = กดอยู่, <code>false</code> = ปล่อย</div>
+        <div class="code-label">ตัวอย่าง — กดสั้น/กดยาว</div>
+        <div class="code-wrap"><pre class="code"><span class="k">while</span> (!<span class="f">SW10</span>()) {} <span class="c">// รอกด</span>
+<span class="t">long</span> <span class="v">t</span> = <span class="f">millis</span>();
+<span class="k">while</span> (<span class="f">SW10</span>()) {}   <span class="c">// รอปล่อย</span>
+<span class="k">if</span> (<span class="f">millis</span>() - <span class="v">t</span> &lt; <span class="n">600</span>) {
+  <span class="c">// กดสั้น</span>
+} <span class="k">else</span> {
+  <span class="c">// กดยาว</span>
+}</pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+    <div class="fn-card" id="fn-Beep">
+      <div class="fn-head" onclick="toggle(this)">
+        <div style="flex:1">
+          <div><span class="fn-return">void</span><span class="fn-name">Beep()</span></div>
+          <div class="fn-short">บีป 1 ครั้ง (1000 Hz, 200ms)</div>
+        </div>
+        <button class="copy-btn" title="คัดลอกชื่อฟังก์ชัน">⎘ คัดลอก</button><span class="chevron">▶</span>
+      </div>
+      <div class="fn-body">
+        <div class="code-label">ตัวอย่าง</div>
+        <div class="code-wrap"><pre class="code"><span class="f">Beep</span>();           <span class="c">// บีป 1 ครั้ง</span>
+<span class="f">delay</span>(<span class="n">200</span>);
+<span class="f">Beep</span>();           <span class="c">// บีป 2 ครั้ง = พร้อม!</span></pre><button class="code-copy-btn" title="คัดลอก code">⎘ copy</button></div>
+      </div>
+    </div>
+
+  </div><!-- /sec-btn -->
+
+  <!-- ══════════════════════════════════════
+       HuskyLens (กล้อง AI) — plugin
+  ═══════════════════════════════════════ -->
+  <div class="section" id="sec-husky">
+    <div class="section-header">
+      <span class="section-icon">📷</span>
+      <div>
+        <div class="section-title">HuskyLens (กล้อง AI)</div>
+        <div class="section-desc">กล้อง AI ผ่าน I2C — ครบ 7 โหมด · ต้องติดตั้ง plugin "HuskyLens (RAZOR-S3)"</div>
+      </div>
+    </div>
+
+    <p class="lead">HuskyLens เป็นกล้อง AI ที่มี <strong>สมองในตัว</strong> — บอร์ด RAZOR แค่สั่งงานและอ่านผลผ่าน I2C ส่วนการรู้จำ/จดจำเกิดที่ตัวกล้องทั้งหมด</p>
+
+    <div class="note-box">
+      <strong>การต่อสาย (I2C):</strong> ต่อ SDA, SCL, VCC (3.3–5V), GND เข้าบัส I2C เดียวกับ OLED ได้เลย —
+      กล้องใช้ address <code>0x32</code> ส่วน OLED <code>0x3C</code> ไม่ชนกัน · <strong>ไม่ต้องโหลดไลบรารีเพิ่ม</strong> (ไดรเวอร์ฝังมาใน plugin แล้ว)
+    </div>
+    <div class="warn-box">
+      <strong>ต้องตั้งที่ตัวกล้องก่อน:</strong> ในเมนูกล้อง → General Settings → Protocol Type → เลือก <strong>I2C</strong>
+      มิฉะนั้นบอร์ดจะคุยกับกล้องไม่ได้
+    </div>
+
+    <h3>โครงสร้างพื้นฐาน (ทุกโหมดใช้แบบเดียวกัน)</h3>
+    <p>เริ่มกล้อง + เลือกโหมดใน <strong>Setup</strong> แล้วเรียก <strong>"กล้อง อ่านข้อมูล"</strong> ทุกรอบใน loop ก่อนอ่านค่า</p>
+    <div class="prog">
+      <div class="prog-label">Setup</div>
+      <div class="bk bk-teal">กล้อง HuskyLens เริ่มต้น (I2C)</div>
+      <div class="bk bk-teal">กล้อง เลือกโหมด <span class="dd">เลือกโหมด</span></div>
+      <div class="prog-label">วนซ้ำ (Forever)</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-gray">… เช็คว่าเจอ → อ่านค่า → สั่งหุ่น …</div>
+    </div>
+
+    <div class="note-box">
+      <strong>ระบบพิกัด:</strong> จอกล้อง <strong>320 × 240</strong> — กลางจอคือ X=160, Y=120 ·
+      <strong>ID = 0</strong> คือเจอแต่ยังไม่ได้สอน · <strong>ID &gt; 0</strong> คือตัวที่สอนไว้ (เลขคือหมายเลขที่สอน) ·
+      ทุก block อ่านค่าคืน <strong>-1</strong> ถ้าไม่มีของให้อ่าน
+    </div>
+
+    <h3>ตารางสรุป 7 โหมด</h3>
+    <table class="params-table">
+      <thead><tr><th>โหมด</th><th>ต้องสอนก่อน?</th><th>อ่านผลด้วยบล็อก</th><th>ใช้ทำอะไร</th></tr></thead>
+      <tbody>
+        <tr><td class="param-name">จดจำใบหน้า</td><td>ไม่ต้อง</td><td>วัตถุ X/Y/กว้าง/สูง</td><td>ตรวจ/นับใบหน้า</td></tr>
+        <tr><td class="param-name">ติดตามวัตถุ</td><td>ต้องสอน 1 ชิ้น</td><td>วัตถุ X/Y</td><td>หุ่นหันตามวัตถุ</td></tr>
+        <tr><td class="param-name">จดจำวัตถุ</td><td>ต้องสอน</td><td>วัตถุ ID + X/Y</td><td>แยกวัตถุหลายแบบ</td></tr>
+        <tr><td class="param-name">ตามเส้น</td><td>ต้องสอนเส้น</td><td>เส้น เริ่ม/ปลาย X,Y</td><td>เดินตามเส้นด้วยกล้อง</td></tr>
+        <tr><td class="param-name">จดจำสี</td><td>ต้องสอนสี</td><td>วัตถุ ID + X/Y</td><td>ตรวจจับสี</td></tr>
+        <tr><td class="param-name">จดจำแท็ก</td><td>ต้องสอน/มี ID</td><td>วัตถุ ID + X/Y</td><td>นำทางด้วย AprilTag</td></tr>
+        <tr><td class="param-name">จำแนกวัตถุ</td><td>ต้องสอนหลายแบบ</td><td>วัตถุ ID</td><td>จำแนกชนิดวัตถุ</td></tr>
+      </tbody>
+    </table>
+
+    <!-- โหมด 1 -->
+    <h3>1 · จดจำใบหน้า <span class="badge badge-green">ไม่ต้องสอน</span></h3>
+    <p>เห็นหน้าก็ตีกรอบให้ทันที (หน้าที่ยังไม่สอน = ID 0) — เหมาะเป็น <strong>เทสต์แรกสุด</strong> เพราะไม่ต้องสอนอะไรก่อน</p>
+    <div class="prog">
+      <div class="prog-label">Setup</div>
+      <div class="bk bk-teal">กล้อง HuskyLens เริ่มต้น (I2C)</div>
+      <div class="bk bk-teal">กล้อง เลือกโหมด <span class="dd">จดจำใบหน้า</span></div>
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-blue">OLED ล้างหน้าจอ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-blue">OLED <span class="val">กล้อง จำนวนที่เจอ</span> บรรทัด <span class="num">1</span></div>
+      <div class="bk bk-blue">OLED <span class="val">กล้อง วัตถุตัวที่ 1 → X</span> บรรทัด <span class="num">2</span></div>
+      <div class="bk bk-blue">OLED แสดงผล</div>
+      <div class="bk bk-red">รอ <span class="num">100</span> ms</div>
+    </div>
+    <p>เอาหน้าเข้ามาในกล้อง → จำนวนเป็น 1 และ X/Y เปลี่ยนตามตำแหน่งหน้า (X กลางจอ = 160)</p>
+
+    <!-- โหมด 2 -->
+    <h3>2 · ติดตามวัตถุ <span class="badge badge-orange">ต้องสอน 1 ชิ้น</span></h3>
+    <p>สอนวัตถุ 1 ชิ้น (กดปุ่ม learn ที่กล้อง หรือบล็อก "สอนวัตถุ") แล้วกล้องจะตามวัตถุนั้น — เอา <strong>X</strong> มาบังคับหุ่นให้หันตาม</p>
+    <div class="prog">
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอวัตถุ?</span> ทำ</div>
+      <div class="bk bk-pink bk-indent">ถ้า <span class="val">กล้อง วัตถุตัวที่ 1 → X</span> &lt; <span class="num">140</span></div>
+      <div class="bk bk-red bk-indent2">move <span class="dd">Turn Left</span> speed <span class="num">35</span></div>
+      <div class="bk bk-pink bk-indent">ถ้า <span class="val">กล้อง วัตถุตัวที่ 1 → X</span> &gt; <span class="num">180</span></div>
+      <div class="bk bk-red bk-indent2">move <span class="dd">Turn Right</span> speed <span class="num">35</span></div>
+      <div class="bk bk-red bk-indent">ไม่งั้น → FORWARD L <span class="num">40</span> R <span class="num">40</span></div>
+      <div class="bk bk-red">ไม่งั้น → หยุด</div>
+    </div>
+    <p>X &lt; 140 = วัตถุอยู่ซ้าย → เลี้ยวซ้าย · X &gt; 180 = ขวา → เลี้ยวขวา · ตรงกลางเดินหน้า · ไม่เจอ = หยุด</p>
+
+    <!-- โหมด 3 -->
+    <h3>3 · จดจำวัตถุ <span class="badge badge-orange">ต้องสอน</span></h3>
+    <p>สอนวัตถุได้หลายแบบ แต่ละแบบมี ID — กล้องบอกว่าเจอ ID ไหนพร้อมตำแหน่ง</p>
+    <div class="prog">
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">1</span></span> ทำ</div>
+      <div class="bk bk-blue bk-indent">OLED "เจอวัตถุ A" บรรทัด <span class="num">1</span></div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">2</span></span> ทำ</div>
+      <div class="bk bk-blue bk-indent">OLED "เจอวัตถุ B" บรรทัด <span class="num">1</span></div>
+    </div>
+
+    <!-- โหมด 4 -->
+    <h3>4 · ตามเส้น <span class="badge badge-orange">ต้องสอนเส้น</span></h3>
+    <p>โหมดนี้คืนผลเป็น <strong>ลูกศร (เส้น)</strong> ไม่ใช่กรอบ — จุดเริ่ม=ล่าง (ใกล้หุ่น) จุดปลาย=บน (ทิศที่เส้นไป) ใช้ <strong>ปลาย X</strong> เทียบ 160 เป็น error บังคับเลี้ยว</p>
+    <div class="prog">
+      <div class="prog-label">Setup</div>
+      <div class="bk bk-teal">กล้อง เลือกโหมด <span class="dd">ตามเส้น</span></div>
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอวัตถุ?</span> ทำ</div>
+      <div class="bk bk-gray bk-indent">ตั้ง <span class="val">error</span> = <span class="val">กล้อง เส้นตัวที่ 1 → ปลาย X</span> − <span class="num">160</span></div>
+      <div class="bk bk-red bk-indent">motorL speed <span class="val">40 + error × 0.3</span></div>
+      <div class="bk bk-red bk-indent">motorR speed <span class="val">40 − error × 0.3</span></div>
+    </div>
+    <p>เส้นเอียงขวา → ปลาย X &gt; 160 → error บวก → ล้อซ้ายเร็วขึ้น = เลี้ยวขวาเข้าเส้น (คล้าย PID เส้นปกติ แต่ใช้กล้องแทนเซนเซอร์)</p>
+
+    <!-- โหมด 5 -->
+    <h3>5 · จดจำสี <span class="badge badge-orange">ต้องสอนสี</span></h3>
+    <p>สอนสีไว้หลายสี แต่ละสีมี ID — เอามาแตกการทำงาน เช่นเจอสีไหนทำอะไร</p>
+    <div class="prog">
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">1</span></span> (สีแดง) ทำ</div>
+      <div class="bk bk-red bk-indent">หยุด</div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">2</span></span> (สีเขียว) ทำ</div>
+      <div class="bk bk-red bk-indent">FORWARD L <span class="num">50</span> R <span class="num">50</span></div>
+    </div>
+
+    <!-- โหมด 6 -->
+    <h3>6 · จดจำแท็ก (AprilTag) <span class="badge badge-orange">ต้องสอน / มี ID</span></h3>
+    <p>แท็กแต่ละใบมี ID ไม่ซ้ำ — เหมาะทำ <strong>ป้ายนำทาง</strong> วางแท็กไว้ตามจุด แล้วให้หุ่นทำตาม ID</p>
+    <div class="prog">
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">1</span></span> ทำ</div>
+      <div class="bk bk-red bk-indent">move <span class="dd">Turn Left</span> speed <span class="num">40</span></div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">2</span></span> ทำ</div>
+      <div class="bk bk-red bk-indent">move <span class="dd">Turn Right</span> speed <span class="num">40</span></div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง เจอ ID <span class="num">3</span></span> ทำ</div>
+      <div class="bk bk-red bk-indent">หยุด</div>
+    </div>
+
+    <!-- โหมด 7 -->
+    <h3>7 · จำแนกวัตถุ <span class="badge badge-orange">ต้องสอนหลายแบบ</span></h3>
+    <p>สอนวัตถุหลายชนิด (หลาย class) แล้วกล้องบอก <strong>ID ของชนิด</strong> ที่เห็นอยู่กลางจอ — เหมาะคัดแยกของ</p>
+    <div class="prog">
+      <div class="prog-label">วนซ้ำ</div>
+      <div class="bk bk-teal">กล้อง อ่านข้อมูล</div>
+      <div class="bk bk-blue">OLED <span class="val">กล้อง วัตถุตัวที่ 1 → ID</span> บรรทัด <span class="num">1</span></div>
+      <div class="bk bk-pink">ถ้า <span class="val">กล้อง วัตถุตัวที่ 1 → ID</span> = <span class="num">1</span> ทำ</div>
+      <div class="bk bk-gray bk-indent">… แยกของชนิดที่ 1 …</div>
+    </div>
+
+    <h3>การสอนจากโค้ด (แทนการกดปุ่มที่กล้อง)</h3>
+    <p>ปกติสอนด้วยปุ่มที่ตัวกล้อง แต่สั่งจากโปรแกรมก็ได้ — เล็งวัตถุให้อยู่กลางจอแล้วเรียก "สอนวัตถุ" · กล้องจำไว้ในตัวเอง (คงอยู่แม้ปิดเครื่อง จนกว่าจะลบ)</p>
+    <div class="prog">
+      <div class="bk bk-teal">กล้อง สอนวัตถุ ID <span class="num">1</span></div>
+      <div class="bk bk-teal">กล้อง ลบที่เรียนทั้งหมด</div>
+      <div class="bk bk-teal">กล้อง จำนวนที่เรียนแล้ว <span class="val">(เช็คว่าสอนไปกี่ตัว)</span></div>
+    </div>
+    <div class="warn-box">
+      <strong>หลุดเส้น/ไม่เจอ:</strong> เรียก "กล้อง อ่านข้อมูล" ทุกรอบก่อนอ่านค่าเสมอ ถ้าไม่เรียก ค่าจะค้างอยู่รอบเก่า
+    </div>
+  </div><!-- /sec-husky -->
+
+  <!-- footer padding -->
+  <div style="height:40px"></div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+function toggle(head) {
+  head.parentElement.classList.toggle('open');
+}
+
+function navTo(id, clicked) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (clicked) clicked.classList.add('active');
+}
+
+function doSearch(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.fn-card').forEach(card => {
+    const txt = card.textContent.toLowerCase();
+    card.classList.toggle('hidden', q.length > 0 && !txt.includes(q));
+  });
+  // open matched cards
+  if (q.length > 0) {
+    document.querySelectorAll('.fn-card:not(.hidden)').forEach(c => c.classList.add('open'));
+  }
+}
+
+// ── Copy helper ──────────────────────────────
+function _copyText(text, btn, label) {
+  const done = () => {
+    btn.textContent = '✓ คัดลอกแล้ว!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => _copyFallback(text, btn, done));
+  } else {
+    _copyFallback(text, btn, done);
+  }
+}
+function _copyFallback(text, btn, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta); done();
+}
+
+// ── ปุ่ม copy ที่ fn-head ─────────────────────
+document.querySelectorAll('.fn-head').forEach(head => {
+  const nameEl = head.querySelector('.fn-name');
+  if (!nameEl) return;
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = '⎘ คัดลอก';
+  btn.title = 'คัดลอกชื่อฟังก์ชัน';
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    _copyText(nameEl.textContent.trim() + ';', btn, '⎘ คัดลอก');
+  });
+  const chevron = head.querySelector('.chevron');
+  chevron ? head.insertBefore(btn, chevron) : head.appendChild(btn);
+});
+
+// ── ปุ่ม copy ที่ code block ──────────────────
+document.querySelectorAll('pre.code').forEach(pre => {
+  const wrap = document.createElement('div');
+  wrap.className = 'code-wrap';
+  pre.parentNode.insertBefore(wrap, pre);
+  wrap.appendChild(pre);
+  const btn = document.createElement('button');
+  btn.className = 'code-copy-btn';
+  btn.textContent = '⎘ copy';
+  btn.title = 'คัดลอก code';
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    _copyText(pre.textContent.trim(), btn, '⎘ copy');
+  });
+  wrap.appendChild(btn);
+});
+
+// Highlight active section on scroll
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (s.offsetTop - 80 <= window.scrollY) cur = s.id; });
+  navItems.forEach(n => {
+    n.classList.remove('active');
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(cur)) n.classList.add('active');
+  });
+
+}, { passive: true });
+</script>
+
+
+</body></html>

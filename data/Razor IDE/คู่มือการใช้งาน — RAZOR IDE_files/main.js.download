@@ -1,0 +1,184 @@
+// ─── Dark / Light Mode Toggle ──────────────────────────────────────────────
+// ทำงานก่อน DOM render เพื่อกัน "flash of wrong theme"
+(() => {
+  const STORAGE_KEY = 'razor-theme';
+  const html = document.documentElement;
+
+  // โหลดธีมจาก localStorage หรือใช้ prefers-color-scheme เป็น fallback
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const isLight = saved === 'light' || !saved;
+
+  if (isLight) html.classList.add('light');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+
+    const updateIcon = () => {
+      const light = html.classList.contains('light');
+      btn.textContent = light ? '☀️' : '🌙';
+      btn.setAttribute('aria-label', light ? 'สลับเป็น Dark Mode' : 'สลับเป็น Light Mode');
+    };
+
+    updateIcon();
+
+    btn.addEventListener('click', () => {
+      html.classList.toggle('light');
+      localStorage.setItem(STORAGE_KEY, html.classList.contains('light') ? 'light' : 'dark');
+      updateIcon();
+    });
+  });
+})();
+
+// mobile nav toggle
+(() => {
+  const toggle = document.getElementById('navToggle');
+  const links = document.getElementById('navLinks');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    toggle.textContent = open ? '✕' : '☰';
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    // Close all dropdowns when nav closes
+    if (!open) {
+      links.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+  });
+  links.querySelectorAll('a:not(.dropdown-toggle)').forEach(a => {
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      toggle.textContent = '☰';
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+
+// mobile dropdown toggle — แค่ลูกศร ▾ เท่านั้นที่ toggle เมนูย่อย
+// กดข้อความ "Razor IDE" ยังคงไปหน้าปกติได้
+(() => {
+  document.addEventListener('DOMContentLoaded', () => {
+    const isMobile = () => window.innerWidth <= 1080;
+
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+      const arrow = toggle.querySelector('.arrow');
+      if (!arrow) return;
+
+      // ทำให้ลูกศรกดได้ง่ายขึ้น (เพิ่มพื้นที่แตะ)
+      arrow.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;cursor:pointer;';
+
+      arrow.addEventListener('click', (e) => {
+        if (!isMobile()) return;
+        e.preventDefault();
+        e.stopPropagation(); // ไม่ให้ event bubble ไปที่ <a> parent
+        const dropdown = toggle.closest('.dropdown');
+        // Close all other dropdowns
+        document.querySelectorAll('.dropdown.open').forEach(d => {
+          if (d !== dropdown) d.classList.remove('open');
+        });
+        dropdown.classList.toggle('open');
+      });
+    });
+
+    // ปิด dropdown เมื่อกด nav item อื่น (ที่ไม่ใช่ dropdown-toggle)
+    document.querySelectorAll('.navlinks a:not(.dropdown-toggle)').forEach(a => {
+      a.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+      });
+    });
+  });
+})();
+
+// screenshot tab switcher (index page only)
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.shot-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.target).classList.add('active');
+  });
+});
+
+// Scroll Reveal Animation using IntersectionObserver
+document.addEventListener('DOMContentLoaded', () => {
+  const reveals = document.querySelectorAll('.reveal');
+  
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  
+  const revealOnScroll = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target); // Stop observing once revealed
+      }
+    });
+  }, observerOptions);
+  
+  reveals.forEach(el => {
+    revealOnScroll.observe(el);
+  });
+});
+
+// Auto-fetch latest download link from GitHub Releases
+// so the site never needs manual updates when a new version ships
+(() => {
+  const btn = document.getElementById('downloadBtn');
+  const versionEl = document.getElementById('downloadVersion');
+  const heroVersionEl = document.getElementById('heroVersion');
+  const noteEl = document.getElementById('downloadNote');
+  if (!btn) return;
+
+  const REPO = '9richer/razor-ide-updates';
+
+  fetch('https://api.github.com/repos/' + REPO + '/releases/latest')
+    .then(res => {
+      if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+      return res.json();
+    })
+    .then(release => {
+      const asset = (release.assets || []).find(a => a.name.toLowerCase().endsWith('.exe'));
+      if (!asset) throw new Error('no .exe asset in latest release');
+
+      const version = (release.tag_name || '').replace(/^v/i, '');
+
+      btn.href = asset.browser_download_url;
+      btn.removeAttribute('onclick');
+      btn.classList.remove('soon');
+      const label = btn.querySelector('span');
+      if (label) label.textContent = '⬇ ดาวน์โหลด' + (version ? ' v' + version : '');
+
+      if (versionEl && version) versionEl.textContent = version;
+      if (heroVersionEl && version) heroVersionEl.textContent = version;
+      if (noteEl) noteEl.textContent = 'ดาวน์โหลดฟรี ไม่มีค่าใช้จ่าย';
+    })
+    .catch(err => {
+      console.warn('Download link fetch failed:', err.message);
+      if (noteEl) {
+        noteEl.innerHTML = 'ดูเวอร์ชันล่าสุดได้ที่ <a href="https://github.com/' + REPO + '/releases" target="_blank" rel="noopener" style="color:#93c5fd; font-weight:600;">GitHub Releases</a>';
+      }
+    });
+})();
+
+// Scroll to top button logic
+(() => {
+  const scrollTopBtn = document.getElementById('scrollToTop');
+  if (!scrollTopBtn) return;
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 450) {
+      scrollTopBtn.classList.add('visible');
+    } else {
+      scrollTopBtn.classList.remove('visible');
+    }
+  });
+  
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+})();
