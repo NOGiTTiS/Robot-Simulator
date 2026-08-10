@@ -23,7 +23,7 @@ import {
   DEFAULT_PHYSICS_CONFIG
 } from '@/lib/physics/kinematics'
 import { getMapDefinition } from '@/lib/maps'
-import { MapDefinition, SensorConfigItem, SensorConfiguration } from '@/types/project'
+import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab } from '@/types/project'
 import { loadProjectState, saveProjectState } from '@/lib/storage'
 
 const DEFAULT_CODE = `#include <ATOM_VX.h>
@@ -56,6 +56,15 @@ void loop() {
 }
 `
 
+const DEFAULT_FILES: CodeTab[] = [
+  {
+    id: 'tab-main',
+    name: 'main.ino',
+    code: DEFAULT_CODE,
+    isMain: true
+  }
+]
+
 const DEFAULT_SENSORS: SensorConfigItem[] = [
   { id: 's0', type: 'IR_LINE', pin: 0, offsetX: 70, offsetY: -40, angle: 0, enabled: true, colorThreshold: 400 },
   { id: 's1', type: 'IR_LINE', pin: 1, offsetX: 70, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
@@ -75,7 +84,9 @@ export default function Home() {
   const [isSensorModalOpen, setIsSensorModalOpen] = useState(false)
   const [isCustomMapModalOpen, setIsCustomMapModalOpen] = useState(false)
 
-  const [code, setCode] = useState<string>(DEFAULT_CODE)
+  const [files, setFiles] = useState<CodeTab[]>(DEFAULT_FILES)
+  const [activeTabId, setActiveTabId] = useState<string>('tab-main')
+
   const [fontSize, setFontSize] = useState<number>(14)
   const [isRunning, setIsRunning] = useState<boolean>(false)
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1)
@@ -93,7 +104,24 @@ export default function Home() {
     if (saved) {
       if (saved.boardType) setBoardType(saved.boardType)
       if (saved.mapId) setMapId(saved.mapId)
-      if (saved.code) setCode(saved.code)
+      if (saved.files && Array.isArray(saved.files) && saved.files.length > 0) {
+        setFiles(saved.files)
+        if (saved.activeTabId && saved.files.some((f) => f.id === saved.activeTabId)) {
+          setActiveTabId(saved.activeTabId)
+        } else {
+          setActiveTabId(saved.files[0].id)
+        }
+      } else if (saved.code) {
+        setFiles([
+          {
+            id: 'tab-main',
+            name: 'main.ino',
+            code: saved.code,
+            isMain: true
+          }
+        ])
+        setActiveTabId('tab-main')
+      }
       if (saved.sensorConfig) setSensorConfig(saved.sensorConfig)
       if (saved.fontSize) setFontSize(saved.fontSize)
       if (saved.speedMultiplier) setSpeedMultiplier(saved.speedMultiplier)
@@ -104,12 +132,27 @@ export default function Home() {
     setIsLoaded(true)
   }, [])
 
+  // Combine code from all tabs for evaluation (Arduino IDE Style)
+  const getCombinedCode = useCallback((tabsList: CodeTab[]) => {
+    const mainTab = tabsList.find((t) => t.isMain || t.name === 'main.ino') || tabsList[0]
+    const otherTabs = tabsList.filter((t) => t.id !== mainTab?.id)
+
+    let combined = mainTab ? mainTab.code : ''
+    for (const tab of otherTabs) {
+      combined += `\n\n// --- File: ${tab.name} ---\n` + tab.code
+    }
+    return combined
+  }, [])
+
   // 2. Auto Save Project State on Changes (Debounced)
   useEffect(() => {
     if (!isLoaded) return
     const timer = setTimeout(() => {
+      const activeTab = files.find((f) => f.id === activeTabId) || files[0]
       saveProjectState({
-        code,
+        code: activeTab ? activeTab.code : '',
+        files,
+        activeTabId,
         boardType,
         mapId,
         sensorConfig,
@@ -120,7 +163,7 @@ export default function Home() {
       })
     }, 600)
     return () => clearTimeout(timer)
-  }, [code, boardType, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, customMaps, isLoaded])
+  }, [files, activeTabId, boardType, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, customMaps, isLoaded])
 
   // Get active map definition (built-in or custom uploaded)
   const mapDef = customMaps.find((m) => m.id === mapId) || getMapDefinition(mapId)
@@ -284,8 +327,42 @@ export default function Home() {
     })
   }
 
-  const handleCodeChange = (newCode: string) => {
-    setCode(newCode)
+  // Multi-Tab Code Handlers
+  const handleCodeChange = (tabId: string, newCode: string) => {
+    setFiles((prev) =>
+      prev.map((f) => (f.id === tabId ? { ...f, code: newCode } : f))
+    )
+  }
+
+  const handleAddTab = (fileName: string) => {
+    const newId = `tab-${Date.now()}`
+    const newTab: CodeTab = {
+      id: newId,
+      name: fileName,
+      code: `// ${fileName}\n\n`,
+      isMain: false
+    }
+    setFiles((prev) => [...prev, newTab])
+    setActiveTabId(newId)
+    setLogs((prev) => [...prev, `Created new sketch tab: ${fileName}`])
+  }
+
+  const handleDeleteTab = (tabId: string) => {
+    setFiles((prev) => {
+      const filtered = prev.filter((f) => f.id !== tabId)
+      if (activeTabId === tabId && filtered.length > 0) {
+        setActiveTabId(filtered[0].id)
+      }
+      return filtered
+    })
+    setLogs((prev) => [...prev, `Closed tab`])
+  }
+
+  const handleRenameTab = (tabId: string, newName: string) => {
+    setFiles((prev) =>
+      prev.map((f) => (f.id === tabId ? { ...f, name: newName } : f))
+    )
+    setLogs((prev) => [...prev, `Renamed tab to ${newName}`])
   }
 
   const handleBoardChange = (board: string) => {
@@ -319,7 +396,8 @@ export default function Home() {
       } else {
         resetHardwareState(hwStateRef.current)
         setLogs((prev) => [...prev, 'Starting simulation ▶'])
-        runnerRef.current.start(code)
+        const combinedCode = getCombinedCode(files)
+        runnerRef.current.start(combinedCode)
       }
     }
   }
@@ -340,11 +418,14 @@ export default function Home() {
 
   const handleExport = (format: 'ino' | 'cpp' = 'ino') => {
     const ext = format === 'cpp' ? 'cpp' : 'ino'
-    const blob = new Blob([code], { type: 'text/plain;charset=utf-8' })
+    const activeTab = files.find((f) => f.id === activeTabId) || files[0]
+    const exportContent = files.length > 1 ? getCombinedCode(files) : (activeTab ? activeTab.code : '')
+
+    const blob = new Blob([exportContent], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `robot_code_${boardType.toLowerCase()}.${ext}`
+    a.download = `${activeTab ? activeTab.name.split('.')[0] : 'sketch'}.${ext}`
     a.click()
     URL.revokeObjectURL(url)
     setLogs((prev) => [...prev, `Code exported to ${a.download} file 📥`])
@@ -353,7 +434,7 @@ export default function Home() {
   const handleImport = () => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = '.ino,.cpp,.c,.txt'
+    input.accept = '.ino,.cpp,.c,.h,.txt'
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
@@ -361,7 +442,21 @@ export default function Home() {
         reader.onload = (event) => {
           const content = event.target?.result as string
           if (content) {
-            handleCodeChange(content)
+            // Import into active tab or create new tab
+            const fileName = file.name
+            const existingTab = files.find((f) => f.name.toLowerCase() === fileName.toLowerCase())
+            if (existingTab) {
+              handleCodeChange(existingTab.id, content)
+              setActiveTabId(existingTab.id)
+            } else {
+              const newId = `tab-${Date.now()}`
+              setFiles((prev) => [
+                ...prev,
+                { id: newId, name: fileName, code: content, isMain: false }
+              ])
+              setActiveTabId(newId)
+            }
+
             // Auto detect board header
             if (content.includes('<ATOM_VX.h>')) {
               setBoardType('ATOM-VX')
@@ -430,8 +525,13 @@ export default function Home() {
         <ResizableSplit
           leftComponent={
             <CodeEditor
-              code={code}
-              onChange={handleCodeChange}
+              files={files}
+              activeTabId={activeTabId}
+              onSelectTab={setActiveTabId}
+              onAddTab={handleAddTab}
+              onDeleteTab={handleDeleteTab}
+              onRenameTab={handleRenameTab}
+              onChangeCode={handleCodeChange}
               fontSize={fontSize}
               onFontSizeChange={handleFontSizeChange}
               boardType={boardType}

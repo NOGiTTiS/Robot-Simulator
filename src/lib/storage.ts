@@ -1,7 +1,9 @@
-import { MapDefinition, SensorConfiguration } from '@/types/project'
+import { MapDefinition, SensorConfiguration, CodeTab } from '@/types/project'
 
 export interface StoredProjectState {
   code: string
+  files?: CodeTab[]
+  activeTabId?: string
   boardType: string
   mapId: string
   sensorConfig: SensorConfiguration
@@ -35,7 +37,18 @@ export function loadProjectState(): StoredProjectState | null {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as StoredProjectState
-    if (parsed && typeof parsed.code === 'string' && typeof parsed.boardType === 'string') {
+    if (parsed && typeof parsed.boardType === 'string') {
+      if (!parsed.files || !Array.isArray(parsed.files) || parsed.files.length === 0) {
+        parsed.files = [
+          {
+            id: 'tab-main',
+            name: 'main.ino',
+            code: parsed.code || '',
+            isMain: true
+          }
+        ]
+        parsed.activeTabId = 'tab-main'
+      }
       return parsed
     }
     return null

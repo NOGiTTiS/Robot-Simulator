@@ -13,11 +13,20 @@ export interface SensorConfiguration {
   sensors: SensorConfigItem[]
 }
 
+export interface CodeTab {
+  id: string
+  name: string
+  code: string
+  isMain?: boolean
+}
+
 export interface RobotProject {
   id: string
   name: string
   boardType: 'ATOM-VX' | 'POP32i' | 'NANO' | 'ESP32'
   code: string
+  files?: CodeTab[]
+  activeTabId?: string
   mapId: string
   sensorConfig: SensorConfiguration
   fontSize: number
