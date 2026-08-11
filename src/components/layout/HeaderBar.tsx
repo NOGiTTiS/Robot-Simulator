@@ -1,11 +1,30 @@
 'use client'
 
-import { Cpu, Map, Play, Pause, RotateCcw, Box, Monitor, Download, Upload, Zap, Sliders, ChevronDown, Bot } from 'lucide-react'
+import {
+  Cpu,
+  Map,
+  Play,
+  Pause,
+  RotateCcw,
+  Box,
+  Monitor,
+  Download,
+  Upload,
+  Zap,
+  Sliders,
+  ChevronDown,
+  Bot,
+  Maximize2,
+  Minimize2,
+  Columns,
+  Code2,
+  Tv
+} from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 
 interface HeaderBarProps {
-  boardType: string
-  onBoardChange: (board: string) => void
+  boardType?: string
+  onBoardChange?: (board: string) => void
   robotName?: string
   onOpenRobotModal?: () => void
   mapId: string
@@ -21,22 +40,21 @@ interface HeaderBarProps {
   onSpeedChange: (speed: number) => void
   viewMode: '2D' | '3D'
   onViewModeChange: (mode: '2D' | '3D') => void
-  fontSize: number
-  onFontSizeChange: (size: number | ((prev: number) => number)) => void
   onExport: (format?: 'ino' | 'cpp') => void
   onImport: () => void
+  isFullscreen: boolean
+  onToggleFullscreen: () => void
+  panelMode: 'split' | 'editor' | 'simulator'
+  onPanelModeChange: (mode: 'split' | 'editor' | 'simulator') => void
 }
 
 export function HeaderBar({
   boardType,
-  onBoardChange,
   robotName = 'ATOM-VX Standard',
   onOpenRobotModal,
   mapId,
-  onMapChange,
   customMaps = [],
   onOpenMapSelectModal,
-  onOpenCustomMapModal,
   onOpenSensorModal,
   isRunning,
   onToggleRun,
@@ -45,18 +63,13 @@ export function HeaderBar({
   onSpeedChange,
   viewMode,
   onViewModeChange,
-  fontSize,
-  onFontSizeChange,
   onExport,
-  onImport
+  onImport,
+  isFullscreen,
+  onToggleFullscreen,
+  panelMode,
+  onPanelModeChange
 }: HeaderBarProps) {
-  const boards = [
-    { id: 'ATOM-VX', name: 'PT-BOT ATOM-VX' },
-    { id: 'POP32i', name: 'POP32 / POP32i' },
-    { id: 'NANO', name: 'Arduino Nano' },
-    { id: 'ESP32', name: 'ESP32 Board' }
-  ]
-
   const builtinMaps = [
     { id: 'athletics-280x160', name: 'Athletics (280x160cm)' },
     { id: 'rt-td-122x244', name: 'RT-TD Field (122x244cm)' },
@@ -69,8 +82,8 @@ export function HeaderBar({
   const speeds = [1, 2, 5]
 
   return (
-    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-200 z-20 shrink-0">
-      {/* Brand & Logo */}
+    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-200 z-20 shrink-0 select-none">
+      {/* 1. Brand & Logo */}
       <div className="flex items-center gap-2.5 min-w-max">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-white/20">
           <Zap className="w-4 h-4 text-white fill-white" />
@@ -88,33 +101,17 @@ export function HeaderBar({
         </div>
       </div>
 
-      {/* Selectors Section */}
+      {/* 2. Selectors Section (Robot, Map, Sensors) */}
       <div className="flex items-center gap-2">
         {/* Robot Spec / Management Modal Button */}
         <button
           onClick={onOpenRobotModal}
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-xs font-medium text-slate-200 hover:text-cyan-300 transition group"
-          title="Robot Specs & Presets Manager"
+          title={`Robot Specs & Presets Manager (${boardType || 'Board'})`}
         >
           <Bot className="w-3.5 h-3.5 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="max-w-[140px] truncate">{robotName}</span>
+          <span className="max-w-[150px] truncate">{robotName}</span>
         </button>
-
-        {/* Board Selector */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
-          <Cpu className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-          <select
-            value={boardType}
-            onChange={(e) => onBoardChange(e.target.value)}
-            className="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer font-medium"
-          >
-            {boards.map((b) => (
-              <option key={b.id} value={b.id} className="bg-slate-900 text-slate-200">
-                {b.name}
-              </option>
-            ))}
-          </select>
-        </div>
 
         {/* Map Selector Modal Button */}
         <button
@@ -123,7 +120,7 @@ export function HeaderBar({
           title="Select Competition Map"
         >
           <Map className="w-3.5 h-3.5 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="max-w-[140px] truncate">
+          <span className="max-w-[130px] truncate">
             {customMaps.find((m) => m.id === mapId)?.name || builtinMaps.find((m) => m.id === mapId)?.name || 'Select Map'}
           </span>
           <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 shrink-0" />
@@ -140,7 +137,7 @@ export function HeaderBar({
         </button>
       </div>
 
-      {/* Main Simulation Control Buttons */}
+      {/* 3. Main Simulation Execution Controls */}
       <div className="flex items-center gap-2">
         {/* Run / Pause Button */}
         <button
@@ -192,35 +189,49 @@ export function HeaderBar({
         </div>
       </div>
 
-      {/* Editor Font & View Toggle Section */}
+      {/* 4. Layout, View Mode, Files & Fullscreen Section */}
       <div className="flex items-center gap-2">
-        {/* Editor Font Size Controls */}
-        <div className="flex items-center gap-1 bg-slate-900/90 rounded-lg px-1.5 py-1 border border-slate-800 text-xs">
-          <span className="text-[11px] text-slate-400 px-1 font-mono">{fontSize}px</span>
+        {/* Panel Layout Mode Selector (Split / Code / Sim) */}
+        <div className="flex items-center bg-slate-900/90 rounded-lg p-0.5 border border-slate-800">
           <button
-            onClick={() => onFontSizeChange((prev) => Math.min(32, prev + 2))}
-            title="Increase Font Size (A+)"
-            className="px-1.5 py-0.5 rounded text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition"
+            onClick={() => onPanelModeChange('split')}
+            title="Split View (Code + Simulator)"
+            className={`p-1 px-2 rounded text-xs font-medium transition flex items-center gap-1 ${
+              panelMode === 'split'
+                ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            A+
+            <Columns className="w-3.5 h-3.5" />
+            <span className="hidden xl:inline text-[11px]">Split</span>
           </button>
           <button
-            onClick={() => onFontSizeChange((prev) => Math.max(10, prev - 2))}
-            title="Decrease Font Size (A-)"
-            className="px-1.5 py-0.5 rounded text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition"
+            onClick={() => onPanelModeChange('editor')}
+            title="Full Editor View"
+            className={`p-1 px-2 rounded text-xs font-medium transition flex items-center gap-1 ${
+              panelMode === 'editor'
+                ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            A-
+            <Code2 className="w-3.5 h-3.5" />
+            <span className="hidden xl:inline text-[11px]">Code</span>
           </button>
           <button
-            onClick={() => onFontSizeChange(14)}
-            title="Reset Font Size (14px)"
-            className="px-1.5 py-0.5 rounded text-[10px] text-slate-400 hover:text-slate-200 transition"
+            onClick={() => onPanelModeChange('simulator')}
+            title="Full Simulator View"
+            className={`p-1 px-2 rounded text-xs font-medium transition flex items-center gap-1 ${
+              panelMode === 'simulator'
+                ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
           >
-            Reset
+            <Tv className="w-3.5 h-3.5" />
+            <span className="hidden xl:inline text-[11px]">Sim</span>
           </button>
         </div>
 
-        {/* 2D / 3D Toggle */}
+        {/* 2D / 3D View Mode Toggle */}
         <div className="flex items-center bg-slate-900/90 rounded-lg p-0.5 border border-slate-800">
           <button
             onClick={() => onViewModeChange('2D')}
@@ -255,7 +266,7 @@ export function HeaderBar({
           >
             <Upload className="w-4 h-4" />
           </button>
-          
+
           <div className="group relative">
             <button
               onClick={() => onExport('ino')}
@@ -279,9 +290,27 @@ export function HeaderBar({
               </button>
             </div>
           </div>
+
+          {/* FullScreen Mode Toggle Button */}
+          <button
+            onClick={onToggleFullscreen}
+            title={isFullscreen ? 'Exit FullScreen (Esc)' : 'Enter FullScreen Mode'}
+            className={`p-1.5 rounded-lg transition flex items-center gap-1 ml-1 ${
+              isFullscreen
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="w-4 h-4 text-cyan-300" />
+            ) : (
+              <Maximize2 className="w-4 h-4" />
+            )}
+          </button>
         </div>
       </div>
     </header>
   )
 }
+
 

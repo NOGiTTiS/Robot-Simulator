@@ -10,6 +10,7 @@ interface ResizableSplitProps {
   minRatio?: number
   maxRatio?: number
   onResize?: () => void
+  panelMode?: 'split' | 'editor' | 'simulator'
 }
 
 export function ResizableSplit({
@@ -19,7 +20,8 @@ export function ResizableSplit({
   storageKey = 'tunorth_editor_split_ratio',
   minRatio = 20,
   maxRatio = 80,
-  onResize
+  onResize,
+  panelMode = 'split'
 }: ResizableSplitProps) {
   const [splitRatio, setSplitRatio] = useState<number>(initialRatio)
   const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -53,7 +55,7 @@ export function ResizableSplit({
       if (onResize) {
         onResize()
       }
-      // Trigger global resize event so Monaco Editor updates layout
+      // Trigger global resize event so Monaco Editor & Canvas update layout
       window.dispatchEvent(new Event('resize'))
     },
     [maxRatio, minRatio, storageKey, onResize]
@@ -113,6 +115,22 @@ export function ResizableSplit({
     updateRatio(50)
   }
 
+  if (panelMode === 'editor') {
+    return (
+      <div className="w-full h-full flex flex-col overflow-hidden relative select-none">
+        {leftComponent}
+      </div>
+    )
+  }
+
+  if (panelMode === 'simulator') {
+    return (
+      <div className="w-full h-full flex flex-col overflow-hidden relative select-none">
+        {rightComponent}
+      </div>
+    )
+  }
+
   return (
     <div
       ref={containerRef}
@@ -149,3 +167,4 @@ export function ResizableSplit({
     </div>
   )
 }
+

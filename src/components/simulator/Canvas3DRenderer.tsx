@@ -13,6 +13,9 @@ interface Canvas3DRendererProps {
   mapDef: MapDefinition
   boardType: string
   robotSpec?: RobotSpec
+  trailPath?: { x: number; y: number }[]
+  showSensorsOverlay?: boolean
+  showTrail?: boolean
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
@@ -23,12 +26,17 @@ export function Canvas3DRenderer({
   mapDef,
   boardType,
   robotSpec,
+  trailPath = [],
+  showSensorsOverlay = true,
+  showTrail = true,
   sensors = [],
   hwState,
   onRepositionRobot
 }: Canvas3DRendererProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const robotGroupRef = useRef<THREE.Group | null>(null)
+  const sensorsGroupRef = useRef<THREE.Group | null>(null)
+  const trailLineRef = useRef<THREE.Line | null>(null)
   const leftWheelRef = useRef<THREE.Object3D | null>(null)
   const rightWheelRef = useRef<THREE.Object3D | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
@@ -128,7 +136,7 @@ export function Canvas3DRenderer({
     borderMesh.position.y = -0.012
     scene.add(borderMesh)
 
-    // Floor Grid Helper (With PolygonOffset to render crisp lines without Z-fighting)
+    // Floor Grid Helper
     const gridHelper = new THREE.GridHelper(Math.max(mapW_m, mapH_m), 20, 0x0284c7, 0x1e293b)
     gridHelper.position.y = 0.001
     if (Array.isArray(gridHelper.material)) {
@@ -143,6 +151,20 @@ export function Canvas3DRenderer({
       gridHelper.material.polygonOffsetUnits = -1
     }
     scene.add(gridHelper)
+
+    // Motion Trail Line in 3D Scene
+    const trailGeo = new THREE.BufferGeometry()
+    const trailMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      linewidth: 2,
+      transparent: true,
+      opacity: 0.8
+    })
+    const trailLine = new THREE.Line(trailGeo, trailMat)
+    trailLine.position.y = 0.003
+    trailLine.visible = showTrail && trailPath.length > 1
+    scene.add(trailLine)
+    trailLineRef.current = trailLine
 
     // 5. 3D Robot Model Group
     const robotGroup = new THREE.Group()
@@ -181,7 +203,7 @@ export function Canvas3DRenderer({
     noseMesh.position.set(bodyL_m / 2 + 0.01, 0.04, 0)
     robotGroup.add(noseMesh)
 
-    // Left & Right Wheels (Pre-rotated geometry so cylinder axis aligns with Z-axis axle)
+    // Left & Right Wheels
     const wheelGeo = new THREE.CylinderGeometry(wheelRadius_m, wheelRadius_m, 0.016, 24)
     wheelGeo.rotateX(Math.PI / 2)
 
@@ -213,15 +235,88 @@ export function Canvas3DRenderer({
     rightWheelRef.current = rightWheelGroup
     robotGroup.add(rightWheelGroup)
 
-    // Front Sensor Array LED Dots
-    const sensorMat = new THREE.MeshBasicMaterial({ color: 0x10b981 })
-    for (let i = -2; i <= 2; i++) {
-      const sensorDotGeo = new THREE.SphereGeometry(0.005, 8, 8)
-      const sensorDot = new THREE.Mesh(sensorDotGeo, sensorMat)
-      sensorDot.position.set(bodyL_m / 2, 0.02, (i * bodyW_m) / 6)
-      robotGroup.add(sensorDot)
-    }
+    // Dynamic 3D Sensors Group Attached to Robot Chassis
+    const sensorsGroup = new THREE.Group()
+    sensorsGroup.name = 'sensorsGroup'
+    sensorsGroupRef.current = sensorsGroup
+    sensorsGroup.visible = showSensorsOverlay
 
+    sensors.forEach((s) => {
+      if (!s.enabled) return
+      const sensorX_m = s.offsetX / 1000
+      const sensorZ_m = s.offsetY / 1000
+
+      if (s.type === 'IR_LINE') {
+        const irGroup = new THREE.Group()
+        irGroup.name = `sensor_ir_${s.id}_${s.pin}`
+        irGroup.position.set(sensorX_m, 0, sensorZ_m)
+
+        // 1. Floor spot disc (on track floor)
+        const discGeo = new THREE.CircleGeometry(0.009, 16)
+        discGeo.rotateX(-Math.PI / 2)
+        const discMat = new THREE.MeshBasicMaterial({
+          color: 0x10b981,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.95
+        })
+        const discMesh = new THREE.Mesh(discGeo, discMat)
+        discMesh.position.y = 0.004
+        discMesh.name = 'floor_spot'
+        irGroup.add(discMesh)
+
+        // 2. Vertical sensor stem probe
+        const stemGeo = new THREE.CylinderGeometry(0.003, 0.003, 0.07, 8)
+        const stemMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3 })
+        const stemMesh = new THREE.Mesh(stemGeo, stemMat)
+        stemMesh.position.y = 0.038
+        irGroup.add(stemMesh)
+
+        // 3. Top-mounted glowing LED indicator
+        const ledGeo = new THREE.SphereGeometry(0.007, 12, 12)
+        const ledMat = new THREE.MeshStandardMaterial({
+          color: 0x10b981,
+          roughness: 0.2,
+          emissive: 0x059669,
+          emissiveIntensity: 0.8
+        })
+        const ledMesh = new THREE.Mesh(ledGeo, ledMat)
+        ledMesh.position.y = 0.075
+        ledMesh.name = 'top_led'
+        irGroup.add(ledMesh)
+
+        sensorsGroup.add(irGroup)
+      } else if (s.type === 'DISTANCE_TOF') {
+        const tofGroup = new THREE.Group()
+        tofGroup.name = `sensor_tof_${s.id}_${s.pin}`
+        tofGroup.position.set(sensorX_m, 0.045, sensorZ_m)
+        tofGroup.rotation.y = -(s.angle * Math.PI) / 180
+
+        const tofGeo = new THREE.BoxGeometry(0.014, 0.012, 0.018)
+        const tofMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 })
+        const tofMesh = new THREE.Mesh(tofGeo, tofMat)
+        tofGroup.add(tofMesh)
+
+        // Laser line projecting forward
+        const laserGeo = new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(0, 0, 0),
+          new THREE.Vector3(0.4, 0, 0)
+        ])
+        const laserMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.8 })
+        const laserLine = new THREE.Line(laserGeo, laserMat)
+        tofGroup.add(laserLine)
+
+        sensorsGroup.add(tofGroup)
+      } else if (s.type === 'GYRO_IMU') {
+        const gyroGeo = new THREE.BoxGeometry(0.016, 0.008, 0.016)
+        const gyroMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.2 })
+        const gyroMesh = new THREE.Mesh(gyroGeo, gyroMat)
+        gyroMesh.position.set(sensorX_m, 0.076, sensorZ_m)
+        sensorsGroup.add(gyroMesh)
+      }
+    })
+
+    robotGroup.add(sensorsGroup)
     scene.add(robotGroup)
 
     // 6. Animation Loop
@@ -260,7 +355,7 @@ export function Canvas3DRenderer({
         container.removeChild(renderer.domElement)
       }
     }
-  }, [mapDef, boardType, robotSpec])
+  }, [mapDef, boardType, robotSpec, sensors])
 
   // Update 3D Robot Position & Orientation from Physics State
   useEffect(() => {
@@ -280,6 +375,80 @@ export function Canvas3DRenderer({
       rightWheelRef.current.rotation.z -= (physicsState.rightWheelSpeed / 30) * 0.016
     }
   }, [physicsState, mapDef])
+
+  // Update 3D Motion Trail geometry & visibility
+  useEffect(() => {
+    const trailLine = trailLineRef.current
+    if (!trailLine) return
+
+    const shouldShow = showTrail && trailPath.length > 1
+    trailLine.visible = shouldShow
+
+    if (shouldShow) {
+      const positions = new Float32Array(trailPath.length * 3)
+      for (let i = 0; i < trailPath.length; i++) {
+        positions[i * 3] = (trailPath[i].x - mapDef.widthMm / 2) / 1000
+        positions[i * 3 + 1] = 0.003
+        positions[i * 3 + 2] = (trailPath[i].y - mapDef.heightMm / 2) / 1000
+      }
+      trailLine.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+      trailLine.geometry.attributes.position.needsUpdate = true
+      trailLine.geometry.computeBoundingSphere()
+    }
+  }, [trailPath, showTrail, mapDef])
+
+  // Toggle 3D Sensor Overlay visibility
+  useEffect(() => {
+    if (sensorsGroupRef.current) {
+      sensorsGroupRef.current.visible = showSensorsOverlay
+    }
+  }, [showSensorsOverlay])
+
+  // Dynamic real-time 3D sensor reading updates (IR LEDs & TOF Laser ray)
+  useEffect(() => {
+    if (!sensorsGroupRef.current || !hwState || !showSensorsOverlay) return
+
+    sensors.forEach((s) => {
+      if (!s.enabled) return
+
+      if (s.type === 'IR_LINE') {
+        const irGroup = sensorsGroupRef.current?.getObjectByName(`sensor_ir_${s.id}_${s.pin}`) as THREE.Group
+        if (irGroup) {
+          const isLine = hwState.digitalPins[s.pin] === 1
+          const topLed = irGroup.getObjectByName('top_led') as THREE.Mesh
+          const floorSpot = irGroup.getObjectByName('floor_spot') as THREE.Mesh
+
+          if (topLed && topLed.material) {
+            const mat = topLed.material as THREE.MeshStandardMaterial
+            if (isLine) {
+              mat.color.setHex(0x10b981) // Emerald
+              mat.emissive.setHex(0x059669)
+            } else {
+              mat.color.setHex(0xef4444) // Red
+              mat.emissive.setHex(0x991b1b)
+            }
+          }
+
+          if (floorSpot && floorSpot.material) {
+            const mat = floorSpot.material as THREE.MeshBasicMaterial
+            mat.color.setHex(isLine ? 0x10b981 : 0xef4444)
+          }
+        }
+      } else if (s.type === 'DISTANCE_TOF') {
+        const tofGroup = sensorsGroupRef.current?.getObjectByName(`sensor_tof_${s.id}_${s.pin}`) as THREE.Group
+        if (tofGroup) {
+          const laserLine = tofGroup.children.find((c) => c instanceof THREE.Line) as THREE.Line
+          if (laserLine) {
+            const readingCm = hwState.analogPins[s.pin] ?? 200
+            const readingM = Math.min(2, Math.max(0.02, readingCm / 100))
+            const positions = new Float32Array([0, 0, 0, readingM, 0, 0])
+            laserLine.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+            laserLine.geometry.attributes.position.needsUpdate = true
+          }
+        }
+      }
+    })
+  }, [physicsState, hwState, sensors, showSensorsOverlay])
 
   // 3D Pointer Dragging Handlers
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -346,3 +515,4 @@ export function Canvas3DRenderer({
     </div>
   )
 }
+

@@ -78,7 +78,7 @@ export function SimulatorContainer({
     <div className="h-full flex flex-col bg-slate-950 text-slate-200 relative overflow-hidden select-none">
       {/* Canvas Top Telemetry & Controls Bar Overlay */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
-        {/* Left Badge: View Mode, Map Selector, Sensor Visuals & Trail Toggles */}
+        {/* Left Badge: View Mode & Visual Overlays (Sensors Overlay & Motion Trail) */}
         <div className="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 pointer-events-auto shadow-lg">
           <Layers className="w-4 h-4 text-indigo-400" />
           <span className="text-xs font-semibold text-slate-200">
@@ -90,33 +90,13 @@ export function SimulatorContainer({
             }`}
           />
 
-          {onOpenMapModal && (
-            <button
-              onClick={onOpenMapModal}
-              className="ml-1 p-1 text-slate-400 hover:text-cyan-300 hover:bg-slate-800 rounded-md transition flex items-center gap-1 text-[11px] font-medium"
-              title="Upload / Change Competition Map"
-            >
-              <MapIcon className="w-3.5 h-3.5" /> Map
-            </button>
-          )}
-
-          {onOpenSensorConfig && (
-            <button
-              onClick={onOpenSensorConfig}
-              className="p-1 text-slate-400 hover:text-emerald-300 hover:bg-slate-800 rounded-md transition flex items-center gap-1 text-[11px] font-medium"
-              title="Open Interactive Sensor Configurator"
-            >
-              <Sliders className="w-3.5 h-3.5" /> Sensors ({sensors.filter((s) => s.enabled).length})
-            </button>
-          )}
-
           <span className="text-slate-700">|</span>
 
           {/* Toggle Sensor Overlay Display */}
           {onToggleSensorsOverlay && (
             <button
               onClick={onToggleSensorsOverlay}
-              className={`p-1 px-1.5 rounded-md transition flex items-center gap-1 text-[11px] font-medium ${
+              className={`p-1 px-2 rounded-md transition flex items-center gap-1.5 text-[11px] font-medium ${
                 showSensorsOverlay
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                   : 'text-slate-500 hover:text-slate-300 bg-slate-800/40'
@@ -124,7 +104,7 @@ export function SimulatorContainer({
               title={showSensorsOverlay ? 'เปิดการแสดงผลเซนเซอร์ (กดเพื่อซ่อน)' : 'ซ่อนการแสดงผลเซนเซอร์ (กดเพื่อแสดง)'}
             >
               {showSensorsOverlay ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
-              <span>Sensors UI</span>
+              <span>Sensors Overlay</span>
             </button>
           )}
 
@@ -132,7 +112,7 @@ export function SimulatorContainer({
           {onToggleTrail && (
             <button
               onClick={onToggleTrail}
-              className={`p-1 px-1.5 rounded-md transition flex items-center gap-1 text-[11px] font-medium ${
+              className={`p-1 px-2 rounded-md transition flex items-center gap-1.5 text-[11px] font-medium ${
                 showTrail
                   ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                   : 'text-slate-500 hover:text-slate-300 bg-slate-800/40'
@@ -222,6 +202,9 @@ export function SimulatorContainer({
             mapDef={mapDef}
             boardType={boardType}
             robotSpec={robotSpec}
+            trailPath={trailPath}
+            showSensorsOverlay={showSensorsOverlay}
+            showTrail={showTrail}
             sensors={sensors}
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}

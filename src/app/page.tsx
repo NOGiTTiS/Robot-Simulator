@@ -104,12 +104,45 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'2D' | '3D'>('2D')
   const [showSensorsOverlay, setShowSensorsOverlay] = useState<boolean>(true)
   const [showTrail, setShowTrail] = useState<boolean>(true)
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
+  const [panelMode, setPanelMode] = useState<'split' | 'editor' | 'simulator'>('split')
   const [logs, setLogs] = useState<string[]>([
     'TUNorth Robot Simulator System v1.0 Ready',
     'Board ATOM-VX selected.'
   ])
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
+
+  // Listen to FullScreen change events
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 100)
+    }
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
+
+  const handleToggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        setLogs((prev) => [...prev, `[Fullscreen Error] ${err.message}`])
+      })
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      }
+    }
+  }
+
+  const handlePanelModeChange = (mode: 'split' | 'editor' | 'simulator') => {
+    setPanelMode(mode)
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'))
+    }, 50)
+  }
 
   // 1. Auto Load Saved State on Mount
   useEffect(() => {
@@ -620,15 +653,18 @@ export default function Home() {
         onSpeedChange={setSpeedMultiplier}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        fontSize={fontSize}
-        onFontSizeChange={handleFontSizeChange}
         onExport={handleExport}
         onImport={handleImport}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={handleToggleFullscreen}
+        panelMode={panelMode}
+        onPanelModeChange={handlePanelModeChange}
       />
 
       {/* 2. Main Resizable Panels */}
       <div className="flex-1 w-full overflow-hidden relative">
         <ResizableSplit
+          panelMode={panelMode}
           leftComponent={
             <CodeEditor
               files={files}
