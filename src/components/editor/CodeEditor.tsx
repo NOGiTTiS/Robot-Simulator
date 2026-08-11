@@ -240,6 +240,46 @@ export function CodeEditor({
             insertText: 'millis()',
             documentation: 'Returns milliseconds since program start',
             range
+          },
+          {
+            label: 'map(value, fromLow, fromHigh, toLow, toHigh)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'map(${1:val}, ${2:0}, ${3:1023}, ${4:0}, ${5:100})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Re-maps a number from one range to another',
+            range
+          },
+          {
+            label: 'constrain(amt, low, high)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'constrain(${1:val}, ${2:0}, ${3:100})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Constrains a number to be within a range',
+            range
+          },
+          {
+            label: 'abs(x)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'abs(${1:x})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Calculates the absolute value of a number',
+            range
+          },
+          {
+            label: 'min(a, b)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'min(${1:a}, ${2:b})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Calculates the minimum of two numbers',
+            range
+          },
+          {
+            label: 'max(a, b)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'max(${1:a}, ${2:b})',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Calculates the maximum of two numbers',
+            range
           }
         ]
 

@@ -185,4 +185,24 @@ export function bindBoardApis(
     if (pin === 3 || pin === 5 || pin === 1) setMotor(1, speedPercent)
     if (pin === 6 || pin === 9 || pin === 2) setMotor(2, speedPercent)
   })
+
+  // C++ / Arduino Math & Helper Functions
+  registerFn('map', (x: number, inMin: number, inMax: number, outMin: number, outMax: number) => {
+    if (inMax === inMin) return outMin
+    return Math.round(outMin + ((x - inMin) * (outMax - outMin)) / (inMax - inMin))
+  })
+  registerFn('constrain', (amt: number, low: number, high: number) => {
+    return Math.max(low, Math.min(high, amt))
+  })
+  registerFn('abs', (x: number) => Math.abs(x))
+  registerFn('min', (a: number, b: number) => Math.min(a, b))
+  registerFn('max', (a: number, b: number) => Math.max(a, b))
+  registerFn('sqrt', (x: number) => Math.sqrt(x))
+  registerFn('pow', (base: number, exp: number) => Math.pow(base, exp))
+  registerFn('random', (minOrMax: number, maxVal?: number) => {
+    if (maxVal !== undefined) {
+      return Math.floor(Math.random() * (maxVal - minOrMax + 1)) + minOrMax
+    }
+    return Math.floor(Math.random() * minOrMax)
+  })
 }

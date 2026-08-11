@@ -18,8 +18,8 @@
 - **ESP32**: บอร์ดประมวลผลความเร็วสูง รองรับการทำงานมัลติทาสก์และเซนเซอร์ขั้นสูง
 
 ### 1.4 สถาปัตยกรรมทางเทคนิค (Tech Stack Architecture)
-- **Frontend Framework**: **Next.js 16 (App Router)** + React 19 + Tailwind CSS (สไตล์ Modern Glassmorphism UI)
-- **Code Editor**: **Monaco Editor** (VS Code Engine) พร้อมระบบปรับขนาดตัวอักษร (`A+`, `A-`, `Reset`) และการลากปรับขนาดพื้นที่ (Resizable Split Panel)
+- **Frontend Framework**: **Next.js 16 (App Router)** + React 19 + Tailwind CSS v4 (สไตล์ Modern Glassmorphism UI พร้อมระบบ **Light / Dark Mode Switcher**)
+- **Code Editor**: **Monaco Editor** (VS Code Engine) พร้อมระบบสลับธีม (`vs-dark` / `vs`), ระบบปรับขนาดตัวอักษร (`A+`, `A-`, `Reset`) และการลากปรับขนาดพื้นที่ (Resizable Split Panel)
 - **Code Execution Engine**: Client-side JavaScript C++ AST Interpreter ประมวลผลลูป `setup()` และ `loop()` แบบ Real-time
 - **Physics Engine**: Realistic Differential Kinematics คำนวณความเร่ง/ความเฉื่อย (Acceleration Ramping), แรงเสียดทานสนาม (Friction Model), การลื่นไถล (Wheel Slip) และ Wheel Encoders
 - **Rendering Engines**:
@@ -49,7 +49,10 @@ export interface RobotProject {
   activeTabId?: string;
   mapId: string;
   sensorConfig: SensorConfiguration;
+  robotSpec?: RobotSpec;
+  customRobots?: RobotSpec[];
   fontSize: number;
+  theme?: 'dark' | 'light';
   updatedAt: number;
 }
 
@@ -106,6 +109,26 @@ export interface RobotPhysicsState {
   leftEncoder: number;
   rightEncoder: number;
   isStuck: boolean;
+}
+
+// 2.6 Robot Chassis & Preset Specification Model
+export interface RobotSpec {
+  id: string;
+  name: string;
+  boardType: 'ATOM-VX' | 'POP32i' | 'NANO' | 'ESP32';
+  bodyWidth: number;
+  bodyLength: number;
+  wheelBase: number;
+  wheelRadius: number;
+  maxSpeed: number;
+  accelRate: number;
+  decelRate: number;
+  frictionCoeff: number;
+  color: string;
+  presetType: 'standard' | 'sumo' | 'speed' | 'custom';
+  isCustom?: boolean;
+  description?: string;
+  defaultSensors?: SensorConfigItem[];
 }
 ```
 
@@ -173,6 +196,22 @@ export interface RobotPhysicsState {
   - [x] **AC 8.2**: สามารถกด Export เพื่อดาวน์โหลดโค้ดเป็นไฟล์ `.ino` หรือ `.cpp` ลงเครื่องคอมพิวเตอร์ได้ทันที
   - [x] **AC 8.3**: สามารถกด Import เพื่อเลือกไฟล์ `.ino` / `.cpp` จากเครื่องมาเปิดแก้ไขใน Editor ได้ถูกต้อง
 
+### Feature 9: Light / Dark Mode & UI Theme System
+- **รายละเอียด**: ระบบสลับธีมการแสดงผลระหว่าง Light Mode (โหมดสว่าง) และ Dark Mode (โหมดมืด)
+- **Acceptance Criteria (AC)**:
+  - [x] **AC 9.1**: มีปุ่ม Sun ☀️ / Moon 🌙 บน HeaderBar ให้กดสลับธีมได้อย่างสะดวกใน 1 คลิก
+  - [x] **AC 9.2**: บันทึกค่าธีมที่เลือกไว้ลงใน LocalStorage ของเบราว์เซอร์อัตโนมัติ เพื่อรักษาธีมเดิมเมื่อเปิดใช้งานครั้งถัดไป
+  - [x] **AC 9.3**: Monaco Code Editor สลับธีมการแสดงผลระหว่าง `vs-dark` และ `vs` (Light Mode) โดยอัตโนมัติ
+  - [x] **AC 9.4**: Viewport ทั้งในโหมด 2D Canvas และ 3D Three.js WebGL ปรับเปลี่ยนสีพื้นหลัง กรอบสนาม และ Grid ให้สบายตาในโหมดสว่าง และคมเข้มในโหมดมืด
+  - [x] **AC 9.5**: แผงควบคุม Glassmorphic UI (HeaderBar, DrawerConsole, ResizableSplit, Modals) ปรับโทนสีข้อความและพื้นหลังโปร่งแสงให้มีความคมชัด อ่านง่ายทั้งสองโหมด
+
+### Feature 10: Robot Spec Presets & Custom Chassis Manager
+- **รายละเอียด**: ระบบเลือกและปรับแต่งสเปกหุ่นยนต์ (ตัวถัง ล้อ กำลังมอเตอร์ ความเร่ง)
+- **Acceptance Criteria (AC)**:
+  - [x] **AC 10.1**: มีพรีเซ็ตหุ่นยนต์มาตรฐาน (Standard, Sumo Bot, Speed Runner) พร้อมรายละเอียดสเปกตัวถัง ล้อ มอเตอร์ และจานสี
+  - [x] **AC 10.2**: สามารถสร้างและบันทึก Custom Robot สเปกของตัวเอง พร้อมพรีวิวตัวถังแบบ 2D Live Canvas ใน modal
+  - [x] **AC 10.3**: สามารถส่งออก (Export) และนำเข้า (Import) สเปกหุ่นยนต์เป็นไฟล์ `.json` ได้
+
 ---
 
 ## 4. แผนการพัฒนาแบ่งเป็น Phase (Phase-by-Phase Roadmap)
@@ -224,3 +263,11 @@ export interface RobotPhysicsState {
 - [x] 5.4 ปรับแต่งการทำ Static Export (`output: 'export'`) และ Service Worker สำหรับการใช้งาน Offline 100% (PWA)
 - [x] 5.5 ทดสอบการเขียนโค้ดและควบคุมหุ่นยนต์เดินตามเส้นบนสนามมาตรฐานทุกสนาม
 - [x] 5.6 ตรวจสอบความถูกต้องของ UI Responsive และธีม Glassmorphism ในทุกลักษณะหน้าจอ
+
+### 📌 Phase 6: Light/Dark Theme Engine & Custom Presets Expansion
+เน้นระบบสลับธีมสว่าง/มืด การจัดการสเปกหุ่นยนต์ และเครื่องมือสร้างสนาม Custom
+- [x] 6.1 พัฒนาระบบ **Light / Dark Mode Switcher** พร้อมปุ่มสลับธีมบน HeaderBar และการบันทึกค่าธีมลง LocalStorage
+- [x] 6.2 ปรับแต่ง CSS Variables และ Glassmorphism UI ให้แสดงผลได้อย่างสวยงาม ชัดเจน ทั้งในโหมดสว่างและโหมดมืด
+- [x] 6.3 ปรับระบบ Monaco Editor, 2D Canvas และ 3D Three.js Scene ให้ปรับสีธีมตามสถานะ Light/Dark Mode
+- [x] 6.4 พัฒนาระบบ **Robot Presets & Custom Robot Manager Modal** ปรับแต่งขนาดตัวถัง วงเลี้ยว ความเร็ว และแรงเสียดทาน
+- [x] 6.5 พัฒนาระบบ **Interactive Map Drawer Modal** สำหรับวาดเส้นสนาม เส้นสตาร์ท และสิ่งกีดขวางแบบกำหนดเอง
