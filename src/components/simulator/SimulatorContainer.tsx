@@ -11,7 +11,11 @@ import {
   Map as MapIcon,
   RotateCcw,
   RotateCw,
-  Compass
+  Compass,
+  Eye,
+  EyeOff,
+  Route,
+  Trash2
 } from 'lucide-react'
 import { Canvas2DRenderer } from './Canvas2DRenderer'
 import { Canvas3DRenderer } from './Canvas3DRenderer'
@@ -28,6 +32,11 @@ interface SimulatorContainerProps {
   isRunning: boolean
   physicsState: ExtendedPhysicsState
   trailPath: { x: number; y: number }[]
+  showSensorsOverlay?: boolean
+  showTrail?: boolean
+  onToggleSensorsOverlay?: () => void
+  onToggleTrail?: () => void
+  onClearTrail?: () => void
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
   onOpenSensorConfig?: () => void
@@ -44,6 +53,11 @@ export function SimulatorContainer({
   isRunning,
   physicsState,
   trailPath,
+  showSensorsOverlay = true,
+  showTrail = true,
+  onToggleSensorsOverlay,
+  onToggleTrail,
+  onClearTrail,
   sensors = [],
   hwState,
   onOpenSensorConfig,
@@ -64,7 +78,7 @@ export function SimulatorContainer({
     <div className="h-full flex flex-col bg-slate-950 text-slate-200 relative overflow-hidden select-none">
       {/* Canvas Top Telemetry & Controls Bar Overlay */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
-        {/* Left Badge: View Mode & Map Selector Trigger */}
+        {/* Left Badge: View Mode, Map Selector, Sensor Visuals & Trail Toggles */}
         <div className="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 pointer-events-auto shadow-lg">
           <Layers className="w-4 h-4 text-indigo-400" />
           <span className="text-xs font-semibold text-slate-200">
@@ -93,6 +107,51 @@ export function SimulatorContainer({
               title="Open Interactive Sensor Configurator"
             >
               <Sliders className="w-3.5 h-3.5" /> Sensors ({sensors.filter((s) => s.enabled).length})
+            </button>
+          )}
+
+          <span className="text-slate-700">|</span>
+
+          {/* Toggle Sensor Overlay Display */}
+          {onToggleSensorsOverlay && (
+            <button
+              onClick={onToggleSensorsOverlay}
+              className={`p-1 px-1.5 rounded-md transition flex items-center gap-1 text-[11px] font-medium ${
+                showSensorsOverlay
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                  : 'text-slate-500 hover:text-slate-300 bg-slate-800/40'
+              }`}
+              title={showSensorsOverlay ? 'เปิดการแสดงผลเซนเซอร์ (กดเพื่อซ่อน)' : 'ซ่อนการแสดงผลเซนเซอร์ (กดเพื่อแสดง)'}
+            >
+              {showSensorsOverlay ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
+              <span>Sensors UI</span>
+            </button>
+          )}
+
+          {/* Toggle Motion Trail Display */}
+          {onToggleTrail && (
+            <button
+              onClick={onToggleTrail}
+              className={`p-1 px-1.5 rounded-md transition flex items-center gap-1 text-[11px] font-medium ${
+                showTrail
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                  : 'text-slate-500 hover:text-slate-300 bg-slate-800/40'
+              }`}
+              title={showTrail ? 'เปิดการแสดงผลเส้นทางการวิ่ง (กดเพื่อซ่อน)' : 'ซ่อนการแสดงผลเส้นทางการวิ่ง (กดเพื่อแสดง)'}
+            >
+              <Route className={`w-3.5 h-3.5 ${showTrail ? 'text-cyan-400' : 'text-slate-500'}`} />
+              <span>Trail</span>
+            </button>
+          )}
+
+          {/* Clear Trail Button */}
+          {onClearTrail && trailPath.length > 0 && (
+            <button
+              onClick={onClearTrail}
+              className="p-1 px-1.5 rounded-md transition text-slate-400 hover:text-rose-300 hover:bg-slate-800 text-[11px] font-medium flex items-center gap-1"
+              title="ลบจุดเส้นทางการวิ่งสะสม (Clear Trail)"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
@@ -151,6 +210,8 @@ export function SimulatorContainer({
             boardType={boardType}
             robotSpec={robotSpec}
             trailPath={trailPath}
+            showSensorsOverlay={showSensorsOverlay}
+            showTrail={showTrail}
             sensors={sensors}
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}

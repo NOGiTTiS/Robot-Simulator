@@ -12,6 +12,8 @@ export interface StoredProjectState {
   fontSize: number
   speedMultiplier: number
   viewMode: '2D' | '3D'
+  showSensorsOverlay?: boolean
+  showTrail?: boolean
   customMaps: MapDefinition[]
   lastSavedAt: number
 }

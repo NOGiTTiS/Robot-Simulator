@@ -26,7 +26,7 @@ import {
   ExtendedPhysicsState
 } from '@/lib/physics/kinematics'
 import { getMapDefinition } from '@/lib/maps'
-import { DEFAULT_ROBOT_SPEC } from '@/lib/robots'
+import { DEFAULT_ROBOT_SPEC, getDefaultSensorsForRobot, syncSensorsWithRobotDimensions } from '@/lib/robots'
 import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab, RobotSpec } from '@/types/project'
 import { loadProjectState, saveProjectState } from '@/lib/storage'
 
@@ -102,6 +102,8 @@ export default function Home() {
   const [isRunning, setIsRunning] = useState<boolean>(false)
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1)
   const [viewMode, setViewMode] = useState<'2D' | '3D'>('2D')
+  const [showSensorsOverlay, setShowSensorsOverlay] = useState<boolean>(true)
+  const [showTrail, setShowTrail] = useState<boolean>(true)
   const [logs, setLogs] = useState<string[]>([
     'TUNorth Robot Simulator System v1.0 Ready',
     'Board ATOM-VX selected.'
@@ -139,6 +141,8 @@ export default function Home() {
       if (saved.fontSize) setFontSize(saved.fontSize)
       if (saved.speedMultiplier) setSpeedMultiplier(saved.speedMultiplier)
       if (saved.viewMode) setViewMode(saved.viewMode)
+      if (typeof saved.showSensorsOverlay === 'boolean') setShowSensorsOverlay(saved.showSensorsOverlay)
+      if (typeof saved.showTrail === 'boolean') setShowTrail(saved.showTrail)
       if (saved.customMaps && Array.isArray(saved.customMaps)) setCustomMaps(saved.customMaps)
       setLogs((prev) => [...prev, 'Loaded saved project state from LocalStorage 💾'])
     }
@@ -174,11 +178,13 @@ export default function Home() {
         fontSize,
         speedMultiplier,
         viewMode,
+        showSensorsOverlay,
+        showTrail,
         customMaps
       })
     }, 600)
     return () => clearTimeout(timer)
-  }, [files, activeTabId, boardType, robotSpec, customRobots, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, customMaps, isLoaded])
+  }, [files, activeTabId, boardType, robotSpec, customRobots, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, showSensorsOverlay, showTrail, customMaps, isLoaded])
 
   // Get active map definition (built-in or custom uploaded)
   const mapDef = customMaps.find((m) => m.id === mapId) || getMapDefinition(mapId)
@@ -372,12 +378,26 @@ export default function Home() {
   }
 
   // Robot management handlers
-  const handleSelectRobot = (newRobot: RobotSpec) => {
+  const handleSelectRobot = (newRobot: RobotSpec, autoSyncSensors: boolean = true) => {
     setRobotSpec(newRobot)
     if (newRobot.boardType !== boardType) {
       setBoardType(newRobot.boardType)
     }
-    setLogs((prev) => [...prev, `Selected Robot: ${newRobot.name} (${newRobot.boardType})`])
+
+    if (autoSyncSensors) {
+      const newSensors = getDefaultSensorsForRobot(newRobot)
+      setSensorConfig({ sensors: newSensors })
+      setLogs((prev) => [
+        ...prev,
+        `Selected Robot: ${newRobot.name} (${newRobot.boardType})`,
+        `Loaded default sensors for ${newRobot.name}`
+      ])
+    } else {
+      setSensorConfig((prev) => ({
+        sensors: syncSensorsWithRobotDimensions(prev.sensors, newRobot)
+      }))
+      setLogs((prev) => [...prev, `Selected Robot: ${newRobot.name} (${newRobot.boardType})`])
+    }
   }
 
   const handleSaveCustomRobot = (newRobot: RobotSpec) => {
@@ -632,6 +652,11 @@ export default function Home() {
               isRunning={isRunning}
               physicsState={physicsState}
               trailPath={trailPath}
+              showSensorsOverlay={showSensorsOverlay}
+              showTrail={showTrail}
+              onToggleSensorsOverlay={() => setShowSensorsOverlay((prev) => !prev)}
+              onToggleTrail={() => setShowTrail((prev) => !prev)}
+              onClearTrail={() => setTrailPath([])}
               sensors={sensorConfig.sensors}
               hwState={hwStateRef.current}
               onOpenSensorConfig={() => setIsSensorModalOpen(true)}
@@ -694,6 +719,7 @@ export default function Home() {
         onClose={() => setIsSensorModalOpen(false)}
         sensorConfig={sensorConfig}
         onChangeSensorConfig={setSensorConfig}
+        activeRobot={robotSpec}
       />
 
       <CustomMapModal

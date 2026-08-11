@@ -13,6 +13,8 @@ interface Canvas2DRendererProps {
   boardType: string
   robotSpec?: RobotSpec
   trailPath: { x: number; y: number }[]
+  showSensorsOverlay?: boolean
+  showTrail?: boolean
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
@@ -24,6 +26,8 @@ export function Canvas2DRenderer({
   boardType,
   robotSpec,
   trailPath,
+  showSensorsOverlay = true,
+  showTrail = true,
   sensors = [],
   hwState,
   onRepositionRobot
@@ -127,7 +131,7 @@ export function Canvas2DRenderer({
     ctx.strokeRect(offsetX, offsetY, drawWidth, drawHeight)
 
     // Draw Robot Motion Trail
-    if (trailPath.length > 1) {
+    if (showTrail && trailPath.length > 1) {
       ctx.beginPath()
       ctx.strokeStyle = '#38bdf880'
       ctx.lineWidth = Math.max(2, 3 * scale)
@@ -265,20 +269,22 @@ export function Canvas2DRenderer({
           hwState.digitalPins[sensor.pin] = isLine ? 1 : 0
         }
 
-        // Render IR Sensor Dot (Green if line, Red if floor)
-        ctx.fillStyle = isLine ? '#10b981' : '#ef4444'
-        ctx.beginPath()
-        ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 4 * scale, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.strokeStyle = '#ffffff'
-        ctx.lineWidth = 1
-        ctx.stroke()
+        if (showSensorsOverlay) {
+          // Render IR Sensor Dot (Green if line, Red if floor)
+          ctx.fillStyle = isLine ? '#10b981' : '#ef4444'
+          ctx.beginPath()
+          ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 4 * scale, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.strokeStyle = '#ffffff'
+          ctx.lineWidth = 1
+          ctx.stroke()
 
-        // Glowing halo
-        ctx.fillStyle = isLine ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'
-        ctx.beginPath()
-        ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 7 * scale, 0, Math.PI * 2)
-        ctx.fill()
+          // Glowing halo
+          ctx.fillStyle = isLine ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'
+          ctx.beginPath()
+          ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 7 * scale, 0, Math.PI * 2)
+          ctx.fill()
+        }
       } else if (sensor.type === 'DISTANCE_TOF') {
         const sensorRad = physicsState.heading + (sensor.angle * Math.PI) / 180
         let distanceMm = 2000
@@ -307,38 +313,42 @@ export function Canvas2DRenderer({
           hwState.analogPins[sensor.pin] = distanceCm
         }
 
-        // Render TOF Laser Ray Beam (Cyan)
-        const hitLocalX = (hitWorldX - physicsState.x) * cosH + (hitWorldY - physicsState.y) * sinH
-        const hitLocalY = -(hitWorldX - physicsState.x) * sinH + (hitWorldY - physicsState.y) * cosH
+        if (showSensorsOverlay) {
+          // Render TOF Laser Ray Beam (Cyan)
+          const hitLocalX = (hitWorldX - physicsState.x) * cosH + (hitWorldY - physicsState.y) * sinH
+          const hitLocalY = -(hitWorldX - physicsState.x) * sinH + (hitWorldY - physicsState.y) * cosH
 
-        ctx.strokeStyle = '#06b6d4'
-        ctx.lineWidth = 1.5
-        ctx.setLineDash([4, 2])
-        ctx.beginPath()
-        ctx.moveTo(sensorLocalCanvasX, sensorLocalCanvasY)
-        ctx.lineTo(hitLocalX * scale, hitLocalY * scale)
-        ctx.stroke()
-        ctx.setLineDash([])
+          ctx.strokeStyle = '#06b6d4'
+          ctx.lineWidth = 1.5
+          ctx.setLineDash([4, 2])
+          ctx.beginPath()
+          ctx.moveTo(sensorLocalCanvasX, sensorLocalCanvasY)
+          ctx.lineTo(hitLocalX * scale, hitLocalY * scale)
+          ctx.stroke()
+          ctx.setLineDash([])
 
-        // Laser Hit Dot
-        ctx.fillStyle = '#38bdf8'
-        ctx.beginPath()
-        ctx.arc(hitLocalX * scale, hitLocalY * scale, 3 * scale, 0, Math.PI * 2)
-        ctx.fill()
+          // Laser Hit Dot
+          ctx.fillStyle = '#38bdf8'
+          ctx.beginPath()
+          ctx.arc(hitLocalX * scale, hitLocalY * scale, 3 * scale, 0, Math.PI * 2)
+          ctx.fill()
+        }
       } else if (sensor.type === 'GYRO_IMU') {
         const headingDeg = Math.round((physicsState.heading * 180) / Math.PI)
         if (hwState) {
           hwState.analogPins[sensor.pin] = headingDeg
         }
 
-        // Compass Ring Overlay around chassis
-        ctx.strokeStyle = '#a855f780' // Purple opacity
-        ctx.lineWidth = 1
-        ctx.setLineDash([2, 2])
-        ctx.beginPath()
-        ctx.arc(0, 0, robotLength * 0.6, 0, Math.PI * 2)
-        ctx.stroke()
-        ctx.setLineDash([])
+        if (showSensorsOverlay) {
+          // Compass Ring Overlay around chassis
+          ctx.strokeStyle = '#a855f780' // Purple opacity
+          ctx.lineWidth = 1
+          ctx.setLineDash([2, 2])
+          ctx.beginPath()
+          ctx.arc(0, 0, robotLength * 0.6, 0, Math.PI * 2)
+          ctx.stroke()
+          ctx.setLineDash([])
+        }
       }
     })
 

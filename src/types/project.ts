@@ -36,6 +36,7 @@ export interface RobotSpec {
   presetType: 'standard' | 'sumo' | 'speed' | 'custom'
   isCustom?: boolean
   description?: string
+  defaultSensors?: SensorConfigItem[]
 }
 
 export interface RobotProject {

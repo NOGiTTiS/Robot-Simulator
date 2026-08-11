@@ -27,7 +27,7 @@ interface RobotModalProps {
   isOpen: boolean
   onClose: () => void
   activeRobot: RobotSpec
-  onSelectRobot: (robot: RobotSpec) => void
+  onSelectRobot: (robot: RobotSpec, autoSyncSensors?: boolean) => void
   customRobots: RobotSpec[]
   onSaveCustomRobot: (robot: RobotSpec) => void
   onDeleteCustomRobot: (robotId: string) => void
@@ -56,6 +56,7 @@ export function RobotModal({
   onOpenSensorModal
 }: RobotModalProps) {
   const [activeTab, setActiveTab] = useState<'presets' | 'customizer'>('presets')
+  const [autoSyncSensors, setAutoSyncSensors] = useState<boolean>(true)
 
   // Form State for Customizer
   const [editRobot, setEditRobot] = useState<RobotSpec>(activeRobot)
@@ -213,7 +214,7 @@ export function RobotModal({
   const allPresets = [...BUILTIN_ROBOT_PRESETS, ...customRobots]
 
   const handleApplyRobot = (robot: RobotSpec) => {
-    onSelectRobot(robot)
+    onSelectRobot(robot, autoSyncSensors)
     onClose()
   }
 
@@ -227,7 +228,7 @@ export function RobotModal({
       presetType: 'custom'
     }
     onSaveCustomRobot(customSpec)
-    onSelectRobot(customSpec)
+    onSelectRobot(customSpec, autoSyncSensors)
     setActiveTab('presets')
   }
 
@@ -340,16 +341,30 @@ export function RobotModal({
             </button>
           </div>
 
-          <button
-            onClick={() => {
-              onClose()
-              onOpenSensorModal()
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-medium transition"
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>ไปที่ตั้งค่าเซนเซอร์ (Sensors) &rarr;</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition">
+              <input
+                type="checkbox"
+                checked={autoSyncSensors}
+                onChange={(e) => setAutoSyncSensors(e.target.checked)}
+                className="w-3.5 h-3.5 rounded accent-cyan-500 cursor-pointer"
+              />
+              <span className="text-xs text-slate-300 font-medium select-none">
+                อัปเดต Default Sensors อัตโนมัติ
+              </span>
+            </label>
+
+            <button
+              onClick={() => {
+                onClose()
+                onOpenSensorModal()
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-medium transition"
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              <span>ตั้งค่าเซนเซอร์ &rarr;</span>
+            </button>
+          </div>
         </div>
 
         {/* Modal Body Content */}
