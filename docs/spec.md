@@ -271,3 +271,11 @@ export interface RobotSpec {
 - [x] 6.3 ปรับระบบ Monaco Editor, 2D Canvas และ 3D Three.js Scene ให้ปรับสีธีมตามสถานะ Light/Dark Mode
 - [x] 6.4 พัฒนาระบบ **Robot Presets & Custom Robot Manager Modal** ปรับแต่งขนาดตัวถัง วงเลี้ยว ความเร็ว และแรงเสียดทาน
 - [x] 6.5 พัฒนาระบบ **Interactive Map Drawer Modal** สำหรับวาดเส้นสนาม เส้นสตาร์ท และสิ่งกีดขวางแบบกำหนดเอง
+
+### 📌 Phase 7: Future Enhancements & Advanced Learning Features (Roadmap)
+เน้นการพัฒนาฟังก์ชันต่อยอดเพื่อเพิ่มความยืดหยุ่น ประสบการณ์ผู้ใช้ และสื่อการเรียนการสอน
+- [ ] 7.1 พัฒนาระบบ **Preset Code Templates Selector (คลังตัวอย่างโค้ด)** บน HeaderBar (`Basic Movement`, `Line Tracker`, `PID Follower`, `Obstacle Avoidance`)
+- [ ] 7.2 พัฒนาระบบ **Interactive Obstacle Placement** สำหรับคลิกวางสิ่งกีดขวางบน Viewport แบบ Real-time
+- [ ] 7.3 พัฒนาระบบ **Keyboard Shortcuts Control** (`Ctrl+Enter` รัน/หยุด, `Ctrl+R` รีเซ็ต, `Ctrl+S` เอ็กซ์พอร์ต)
+- [ ] 7.4 พัฒนาระบบ **Audio Mute / Unmute Toggle Button** สำหรับเปิด/ปิดเสียง Buzzer สังเคราะห์บน HeaderBar
+
