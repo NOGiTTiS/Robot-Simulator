@@ -9,6 +9,9 @@ import { SimulatorContainer } from '@/components/simulator/SimulatorContainer'
 import { DrawerConsole } from '@/components/layout/DrawerConsole'
 import { SensorConfigModal } from '@/components/layout/SensorConfigModal'
 import { CustomMapModal } from '@/components/layout/CustomMapModal'
+import { MapSelectModal } from '@/components/layout/MapSelectModal'
+import { MapDrawerModal } from '@/components/layout/MapDrawerModal'
+import { MapEditModal } from '@/components/layout/MapEditModal'
 import {
   InterpreterRunner,
   bindBoardApis,
@@ -82,7 +85,11 @@ export default function Home() {
   const [sensorConfig, setSensorConfig] = useState<SensorConfiguration>({ sensors: DEFAULT_SENSORS })
 
   const [isSensorModalOpen, setIsSensorModalOpen] = useState(false)
+  const [isMapSelectModalOpen, setIsMapSelectModalOpen] = useState(false)
+  const [isMapDrawerModalOpen, setIsMapDrawerModalOpen] = useState(false)
+  const [isMapEditModalOpen, setIsMapEditModalOpen] = useState(false)
   const [isCustomMapModalOpen, setIsCustomMapModalOpen] = useState(false)
+  const [editingMap, setEditingMap] = useState<MapDefinition | null>(null)
 
   const [files, setFiles] = useState<CodeTab[]>(DEFAULT_FILES)
   const [activeTabId, setActiveTabId] = useState<string>('tab-main')
@@ -319,6 +326,43 @@ export default function Home() {
     setLogs((prev) => [...prev, `Loaded Custom Map: ${newMap.name}`])
   }
 
+  // Delete custom map
+  const handleDeleteCustomMap = (targetMapId: string) => {
+    const targetMap = customMaps.find((m) => m.id === targetMapId)
+    setCustomMaps((prev) => prev.filter((m) => m.id !== targetMapId))
+
+    // Fallback to default builtin map if active map was deleted
+    if (mapId === targetMapId) {
+      const defaultMapId = 'athletics-280x160'
+      setMapId(defaultMapId)
+      const defaultDef = getMapDefinition(defaultMapId)
+      const resetPhysics = createInitialPhysicsState(defaultDef.startX, defaultDef.startY, defaultDef.startHeading)
+      setPhysicsState(resetPhysics)
+      physicsRef.current = resetPhysics
+      setTrailPath([])
+    }
+
+    setLogs((prev) => [...prev, `Deleted Custom Map: ${targetMap?.name || targetMapId}`])
+  }
+
+  // Edit & Update custom map
+  const handleOpenEditMap = (map: MapDefinition) => {
+    setEditingMap(map)
+    setIsMapEditModalOpen(true)
+  }
+
+  const handleUpdateCustomMap = (updatedMap: MapDefinition) => {
+    setCustomMaps((prev) => prev.map((m) => (m.id === updatedMap.id ? updatedMap : m)))
+
+    if (mapId === updatedMap.id) {
+      const resetPhysics = createInitialPhysicsState(updatedMap.startX, updatedMap.startY, updatedMap.startHeading)
+      setPhysicsState(resetPhysics)
+      physicsRef.current = resetPhysics
+    }
+
+    setLogs((prev) => [...prev, `Updated Map Dimensions: ${updatedMap.name}`])
+  }
+
   const handleFontSizeChange = (sizeOrFn: number | ((prev: number) => number)) => {
     setFontSize((prev) => {
       const nextSize = typeof sizeOrFn === 'function' ? sizeOrFn(prev) : sizeOrFn
@@ -505,6 +549,7 @@ export default function Home() {
         mapId={mapId}
         onMapChange={handleMapChange}
         customMaps={customMaps}
+        onOpenMapSelectModal={() => setIsMapSelectModalOpen(true)}
         onOpenCustomMapModal={() => setIsCustomMapModalOpen(true)}
         onOpenSensorModal={() => setIsSensorModalOpen(true)}
         isRunning={isRunning}
@@ -548,7 +593,7 @@ export default function Home() {
               sensors={sensorConfig.sensors}
               hwState={hwStateRef.current}
               onOpenSensorConfig={() => setIsSensorModalOpen(true)}
-              onOpenMapModal={() => setIsCustomMapModalOpen(true)}
+              onOpenMapModal={() => setIsMapSelectModalOpen(true)}
               onRepositionRobot={handleRepositionRobot}
               onRotateRobot={handleRotateRobot}
             />
@@ -566,6 +611,31 @@ export default function Home() {
       />
 
       {/* 4. Modals */}
+      <MapSelectModal
+        isOpen={isMapSelectModalOpen}
+        onClose={() => setIsMapSelectModalOpen(false)}
+        mapId={mapId}
+        onMapChange={handleMapChange}
+        customMaps={customMaps}
+        onOpenCustomMapModal={() => setIsCustomMapModalOpen(true)}
+        onOpenMapDrawerModal={() => setIsMapDrawerModalOpen(true)}
+        onEditCustomMap={handleOpenEditMap}
+        onDeleteCustomMap={handleDeleteCustomMap}
+      />
+
+      <MapDrawerModal
+        isOpen={isMapDrawerModalOpen}
+        onClose={() => setIsMapDrawerModalOpen(false)}
+        onAddMap={handleAddCustomMap}
+      />
+
+      <MapEditModal
+        isOpen={isMapEditModalOpen}
+        onClose={() => setIsMapEditModalOpen(false)}
+        mapDef={editingMap}
+        onUpdateMap={handleUpdateCustomMap}
+      />
+
       <SensorConfigModal
         isOpen={isSensorModalOpen}
         onClose={() => setIsSensorModalOpen(false)}

@@ -45,12 +45,20 @@ export function Canvas2DRenderer({
 
   // Load / Generate Map Background Offscreen Canvas
   useEffect(() => {
-    if (mapDef.isCustom && mapDef.imageUrl) {
+    if (mapDef.imageUrl) {
       const img = new Image()
       img.crossOrigin = 'anonymous'
       img.src = mapDef.imageUrl
       img.onload = () => {
         customImgRef.current = img
+        const offCanvas = document.createElement('canvas')
+        offCanvas.width = 2400
+        offCanvas.height = Math.round(2400 * (mapDef.heightMm / mapDef.widthMm))
+        const ctx = offCanvas.getContext('2d')
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, offCanvas.width, offCanvas.height)
+          mapCanvasRef.current = offCanvas
+        }
       }
     } else {
       customImgRef.current = null

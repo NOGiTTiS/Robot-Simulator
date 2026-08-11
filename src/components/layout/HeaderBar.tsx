@@ -1,6 +1,6 @@
 'use client'
 
-import { Cpu, Map, Play, Pause, RotateCcw, Box, Monitor, Download, Upload, Zap, Sliders } from 'lucide-react'
+import { Cpu, Map, Play, Pause, RotateCcw, Box, Monitor, Download, Upload, Zap, Sliders, ChevronDown } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 
 interface HeaderBarProps {
@@ -9,6 +9,7 @@ interface HeaderBarProps {
   mapId: string
   onMapChange: (map: string) => void
   customMaps?: MapDefinition[]
+  onOpenMapSelectModal?: () => void
   onOpenCustomMapModal?: () => void
   onOpenSensorModal?: () => void
   isRunning: boolean
@@ -30,6 +31,7 @@ export function HeaderBar({
   mapId,
   onMapChange,
   customMaps = [],
+  onOpenMapSelectModal,
   onOpenCustomMapModal,
   onOpenSensorModal,
   isRunning,
@@ -100,41 +102,18 @@ export function HeaderBar({
           </select>
         </div>
 
-        {/* Map Selector */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
-          <Map className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <select
-            value={mapId}
-            onChange={(e) => {
-              if (e.target.value === '__upload_new__') {
-                onOpenCustomMapModal?.()
-              } else {
-                onMapChange(e.target.value)
-              }
-            }}
-            className="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer font-medium"
-          >
-            <optgroup label="Standard Competition Maps">
-              {builtinMaps.map((m) => (
-                <option key={m.id} value={m.id} className="bg-slate-900 text-slate-200">
-                  {m.name}
-                </option>
-              ))}
-            </optgroup>
-            {customMaps.length > 0 && (
-              <optgroup label="Custom Uploaded Maps">
-                {customMaps.map((cm) => (
-                  <option key={cm.id} value={cm.id} className="bg-slate-900 text-slate-200">
-                    {cm.name}
-                  </option>
-                ))}
-              </optgroup>
-            )}
-            <option value="__upload_new__" className="bg-slate-900 text-cyan-400 font-semibold">
-              + Upload Custom Map (PNG/JPG)...
-            </option>
-          </select>
-        </div>
+        {/* Map Selector Modal Button */}
+        <button
+          onClick={onOpenMapSelectModal}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 text-xs font-medium text-slate-200 hover:text-emerald-300 transition group"
+          title="Select Competition Map"
+        >
+          <Map className="w-3.5 h-3.5 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="max-w-[150px] truncate">
+            {customMaps.find((m) => m.id === mapId)?.name || builtinMaps.find((m) => m.id === mapId)?.name || 'Select Map'}
+          </span>
+          <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 shrink-0" />
+        </button>
 
         {/* Sensors Configurator Modal Button */}
         <button

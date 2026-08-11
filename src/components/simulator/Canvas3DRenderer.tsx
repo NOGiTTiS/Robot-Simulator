@@ -92,7 +92,7 @@ export function Canvas3DRenderer({
     const mapH_m = mapHeightMm / 1000
 
     let floorTexture: THREE.Texture
-    if (mapDef.isCustom && mapDef.imageUrl) {
+    if (mapDef.imageUrl) {
       floorTexture = new THREE.TextureLoader().load(mapDef.imageUrl)
     } else {
       const mapCanvas = generateBuiltinMapCanvas(mapDef, 2400)
