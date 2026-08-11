@@ -23,7 +23,8 @@ import {
 
 const CTYPES = new Set([
   'void', 'int', 'float', 'double', 'char', 'bool', 'boolean', 'long', 'short',
-  'unsigned', 'String', 'uint8_t', 'int8_t', 'uint16_t', 'int16_t', 'uint32_t', 'int32_t'
+  'unsigned', 'signed', 'const', 'static', 'String', 'byte', 'word', 'size_t', 'auto',
+  'uint8_t', 'int8_t', 'uint16_t', 'int16_t', 'uint32_t', 'int32_t', 'uint64_t', 'int64_t'
 ])
 
 export class Parser {
@@ -88,7 +89,7 @@ export class Parser {
 
     // Check if type declaration (variable or function declaration)
     const current = this.peek()
-    if (CTYPES.has(current.value)) {
+    if (CTYPES.has(current.value) || ['const', 'static', 'unsigned', 'signed'].includes(current.value)) {
       return this.parseVarOrFuncDecl()
     }
 
@@ -97,28 +98,70 @@ export class Parser {
   }
 
   private parseVarOrFuncDecl(): ASTNode {
-    const returnOrVarType = this.advance().value // e.g. void, int, float
-
-    // Allow unsigned int, etc.
-    let fullType = returnOrVarType
-    if (returnOrVarType === 'unsigned' && CTYPES.has(this.peek().value)) {
-      fullType += ' ' + this.advance().value
+    let fullType = ''
+    while (
+      CTYPES.has(this.peek().value) ||
+      ['const', 'static', 'unsigned', 'signed'].includes(this.peek().value)
+    ) {
+      fullType += (fullType ? ' ' : '') + this.advance().value
     }
 
-    const name = this.consume('IDENTIFIER', undefined, 'Expected function or variable name').value
+    while (this.peek().value === '*' || this.peek().value === '&') {
+      fullType += this.advance().value
+    }
 
-    // Function Declaration
+    const nameToken = this.peek()
+    if (nameToken.type !== 'IDENTIFIER') {
+      throw new Error(`Parse Error at line ${nameToken.line}:${nameToken.column} - Expected function or variable name, got ${nameToken.value}`)
+    }
+    const name = this.advance().value
+
+    // Function Declaration or Prototype
     if (this.match('PUNCTUATION', '(')) {
       const params: { type: string; name: string }[] = []
       if (!this.match('PUNCTUATION', ')')) {
         do {
-          if (CTYPES.has(this.peek().value)) {
-            const pType = this.advance().value
-            const pName = this.consume('IDENTIFIER', undefined, 'Expected parameter name').value
-            params.push({ type: pType, name: pName })
+          let pType = 'int'
+          if (
+            CTYPES.has(this.peek().value) ||
+            ['const', 'static', 'unsigned', 'signed'].includes(this.peek().value)
+          ) {
+            pType = this.advance().value
+            while (
+              CTYPES.has(this.peek().value) ||
+              ['const', 'static', 'unsigned', 'signed'].includes(this.peek().value)
+            ) {
+              pType += ' ' + this.advance().value
+            }
+            while (this.peek().value === '*' || this.peek().value === '&') {
+              pType += this.advance().value
+            }
+            if (this.peek().type === 'IDENTIFIER') {
+              const pName = this.advance().value
+              if (this.match('OPERATOR', '=')) {
+                this.parseAssignment()
+              }
+              params.push({ type: pType, name: pName })
+            }
+          } else if (this.peek().type === 'IDENTIFIER') {
+            const pName = this.advance().value
+            if (this.match('OPERATOR', '=')) {
+              this.parseAssignment()
+            }
+            params.push({ type: 'int', name: pName })
           }
         } while (this.match('PUNCTUATION', ','))
         this.consume('PUNCTUATION', ')', "Expected ')' after parameters")
+      }
+
+      if (this.match('PUNCTUATION', ';')) {
+        return {
+          type: 'FunctionDecl',
+          returnType: fullType,
+          name,
+          params,
+          body: { type: 'BlockStatement', body: [] }
+        } as FunctionDeclNode
       }
 
       const body = this.parseBlockStatement()
@@ -131,22 +174,44 @@ export class Parser {
       } as FunctionDeclNode
     }
 
-    // Variable Declaration
-    let initializer: ASTNode | null = null
-    if (this.match('OPERATOR', '=')) {
-      initializer = this.parseExpression()
+    // Variable Declaration (supports multiple comma-separated variables: int speed, time;)
+    const varDecls: VarDeclNode[] = []
+
+    const parseSingleVar = (varName: string): VarDeclNode => {
+      let initializer: ASTNode | null = null
+      if (this.match('OPERATOR', '=')) {
+        initializer = this.parseAssignment()
+      }
+      return {
+        type: 'VarDecl',
+        varType: fullType,
+        name: varName,
+        initializer
+      } as VarDeclNode
     }
 
-    if (this.match('PUNCTUATION', ';')) {
-      // Optional trailing semicolon consumed
+    varDecls.push(parseSingleVar(name))
+
+    while (this.match('PUNCTUATION', ',')) {
+      const nextToken = this.peek()
+      if (nextToken.type === 'IDENTIFIER') {
+        const nextName = this.advance().value
+        varDecls.push(parseSingleVar(nextName))
+      } else {
+        break
+      }
+    }
+
+    this.match('PUNCTUATION', ';')
+
+    if (varDecls.length === 1) {
+      return varDecls[0]
     }
 
     return {
-      type: 'VarDecl',
-      varType: fullType,
-      name,
-      initializer
-    } as VarDeclNode
+      type: 'BlockStatement',
+      body: varDecls
+    } as BlockStatementNode
   }
 
   private parseStatement(): ASTNode {
@@ -185,7 +250,7 @@ export class Parser {
       return this.parseBlockStatement()
     }
 
-    if (CTYPES.has(this.peek().value)) {
+    if (CTYPES.has(this.peek().value) || ['const', 'static', 'unsigned', 'signed'].includes(this.peek().value)) {
       return this.parseVarOrFuncDecl()
     }
 
@@ -299,7 +364,19 @@ export class Parser {
   }
 
   private parseExpression(): ASTNode {
-    return this.parseAssignment()
+    let expr = this.parseAssignment()
+
+    while (this.match('PUNCTUATION', ',')) {
+      const right = this.parseAssignment()
+      expr = {
+        type: 'BinaryExpression',
+        operator: ',',
+        left: expr,
+        right
+      } as BinaryExpressionNode
+    }
+
+    return expr
   }
 
   private parseAssignment(): ASTNode {
@@ -452,7 +529,7 @@ export class Parser {
         const args: ASTNode[] = []
         if (!this.match('PUNCTUATION', ')')) {
           do {
-            args.push(this.parseExpression())
+            args.push(this.parseAssignment())
           } while (this.match('PUNCTUATION', ','))
           this.consume('PUNCTUATION', ')', "Expected ')' after arguments")
         }

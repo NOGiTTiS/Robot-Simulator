@@ -18,6 +18,7 @@ import { Canvas3DRenderer } from './Canvas3DRenderer'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
 import { MapDefinition, SensorConfigItem } from '@/types/project'
 import { HardwareState } from '@/lib/interpreter/boards'
+import { useSensorSampler } from '@/lib/physics/mapSampler'
 
 interface SimulatorContainerProps {
   viewMode: '2D' | '3D'
@@ -48,6 +49,9 @@ export function SimulatorContainer({
   onRepositionRobot,
   onRotateRobot
 }: SimulatorContainerProps) {
+  // Continuous sensor sampler hook (updates hardware state in both 2D and 3D mode)
+  useSensorSampler(physicsState, mapDef, sensors, hwState)
+
   // Convert radians to degrees [-180, 180]
   const headingDeg = Math.round((physicsState.heading * 180) / Math.PI)
   const posXCm = (physicsState.x / 10).toFixed(1)
@@ -153,6 +157,8 @@ export function SimulatorContainer({
             physicsState={physicsState}
             mapDef={mapDef}
             boardType={boardType}
+            sensors={sensors}
+            hwState={hwState}
             onRepositionRobot={onRepositionRobot}
           />
         )}

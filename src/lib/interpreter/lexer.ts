@@ -2,9 +2,10 @@ import { Token, TokenType } from './ast'
 
 const KEYWORDS = new Set([
   'void', 'int', 'float', 'double', 'char', 'bool', 'boolean', 'long', 'short',
-  'unsigned', 'signed', 'const', 'String', 'uint8_t', 'int8_t', 'uint16_t',
-  'int16_t', 'uint32_t', 'int32_t', 'if', 'else', 'while', 'for', 'do',
-  'return', 'break', 'continue', 'true', 'false', 'HIGH', 'LOW', 'INPUT', 'OUTPUT', 'INPUT_PULLUP'
+  'unsigned', 'signed', 'const', 'static', 'String', 'byte', 'word', 'size_t', 'auto',
+  'uint8_t', 'int8_t', 'uint16_t', 'int16_t', 'uint32_t', 'int32_t', 'uint64_t', 'int64_t',
+  'if', 'else', 'while', 'for', 'do', 'return', 'break', 'continue', 'true', 'false',
+  'HIGH', 'LOW', 'INPUT', 'OUTPUT', 'INPUT_PULLUP'
 ])
 
 export class Lexer {

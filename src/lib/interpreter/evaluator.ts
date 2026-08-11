@@ -288,6 +288,7 @@ export class Evaluator {
       case '>=': return left >= right
       case '&&': return Boolean(left) && Boolean(right)
       case '||': return Boolean(left) || Boolean(right)
+      case ',': return right
       default: return 0
     }
   }

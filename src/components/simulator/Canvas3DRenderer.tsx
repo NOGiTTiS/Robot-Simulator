@@ -4,13 +4,16 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
-import { MapDefinition } from '@/types/project'
+import { MapDefinition, SensorConfigItem } from '@/types/project'
 import { generateBuiltinMapCanvas } from '@/lib/mapRenderer'
+import { HardwareState } from '@/lib/interpreter/boards'
 
 interface Canvas3DRendererProps {
   physicsState: ExtendedPhysicsState
   mapDef: MapDefinition
   boardType: string
+  sensors?: SensorConfigItem[]
+  hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
 }
 
@@ -18,6 +21,8 @@ export function Canvas3DRenderer({
   physicsState,
   mapDef,
   boardType,
+  sensors = [],
+  hwState,
   onRepositionRobot
 }: Canvas3DRendererProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
