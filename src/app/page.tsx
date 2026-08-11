@@ -106,6 +106,7 @@ export default function Home() {
   const [showTrail, setShowTrail] = useState<boolean>(true)
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
   const [panelMode, setPanelMode] = useState<'split' | 'editor' | 'simulator'>('split')
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [logs, setLogs] = useState<string[]>([
     'TUNorth Robot Simulator System v1.0 Ready',
     'Board ATOM-VX selected.'
@@ -144,6 +145,27 @@ export default function Home() {
     }, 50)
   }
 
+  const handleToggleTheme = () => {
+    setTheme((prev) => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark'
+      setLogs((logsPrev) => [...logsPrev, `Switched theme to ${nextTheme.toUpperCase()} mode 🎨`])
+      return nextTheme
+    })
+  }
+
+  // Apply light/dark class on root document element
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (theme === 'light') {
+        document.documentElement.classList.remove('dark')
+        document.documentElement.classList.add('light')
+      } else {
+        document.documentElement.classList.remove('light')
+        document.documentElement.classList.add('dark')
+      }
+    }
+  }, [theme])
+
   // 1. Auto Load Saved State on Mount
   useEffect(() => {
     const saved = loadProjectState()
@@ -177,6 +199,7 @@ export default function Home() {
       if (typeof saved.showSensorsOverlay === 'boolean') setShowSensorsOverlay(saved.showSensorsOverlay)
       if (typeof saved.showTrail === 'boolean') setShowTrail(saved.showTrail)
       if (saved.customMaps && Array.isArray(saved.customMaps)) setCustomMaps(saved.customMaps)
+      if (saved.theme) setTheme(saved.theme)
       setLogs((prev) => [...prev, 'Loaded saved project state from LocalStorage 💾'])
     }
     setIsLoaded(true)
@@ -213,11 +236,12 @@ export default function Home() {
         viewMode,
         showSensorsOverlay,
         showTrail,
-        customMaps
+        customMaps,
+        theme
       })
     }, 600)
     return () => clearTimeout(timer)
-  }, [files, activeTabId, boardType, robotSpec, customRobots, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, showSensorsOverlay, showTrail, customMaps, isLoaded])
+  }, [files, activeTabId, boardType, robotSpec, customRobots, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, showSensorsOverlay, showTrail, customMaps, theme, isLoaded])
 
   // Get active map definition (built-in or custom uploaded)
   const mapDef = customMaps.find((m) => m.id === mapId) || getMapDefinition(mapId)
@@ -633,7 +657,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
+    <div className="h-screen w-screen flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-hidden font-sans select-none">
       {/* 1. Header Bar */}
       <HeaderBar
         boardType={boardType}
@@ -659,6 +683,8 @@ export default function Home() {
         onToggleFullscreen={handleToggleFullscreen}
         panelMode={panelMode}
         onPanelModeChange={handlePanelModeChange}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* 2. Main Resizable Panels */}
@@ -677,6 +703,7 @@ export default function Home() {
               fontSize={fontSize}
               onFontSizeChange={handleFontSizeChange}
               boardType={boardType}
+              theme={theme}
             />
           }
           rightComponent={
@@ -699,6 +726,7 @@ export default function Home() {
               onOpenMapModal={() => setIsMapSelectModalOpen(true)}
               onRepositionRobot={handleRepositionRobot}
               onRotateRobot={handleRotateRobot}
+              theme={theme}
             />
           }
         />

@@ -18,6 +18,7 @@ interface Canvas2DRendererProps {
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
+  theme?: 'dark' | 'light'
 }
 
 export function Canvas2DRenderer({
@@ -30,7 +31,8 @@ export function Canvas2DRenderer({
   showTrail = true,
   sensors = [],
   hwState,
-  onRepositionRobot
+  onRepositionRobot,
+  theme = 'dark'
 }: Canvas2DRendererProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -112,7 +114,7 @@ export function Canvas2DRenderer({
     transformRef.current = { offsetX, offsetY, scale }
 
     // Clear outer background
-    ctx.fillStyle = '#020617' // Slate 950
+    ctx.fillStyle = theme === 'light' ? '#f8fafc' : '#020617'
     ctx.fillRect(0, 0, rect.width, rect.height)
 
     // Draw Map Frame Background (Custom Image or Procedural Canvas)
@@ -447,7 +449,7 @@ export function Canvas2DRenderer({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={`w-full h-full relative overflow-hidden bg-slate-950 flex items-center justify-center touch-none ${
+      className={`w-full h-full relative overflow-hidden bg-slate-100 dark:bg-slate-950 flex items-center justify-center touch-none ${
         isDragging ? 'cursor-grabbing' : isHovered ? 'cursor-grab' : 'cursor-default'
       }`}
     >

@@ -18,7 +18,9 @@ import {
   Minimize2,
   Columns,
   Code2,
-  Tv
+  Tv,
+  Sun,
+  Moon
 } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 
@@ -46,6 +48,8 @@ interface HeaderBarProps {
   onToggleFullscreen: () => void
   panelMode: 'split' | 'editor' | 'simulator'
   onPanelModeChange: (mode: 'split' | 'editor' | 'simulator') => void
+  theme?: 'dark' | 'light'
+  onToggleTheme?: () => void
 }
 
 export function HeaderBar({
@@ -68,7 +72,9 @@ export function HeaderBar({
   isFullscreen,
   onToggleFullscreen,
   panelMode,
-  onPanelModeChange
+  onPanelModeChange,
+  theme = 'dark',
+  onToggleTheme
 }: HeaderBarProps) {
   const builtinMaps = [
     { id: 'athletics-280x160', name: 'Athletics (280x160cm)' },
@@ -82,7 +88,7 @@ export function HeaderBar({
   const speeds = [1, 2, 5]
 
   return (
-    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-200 z-20 shrink-0 select-none">
+    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none">
       {/* 1. Brand & Logo */}
       <div className="flex items-center gap-2.5 min-w-max">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-white/20">
@@ -90,14 +96,14 @@ export function HeaderBar({
         </div>
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-sm bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent tracking-tight">
+            <span className="font-bold text-sm bg-gradient-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-white dark:via-slate-200 dark:to-cyan-400 bg-clip-text text-transparent tracking-tight">
               TUNorth Robot Simulator
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-cyan-950/80 text-cyan-400 border border-cyan-800/50">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-400 border border-cyan-300 dark:border-cyan-800/50">
               v1.0
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษาภาคเหนือ</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษาภาคเหนือ</p>
         </div>
       </div>
 
@@ -298,15 +304,30 @@ export function HeaderBar({
             className={`p-1.5 rounded-lg transition flex items-center gap-1 ml-1 ${
               isFullscreen
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
             }`}
           >
             {isFullscreen ? (
-              <Minimize2 className="w-4 h-4 text-cyan-300" />
+              <Minimize2 className="w-4 h-4 text-cyan-400" />
             ) : (
               <Maximize2 className="w-4 h-4" />
             )}
           </button>
+
+          {/* Light / Dark Mode Toggle Button */}
+          {onToggleTheme && (
+            <button
+              onClick={onToggleTheme}
+              title={theme === 'dark' ? 'เปลี่ยนเป็น Light Mode (สว่าง)' : 'เปลี่ยนเป็น Dark Mode (มืด)'}
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center gap-1 active:scale-95"
+            >
+              {theme === 'light' ? (
+                <Sun className="w-4 h-4 text-amber-500 fill-amber-500" />
+              ) : (
+                <Moon className="w-4 h-4 text-cyan-300" />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </header>

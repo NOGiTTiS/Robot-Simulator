@@ -15,6 +15,7 @@ export interface StoredProjectState {
   showSensorsOverlay?: boolean
   showTrail?: boolean
   customMaps: MapDefinition[]
+  theme?: 'dark' | 'light'
   lastSavedAt: number
 }
 

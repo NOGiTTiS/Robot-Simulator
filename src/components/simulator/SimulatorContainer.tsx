@@ -43,6 +43,7 @@ interface SimulatorContainerProps {
   onOpenMapModal?: () => void
   onRepositionRobot?: (x: number, y: number) => void
   onRotateRobot?: (deltaDeg: number, absoluteDeg?: number) => void
+  theme?: 'dark' | 'light'
 }
 
 export function SimulatorContainer({
@@ -63,7 +64,8 @@ export function SimulatorContainer({
   onOpenSensorConfig,
   onOpenMapModal,
   onRepositionRobot,
-  onRotateRobot
+  onRotateRobot,
+  theme = 'dark'
 }: SimulatorContainerProps) {
   // Continuous sensor sampler hook (updates hardware state in both 2D and 3D mode)
   useSensorSampler(physicsState, mapDef, sensors, hwState)
@@ -75,13 +77,13 @@ export function SimulatorContainer({
   const speedCmS = (physicsState.linearVelocity / 10).toFixed(1)
 
   return (
-    <div className="h-full flex flex-col bg-slate-950 text-slate-200 relative overflow-hidden select-none">
+    <div className="h-full flex flex-col bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 relative overflow-hidden select-none">
       {/* Canvas Top Telemetry & Controls Bar Overlay */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
         {/* Left Badge: View Mode & Visual Overlays (Sensors Overlay & Motion Trail) */}
-        <div className="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 pointer-events-auto shadow-lg">
-          <Layers className="w-4 h-4 text-indigo-400" />
-          <span className="text-xs font-semibold text-slate-200">
+        <div className="flex items-center gap-2 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 pointer-events-auto shadow-lg">
+          <Layers className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
             {viewMode} View &bull; {mapDef.name}
           </span>
           <span
@@ -137,10 +139,10 @@ export function SimulatorContainer({
         </div>
 
         {/* Center/Right Badge: Real-time Telemetry */}
-        <div className="flex items-center gap-3 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 pointer-events-auto text-xs font-mono text-slate-300 shadow-lg">
-          <div className="flex items-center gap-1 text-cyan-400">
+        <div className="flex items-center gap-3 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 pointer-events-auto text-xs font-mono text-slate-700 dark:text-slate-300 shadow-lg">
+          <div className="flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
             <Bot className="w-3.5 h-3.5" />
-            <span className="font-semibold text-slate-200">{boardType}</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">{boardType}</span>
           </div>
 
           <span className="text-slate-700">|</span>
@@ -195,6 +197,7 @@ export function SimulatorContainer({
             sensors={sensors}
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}
+            theme={theme}
           />
         ) : (
           <Canvas3DRenderer
@@ -208,6 +211,7 @@ export function SimulatorContainer({
             sensors={sensors}
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}
+            theme={theme}
           />
         )}
       </div>

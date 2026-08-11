@@ -31,24 +31,25 @@ interface CodeEditorProps {
   fontSize: number
   onFontSizeChange: (size: number | ((prev: number) => number)) => void
   boardType: string
+  theme?: 'dark' | 'light'
 }
 
 function CodeEditorSkeleton() {
   return (
-    <div className="w-full h-full bg-slate-950 flex flex-col justify-between p-4 font-mono select-none animate-pulse">
+    <div className="w-full h-full bg-white dark:bg-slate-950 flex flex-col justify-between p-4 font-mono select-none animate-pulse">
       <div className="space-y-2">
-        <div className="h-4 bg-slate-800/60 rounded w-1/3" />
-        <div className="h-4 bg-slate-800/40 rounded w-1/2" />
-        <div className="h-4 bg-slate-800/30 rounded w-2/3" />
-        <div className="h-4 bg-slate-800/50 rounded w-2/5" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-800/60 rounded w-1/3" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-800/40 rounded w-1/2" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-800/30 rounded w-2/3" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-800/50 rounded w-2/5" />
       </div>
-      <div className="flex items-center justify-center gap-2 text-xs text-cyan-400/80 bg-slate-900/60 py-2 rounded-lg border border-cyan-900/30">
-        <Sparkles className="w-4 h-4 animate-spin text-cyan-400" />
+      <div className="flex items-center justify-center gap-2 text-xs text-cyan-600 dark:text-cyan-400/80 bg-slate-100 dark:bg-slate-900/60 py-2 rounded-lg border border-cyan-200 dark:border-cyan-900/30">
+        <Sparkles className="w-4 h-4 animate-spin text-cyan-500" />
         <span>กำลังโหลด Monaco C++ Editor...</span>
       </div>
       <div className="space-y-2">
-        <div className="h-4 bg-slate-800/40 rounded w-1/4" />
-        <div className="h-4 bg-slate-800/50 rounded w-1/3" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-800/40 rounded w-1/4" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-800/50 rounded w-1/3" />
       </div>
     </div>
   )
@@ -64,7 +65,8 @@ export function CodeEditor({
   onChangeCode,
   fontSize,
   onFontSizeChange,
-  boardType
+  boardType,
+  theme = 'dark'
 }: CodeEditorProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null)
@@ -322,9 +324,9 @@ export function CodeEditor({
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1)
 
   return (
-    <div className="h-full flex flex-col bg-slate-950 text-slate-200 border-r border-slate-900 select-none">
+    <div className="h-full flex flex-col bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-900 select-none">
       {/* 1. Arduino IDE Style Multi-Tab Header Bar */}
-      <div className="h-10 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between px-2 shrink-0 gap-2 overflow-hidden">
+      <div className="h-10 bg-slate-100 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-2 shrink-0 gap-2 overflow-hidden">
         {/* Scrollable Tabs List */}
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-1 flex-1">
           {files.map((tab) => {
@@ -339,8 +341,8 @@ export function CodeEditor({
                 onDoubleClick={(e) => handleStartRename(tab, e)}
                 className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono transition cursor-pointer shrink-0 border-t border-x ${
                   isActive
-                    ? 'bg-slate-950 text-cyan-300 border-slate-800 font-semibold shadow-sm shadow-cyan-500/10'
-                    : 'bg-slate-900/60 text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 border-transparent'
+                    ? 'bg-white dark:bg-slate-950 text-cyan-600 dark:text-cyan-300 border-slate-300 dark:border-slate-800 font-semibold shadow-sm shadow-cyan-500/10'
+                    : 'bg-slate-200/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-300/80 dark:hover:bg-slate-800/80 hover:text-slate-800 dark:hover:text-slate-200 border-transparent'
                 }`}
               >
                 {tab.name.endsWith('.ino') ? (
@@ -508,7 +510,7 @@ export function CodeEditor({
             key={activeTab.id}
             height="100%"
             defaultLanguage="cpp"
-            theme="vs-dark"
+            theme={theme === 'dark' ? 'vs-dark' : 'vs'}
             value={currentCode}
             onChange={(val) => onChangeCode(activeTab.id, val || '')}
             onMount={handleEditorMount}

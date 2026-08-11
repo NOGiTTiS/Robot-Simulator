@@ -19,6 +19,7 @@ interface Canvas3DRendererProps {
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
+  theme?: 'dark' | 'light'
 }
 
 export function Canvas3DRenderer({
@@ -31,7 +32,8 @@ export function Canvas3DRenderer({
   showTrail = true,
   sensors = [],
   hwState,
-  onRepositionRobot
+  onRepositionRobot,
+  theme = 'dark'
 }: Canvas3DRendererProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const robotGroupRef = useRef<THREE.Group | null>(null)
@@ -59,8 +61,9 @@ export function Canvas3DRenderer({
 
     // 1. Create Three.js Scene, Camera, Renderer
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x020617) // Slate 950
-    scene.fog = new THREE.FogExp2(0x020617, 0.1)
+    const bgColor = theme === 'light' ? 0xf8fafc : 0x020617
+    scene.background = new THREE.Color(bgColor)
+    scene.fog = new THREE.FogExp2(bgColor, 0.1)
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 30)
     camera.position.set(0, 3.5, 3.5)
@@ -355,7 +358,7 @@ export function Canvas3DRenderer({
         container.removeChild(renderer.domElement)
       }
     }
-  }, [mapDef, boardType, robotSpec, sensors])
+  }, [mapDef, boardType, robotSpec, sensors, theme])
 
   // Update 3D Robot Position & Orientation from Physics State
   useEffect(() => {

@@ -28,17 +28,17 @@ export function DrawerConsole({
 
   return (
     <div
-      className={`glass-panel border-t border-slate-800 transition-all duration-300 flex flex-col shrink-0 z-20 ${
+      className={`glass-panel border-t border-slate-200 dark:border-slate-800 transition-all duration-300 flex flex-col shrink-0 z-20 ${
         isOpen ? 'h-52' : 'h-8'
       }`}
     >
       {/* Console Header / Tabs Bar */}
-      <div className="h-8 bg-slate-900/90 px-3 flex items-center justify-between text-xs border-b border-slate-800 shrink-0 select-none">
+      <div className="h-8 bg-slate-100/90 dark:bg-slate-900/90 px-3 flex items-center justify-between text-xs border-b border-slate-200 dark:border-slate-800 shrink-0 select-none">
         <div className="flex items-center gap-1">
           {/* Collapse/Expand button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition mr-1"
+            className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition mr-1"
           >
             {isOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
           </button>
@@ -51,8 +51,8 @@ export function DrawerConsole({
             }}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-t text-xs font-medium transition ${
               activeTab === 'serial' && isOpen
-                ? 'bg-slate-950 text-cyan-400 border-t-2 border-cyan-400'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white dark:bg-slate-950 text-cyan-600 dark:text-cyan-400 border-t-2 border-cyan-500 dark:border-cyan-400'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -66,14 +66,14 @@ export function DrawerConsole({
             }}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-t text-xs font-medium transition ${
               activeTab === 'sensors' && isOpen
-                ? 'bg-slate-950 text-emerald-400 border-t-2 border-emerald-400'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 border-t-2 border-emerald-500 dark:border-emerald-400'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Activity className="w-3.5 h-3.5" />
             <span>Sensor Debug</span>
             {sensors.filter((s) => s.enabled).length > 0 && (
-              <span className="text-[9px] px-1 rounded-full bg-emerald-950 text-emerald-400 font-mono">
+              <span className="text-[9px] px-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-mono">
                 {sensors.filter((s) => s.enabled).length}
               </span>
             )}
@@ -86,8 +86,8 @@ export function DrawerConsole({
             }}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-t text-xs font-medium transition ${
               activeTab === 'telemetry' && isOpen
-                ? 'bg-slate-950 text-indigo-400 border-t-2 border-indigo-400'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white dark:bg-slate-950 text-indigo-600 dark:text-indigo-400 border-t-2 border-indigo-500 dark:border-indigo-400'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Gauge className="w-3.5 h-3.5" />
@@ -97,12 +97,12 @@ export function DrawerConsole({
 
         {/* Action Controls right */}
         {isOpen && (
-          <div className="flex items-center gap-2 text-slate-400">
+          <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
             <button
               onClick={() => setAutoScroll(!autoScroll)}
               title="Toggle Auto-Scroll"
               className={`flex items-center gap-1 text-[11px] px-2 py-0.5 rounded transition ${
-                autoScroll ? 'text-cyan-400 bg-cyan-950/40' : 'hover:text-slate-200'
+                autoScroll ? 'text-cyan-600 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-950/40' : 'hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <ArrowDownCircle className="w-3 h-3" />
@@ -113,7 +113,7 @@ export function DrawerConsole({
               <button
                 onClick={onClearLogs}
                 title="Clear Logs"
-                className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded hover:bg-slate-800 hover:text-rose-400 transition"
+                className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-rose-600 dark:hover:text-rose-400 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear</span>
@@ -125,7 +125,7 @@ export function DrawerConsole({
 
       {/* Drawer Body Content */}
       {isOpen && (
-        <div className="flex-1 bg-slate-950/90 p-3 overflow-y-auto font-mono text-xs text-slate-300">
+        <div className="flex-1 bg-white/90 dark:bg-slate-950/90 p-3 overflow-y-auto font-mono text-xs text-slate-700 dark:text-slate-300">
           {activeTab === 'serial' && (
             <div className="space-y-1">
               {logs.length === 0 ? (
