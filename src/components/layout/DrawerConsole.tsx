@@ -20,7 +20,7 @@ export function DrawerConsole({
   hwState,
   physicsState
 }: DrawerConsoleProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(true)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<'serial' | 'sensors' | 'telemetry'>('serial')
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
