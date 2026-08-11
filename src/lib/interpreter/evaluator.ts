@@ -97,6 +97,9 @@ export class Evaluator {
         return
       }
 
+      case 'EmptyStatement':
+        return undefined
+
       case 'IfStatement': {
         const cond = await this.evaluate(node.test, env)
         if (cond) {

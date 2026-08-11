@@ -18,7 +18,8 @@ import {
   LiteralNode,
   ReturnStatementNode,
   BreakStatementNode,
-  ContinueStatementNode
+  ContinueStatementNode,
+  EmptyStatementNode
 } from './ast'
 
 const CTYPES = new Set([
@@ -252,6 +253,10 @@ export class Parser {
 
     if (CTYPES.has(this.peek().value) || ['const', 'static', 'unsigned', 'signed'].includes(this.peek().value)) {
       return this.parseVarOrFuncDecl()
+    }
+
+    if (this.match('PUNCTUATION', ';')) {
+      return { type: 'EmptyStatement' } as EmptyStatementNode
     }
 
     // Expression Statement

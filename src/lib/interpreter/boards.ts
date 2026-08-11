@@ -39,6 +39,39 @@ export function resetHardwareState(hwState: HardwareState) {
   hwState.pinModes = {}
 }
 
+let sharedAudioCtx: AudioContext | null = null
+
+function playBuzzerTone(frequency: number = 1000, durationMs: number = 100) {
+  if (typeof window === 'undefined') return
+  try {
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (!AudioCtx) return
+    if (!sharedAudioCtx) {
+      sharedAudioCtx = new AudioCtx()
+    }
+    if (sharedAudioCtx.state === 'suspended') {
+      sharedAudioCtx.resume()
+    }
+
+    const osc = sharedAudioCtx.createOscillator()
+    const gain = sharedAudioCtx.createGain()
+
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(frequency, sharedAudioCtx.currentTime)
+
+    gain.gain.setValueAtTime(0.12, sharedAudioCtx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, sharedAudioCtx.currentTime + durationMs / 1000)
+
+    osc.connect(gain)
+    gain.connect(sharedAudioCtx.destination)
+
+    osc.start()
+    osc.stop(sharedAudioCtx.currentTime + durationMs / 1000)
+  } catch (err) {
+    // Audio autoplay policy fallback
+  }
+}
+
 export function bindBoardApis(
   boardType: string,
   registerFn: (name: string, fn: (...args: any[]) => any) => void,
@@ -59,15 +92,15 @@ export function bindBoardApis(
     if (ch === 2) hwState.rightMotorSpeed = clamped
   }
 
-  // Universal Movement & Control Bindings (Works across all boards)
+  // ATOM-VX / POP32 / Arduino Common Motion Commands
   registerFn('fd', (speed: number = 50) => setDrive(speed, speed))
-  registerFn('fd2', (speedL: number = 50, speedR?: number) => setDrive(speedL, speedR ?? speedL))
+  registerFn('fd2', (lSpeed: number = 50, rSpeed: number = 50) => setDrive(lSpeed, rSpeed))
   registerFn('bk', (speed: number = 50) => setDrive(-speed, -speed))
-  registerFn('bk2', (speedL: number = 50, speedR?: number) => setDrive(-speedL, -(speedR ?? speedL)))
-  registerFn('tl', (speed: number = 50) => setDrive(0, speed))
-  registerFn('tr', (speed: number = 50) => setDrive(speed, 0))
-  registerFn('sl', (speed: number = 50) => setDrive(-speed, speed))
-  registerFn('sr', (speed: number = 50) => setDrive(speed, -speed))
+  registerFn('bk2', (lSpeed: number = 50, rSpeed: number = 50) => setDrive(-lSpeed, -rSpeed))
+  registerFn('tl', (speed: number = 50) => setDrive(-speed, speed))
+  registerFn('tr', (speed: number = 50) => setDrive(speed, -speed))
+  registerFn('sl', (speed: number = 50) => setDrive(0, speed))
+  registerFn('sr', (speed: number = 50) => setDrive(speed, 0))
   registerFn('ao', () => setDrive(0, 0))
   registerFn('motor', (ch: number, speed: number) => setMotor(ch, speed))
   registerFn('analog', (pin: number) => hwState.analogPins[pin] ?? 500)
@@ -75,14 +108,47 @@ export function bindBoardApis(
   registerFn('gl', (pin: number = 0) => hwState.analogPins[pin] ?? 500)
   registerFn('knob', () => hwState.knobValue)
 
-  // POP32 Sound / Beep
+  // POP32 / ATOM / Arduino Sound & Beep APIs
+  registerFn('beep', (param1?: number, param2?: number) => {
+    let freq = 1000
+    let duration = 100
+
+    if (typeof param1 === 'number' && typeof param2 === 'number') {
+      freq = param1
+      duration = param2
+    } else if (typeof param1 === 'number') {
+      duration = param1
+    }
+
+    hwState.soundFreq = freq
+    hwState.soundDuration = duration
+    playBuzzerTone(freq, duration)
+  })
+
   registerFn('sound', (freq: number = 1000, duration: number = 100) => {
     hwState.soundFreq = freq
     hwState.soundDuration = duration
+    playBuzzerTone(freq, duration)
   })
-  registerFn('beep', () => {
-    hwState.soundFreq = 1000
-    hwState.soundDuration = 100
+
+  registerFn('tone', (pinOrFreq: number, freqOrDur?: number, duration?: number) => {
+    let freq = 1000
+    let dur = 100
+    if (typeof duration === 'number') {
+      freq = freqOrDur || 1000
+      dur = duration
+    } else if (typeof freqOrDur === 'number') {
+      freq = pinOrFreq
+      dur = freqOrDur
+    }
+    hwState.soundFreq = freq
+    hwState.soundDuration = dur
+    playBuzzerTone(freq, dur)
+  })
+
+  registerFn('noTone', () => {
+    hwState.soundFreq = 0
+    hwState.soundDuration = 0
   })
 
   // Arduino Standard Functions

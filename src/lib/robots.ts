@@ -2,9 +2,9 @@ import { RobotSpec, SensorConfigItem } from '@/types/project'
 
 export const BUILTIN_ROBOT_PRESETS: RobotSpec[] = [
   {
-    id: 'atom-vx-std',
-    name: 'PT-BOT ATOM-VX Standard',
-    boardType: 'ATOM-VX',
+    id: 'pop32-line-2ch',
+    name: 'POP32i Line Follower 2 ch',
+    boardType: 'POP32i',
     bodyWidth: 140,
     bodyLength: 160,
     wheelBase: 140,
@@ -16,15 +16,68 @@ export const BUILTIN_ROBOT_PRESETS: RobotSpec[] = [
     color: '#06b6d4',
     presetType: 'standard',
     isCustom: false,
-    description: 'หุ่นยนต์เพื่อการศึกษามาตรฐาน สมดุลดีเยี่ยมสำหรับภารกิจทั่วไปและเดินตามเส้น',
+    description: 'หุ่นยนต์เดินตามเส้นแบบ 2 เซนเซอร์ (2-Channel) พร้อมบอร์ด POP32/POP32i ควบคุมง่ายและตอบสนองคงที่',
     defaultSensors: [
-      { id: 's-atom-0', type: 'IR_LINE', pin: 0, offsetX: 70, offsetY: -40, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-atom-1', type: 'IR_LINE', pin: 1, offsetX: 70, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-atom-2', type: 'IR_LINE', pin: 2, offsetX: 70, offsetY: 0, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-atom-3', type: 'IR_LINE', pin: 3, offsetX: 70, offsetY: 20, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-atom-4', type: 'IR_LINE', pin: 4, offsetX: 70, offsetY: 40, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-atom-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 80, offsetY: 0, angle: 0, enabled: true },
-      { id: 's-atom-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+      { id: 's-pop2-0', type: 'IR_LINE', pin: 0, offsetX: 70, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop2-1', type: 'IR_LINE', pin: 1, offsetX: 70, offsetY: 20, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop2-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 80, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-pop2-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+    ]
+  },
+  {
+    id: 'pop32-line-8ch',
+    name: 'POP32i Line Follower 8 ch',
+    boardType: 'POP32i',
+    bodyWidth: 170,
+    bodyLength: 180,
+    wheelBase: 160,
+    wheelRadius: 32,
+    maxSpeed: 900,
+    accelRate: 2800,
+    decelRate: 3400,
+    frictionCoeff: 0.92,
+    color: '#10b981',
+    presetType: 'speed',
+    isCustom: false,
+    description: 'หุ่นยนต์เดินตามเส้นความเร็วสูง 8 เซนเซอร์ อ่านค่าสีพื้นและเส้นทางได้อย่างแม่นยำและละเอียดสูง',
+    defaultSensors: [
+      { id: 's-pop8-0', type: 'IR_LINE', pin: 0, offsetX: 80, offsetY: -70, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-1', type: 'IR_LINE', pin: 1, offsetX: 80, offsetY: -50, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-2', type: 'IR_LINE', pin: 2, offsetX: 80, offsetY: -30, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-3', type: 'IR_LINE', pin: 3, offsetX: 80, offsetY: -10, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-4', type: 'IR_LINE', pin: 4, offsetX: 80, offsetY: 10, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-5', type: 'IR_LINE', pin: 5, offsetX: 80, offsetY: 30, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-6', type: 'IR_LINE', pin: 6, offsetX: 80, offsetY: 50, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-7', type: 'IR_LINE', pin: 7, offsetX: 80, offsetY: 70, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-pop8-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 88, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-pop8-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+    ]
+  },
+  {
+    id: 'pop32-wall-line-6ch',
+    name: 'POP32i Wall Line Track 6 ch',
+    boardType: 'POP32i',
+    bodyWidth: 160,
+    bodyLength: 180,
+    wheelBase: 150,
+    wheelRadius: 30,
+    maxSpeed: 700,
+    accelRate: 2200,
+    decelRate: 2800,
+    frictionCoeff: 0.9,
+    color: '#6366f1',
+    presetType: 'standard',
+    isCustom: false,
+    description: 'หุ่นยนต์เดินตามเส้นหน้า-หลัง 6 เซนเซอร์ (Front 4 ch, Rear 2 ch) ออกแบบพิเศษสำหรับสนาม Wall Line Track',
+    defaultSensors: [
+      { id: 's-wall-0', type: 'IR_LINE', pin: 0, offsetX: 80, offsetY: -45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-wall-1', type: 'IR_LINE', pin: 1, offsetX: 80, offsetY: -15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-wall-2', type: 'IR_LINE', pin: 2, offsetX: 80, offsetY: 15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-wall-3', type: 'IR_LINE', pin: 3, offsetX: 80, offsetY: 45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-wall-4', type: 'IR_LINE', pin: 4, offsetX: -80, offsetY: -30, angle: 180, enabled: true, colorThreshold: 400 },
+      { id: 's-wall-5', type: 'IR_LINE', pin: 5, offsetX: -80, offsetY: 30, angle: 180, enabled: true, colorThreshold: 400 },
+      { id: 's-wall-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 85, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-wall-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
     ]
   },
   {
@@ -35,75 +88,50 @@ export const BUILTIN_ROBOT_PRESETS: RobotSpec[] = [
     bodyLength: 200,
     wheelBase: 170,
     wheelRadius: 35,
-    maxSpeed: 750,
-    accelRate: 2400,
-    decelRate: 3000,
+    maxSpeed: 800,
+    accelRate: 2600,
+    decelRate: 3200,
     frictionCoeff: 0.98,
     color: '#f59e0b',
     presetType: 'sumo',
     isCustom: false,
-    description: 'หุ่นยนต์ซูโม่ขนาดใหญ่ แรงบิดและการยึดเกาะสนามสูง เหมาะสำหรับดันวัตถุและงานความเสถียรสูง',
+    description: 'หุ่นยนต์ซูโม่ขนาดใหญ่ แรงบิดและการยึดเกาะสนามสูง พร้อมเซนเซอร์ขอบสนาม 4 จุดและ TOF 3 ทิศทาง',
     defaultSensors: [
-      { id: 's-pop-0', type: 'IR_LINE', pin: 0, offsetX: 90, offsetY: -60, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-pop-1', type: 'IR_LINE', pin: 1, offsetX: 90, offsetY: -36, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-pop-2', type: 'IR_LINE', pin: 2, offsetX: 90, offsetY: -12, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-pop-3', type: 'IR_LINE', pin: 3, offsetX: 90, offsetY: 12, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-pop-4', type: 'IR_LINE', pin: 4, offsetX: 90, offsetY: 36, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-pop-5', type: 'IR_LINE', pin: 5, offsetX: 90, offsetY: 60, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-pop-tof-front', type: 'DISTANCE_TOF', pin: 8, offsetX: 95, offsetY: 0, angle: 0, enabled: true },
-      { id: 's-pop-tof-left', type: 'DISTANCE_TOF', pin: 7, offsetX: 85, offsetY: -50, angle: -30, enabled: true },
-      { id: 's-pop-tof-right', type: 'DISTANCE_TOF', pin: 6, offsetX: 85, offsetY: 50, angle: 30, enabled: true },
-      { id: 's-pop-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+      { id: 's-sumo-0', type: 'IR_LINE', pin: 0, offsetX: 90, offsetY: -60, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-sumo-1', type: 'IR_LINE', pin: 1, offsetX: 90, offsetY: 60, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-sumo-2', type: 'IR_LINE', pin: 2, offsetX: -90, offsetY: -60, angle: 180, enabled: true, colorThreshold: 400 },
+      { id: 's-sumo-3', type: 'IR_LINE', pin: 3, offsetX: -90, offsetY: 60, angle: 180, enabled: true, colorThreshold: 400 },
+      { id: 's-sumo-tof-fwd', type: 'DISTANCE_TOF', pin: 8, offsetX: 95, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-sumo-tof-lft', type: 'DISTANCE_TOF', pin: 7, offsetX: 85, offsetY: -50, angle: -30, enabled: true },
+      { id: 's-sumo-tof-rgt', type: 'DISTANCE_TOF', pin: 6, offsetX: 85, offsetY: 50, angle: 30, enabled: true },
+      { id: 's-sumo-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
     ]
   },
   {
-    id: 'micromouse-esp32',
-    name: 'ESP32 MicroMouse Racer',
-    boardType: 'ESP32',
-    bodyWidth: 100,
-    bodyLength: 120,
-    wheelBase: 100,
-    wheelRadius: 24,
-    maxSpeed: 1100,
-    accelRate: 3600,
-    decelRate: 4200,
-    frictionCoeff: 0.85,
-    color: '#10b981',
-    presetType: 'speed',
-    isCustom: false,
-    description: 'หุ่นยนต์จิ๋วความเร็วสูง อัตราเร่งทรงพลัง และการเลี้ยวที่ฉับไว เหมาะกับการแข่งความเร็ว',
-    defaultSensors: [
-      { id: 's-mm-0', type: 'IR_LINE', pin: 0, offsetX: 50, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-mm-1', type: 'IR_LINE', pin: 1, offsetX: 50, offsetY: 0, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-mm-2', type: 'IR_LINE', pin: 2, offsetX: 50, offsetY: 20, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-mm-tof-fwd', type: 'DISTANCE_TOF', pin: 8, offsetX: 55, offsetY: 0, angle: 0, enabled: true },
-      { id: 's-mm-tof-lft', type: 'DISTANCE_TOF', pin: 7, offsetX: 40, offsetY: -35, angle: -45, enabled: true },
-      { id: 's-mm-tof-rgt', type: 'DISTANCE_TOF', pin: 6, offsetX: 40, offsetY: 35, angle: 45, enabled: true },
-      { id: 's-mm-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
-    ]
-  },
-  {
-    id: 'nano-explorer',
-    name: 'Arduino Nano Crawler',
-    boardType: 'NANO',
-    bodyWidth: 130,
-    bodyLength: 150,
-    wheelBase: 130,
-    wheelRadius: 28,
-    maxSpeed: 480,
-    accelRate: 1400,
-    decelRate: 2000,
-    frictionCoeff: 0.92,
-    color: '#6366f1',
+    id: 'pop32-move-can',
+    name: 'POP32i Move The Can',
+    boardType: 'POP32i',
+    bodyWidth: 160,
+    bodyLength: 180,
+    wheelBase: 150,
+    wheelRadius: 32,
+    maxSpeed: 750,
+    accelRate: 2200,
+    decelRate: 2800,
+    frictionCoeff: 0.94,
+    color: '#a855f7',
     presetType: 'standard',
     isCustom: false,
-    description: 'หุ่นยนต์เรียนรู้ไมโครคอนโทรลเลอร์พื้นฐาน ความเร็วปานกลาง ควบคุมง่ายและคงที่',
+    description: 'หุ่นยนต์ภารกิจค้นหาและย้ายกระป๋อง (Move The Can) พร้อมเซนเซอร์ระยะทาง TOF สแกนกระป๋องและเซนเซอร์อ่านเส้นทาง',
     defaultSensors: [
-      { id: 's-nano-0', type: 'IR_LINE', pin: 0, offsetX: 65, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-nano-1', type: 'IR_LINE', pin: 1, offsetX: 65, offsetY: 0, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-nano-2', type: 'IR_LINE', pin: 2, offsetX: 65, offsetY: 20, angle: 0, enabled: true, colorThreshold: 400 },
-      { id: 's-nano-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 70, offsetY: 0, angle: 0, enabled: true },
-      { id: 's-nano-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+      { id: 's-can-0', type: 'IR_LINE', pin: 0, offsetX: 80, offsetY: -45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-can-1', type: 'IR_LINE', pin: 1, offsetX: 80, offsetY: -15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-can-2', type: 'IR_LINE', pin: 2, offsetX: 80, offsetY: 15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-can-3', type: 'IR_LINE', pin: 3, offsetX: 80, offsetY: 45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-can-tof-fwd', type: 'DISTANCE_TOF', pin: 8, offsetX: 88, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-can-tof-lft', type: 'DISTANCE_TOF', pin: 7, offsetX: 80, offsetY: -40, angle: -20, enabled: true },
+      { id: 's-can-tof-rgt', type: 'DISTANCE_TOF', pin: 6, offsetX: 80, offsetY: 40, angle: 20, enabled: true },
+      { id: 's-can-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
     ]
   }
 ]
@@ -155,6 +183,13 @@ export function syncSensorsWithRobotDimensions(
   return sensors.map((s) => {
     // If sensor was near the front nose, adjust offsetX to match new nose length
     if (s.type === 'IR_LINE') {
+      if (s.offsetX < 0) {
+        return {
+          ...s,
+          offsetX: -noseX,
+          offsetY: Math.max(-maxOffsetY, Math.min(maxOffsetY, s.offsetY))
+        }
+      }
       return {
         ...s,
         offsetX: noseX,

@@ -19,6 +19,7 @@ export type ASTNode =
   | FunctionDeclNode
   | VarDeclNode
   | BlockStatementNode
+  | EmptyStatementNode
   | IfStatementNode
   | WhileStatementNode
   | ForStatementNode
@@ -33,6 +34,10 @@ export type ASTNode =
   | ReturnStatementNode
   | BreakStatementNode
   | ContinueStatementNode
+
+export interface EmptyStatementNode {
+  type: 'EmptyStatement'
+}
 
 export interface ProgramNode {
   type: 'Program'
