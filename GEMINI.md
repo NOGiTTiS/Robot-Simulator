@@ -51,8 +51,8 @@ D:\RobotSIM
 ---
 
 ## 🤖 5. บอร์ดหุ่นยนต์ที่รองรับ (Supported Hardware)
-1. **PT-BOT ATOM-VX**: `fd()`, `bk()`, `tl()`, `tr()`, `ao()`, `motor()`, `analog()`, `in()`, `gl()`, `knob()`
-2. **POP32 / POP32i**: `motor()`, `fd()`, `bk()`, `tl()`, `tr()`, `ao()`, `analog()`, `in()`, `sound()`
+1. **PT-BOT ATOM-VX**: `fd()`, `fd2()`, `bk()`, `bk2()`, `tl()`, `tr()`, `ao()`, `motor()`, `analog()`, `in()`, `gl()`, `knob()`
+2. **POP32 / POP32i**: `motor()`, `fd()`, `fd2()`, `bk()`, `bk2()`, `tl()`, `tr()`, `ao()`, `analog()`, `in()`, `sound()`
 3. **Arduino Nano (ATmega328P)**: `pinMode()`, `digitalWrite()`, `digitalRead()`, `analogRead()`, `analogWrite()`
 4. **ESP32**: High speed processing & multi-tasking
 

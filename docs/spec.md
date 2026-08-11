@@ -32,12 +32,21 @@
 ## 2. Data Model & Schema Definitions
 
 ```typescript
-// 2.1 Project & Code File Model
+// 2.1 Project & Code File Model (Arduino IDE Multi-Tab Support)
+export interface CodeTab {
+  id: string;
+  name: string;
+  code: string;
+  isMain?: boolean;
+}
+
 export interface RobotProject {
   id: string;
   name: string;
   boardType: 'ATOM-VX' | 'POP32i' | 'NANO' | 'ESP32';
   code: string;
+  files?: CodeTab[];
+  activeTabId?: string;
   mapId: string;
   sensorConfig: SensorConfiguration;
   fontSize: number;
@@ -104,12 +113,14 @@ export interface RobotPhysicsState {
 
 ## 3. ฟีเจอร์ทั้งหมดพร้อม Acceptance Criteria (AC)
 
-### Feature 1: Next.js 16 Shell & Resizable Code Editor
-- **รายละเอียด**: หน้าจอหลักพัฒนาด้วย Next.js 16 พร้อม Monaco Editor สำหรับเขียน C++
+### Feature 1: Next.js 16 Shell & Resizable Code Editor (Arduino IDE Multi-Tab)
+- **รายละเอียด**: หน้าจอหลักพัฒนาด้วย Next.js 16 พร้อม Monaco Editor สำหรับเขียน C++ / Arduino ในรูปแบบ Multi-Tab
 - **Acceptance Criteria (AC)**:
   - [x] **AC 1.1**: หน้าจอถูกแบ่งเป็น 2 ฝั่ง (ซ้าย: Editor, ขวา: Simulator) โดยมีด้ามจับ (Splitter) ให้ลากปรับขนาดความกว้างของฝั่งซ้าย-ขวาได้แบบ Real-time
   - [x] **AC 1.2**: บนแถบเครื่องมือของ Editor มีปุ่มปรับขนาดฟอนต์ `A+`, `A-` และ `Reset` ซึ่งเมื่อกดแล้ว ขนาดตัวอักษรใน Monaco Editor จะเปลี่ยนแปลงทันที (ช่วง 10px - 32px)
   - [x] **AC 1.3**: Monaco Editor แสดงผล C++ Syntax Highlighting และระบบแนะนำโค้ด (IntelliSense) สำหรับคำสั่งควบคุมหุ่นยนต์ เช่น `fd()`, `bk()`, `tl()`, `tr()`, `sl()`, `sr()`, `motor()`, `analog()` อย่างถูกต้อง
+  - [x] **AC 1.4**: รองรับระบบ Multi-Tab สไตล์ Arduino IDE โดยแท็บเริ่มต้นคือ `main.ino` และสามารถเพิ่ม (`+`), ลบ (`x`), และเปลี่ยนชื่อ (Rename) แท็บไฟล์ได้อย่างอิสระ
+  - [x] **AC 1.5**: เมื่อสั่ง Run Simulation ระบบจะ Concatenate รวมโค้ดจากทุกแท็บ (โดยแท็บหลัก `main.ino` ขึ้นก่อน แล้วต่อด้วยแท็บอื่นๆ) ส่งให้ C++ Interpreter ประมวลผลเสมือนคอมไพล์โปรเจกต์ Arduino IDE จริง
 
 ### Feature 2: Client-side C++ Interpreter & Board API Engine
 - **รายละเอียด**: ตัวแปลและรันโค้ดภาษา C++ / Arduino ใน Browser โดยไม่ต้องใช้ Server
@@ -174,6 +185,7 @@ export interface RobotPhysicsState {
 - [x] 1.4 ติดตั้งและตั้งค่า Monaco Editor Component สำหรับภาษา C++ / Arduino
 - [x] 1.5 พัฒนาระบบ Toolbar ปรับขนาดตัวอักษรใน Editor (ปุ่ม `A+`, `A-`, `Reset` ช่วง 10px - 32px)
 - [x] 1.6 ทำระบบบันทึกค่าการปรับขนาดหน้าจอและขนาดฟอนต์ลง LocalStorage
+- [x] 1.7 พัฒนาระบบ Arduino IDE Multi-Tab Editor (เปลี่ยนไฟล์หลักเป็น `main.ino`, เพิ่ม/ลบ/เปลี่ยนชื่อแท็บ และการรวมโค้ดรัน Simulation)
 
 ### 📌 Phase 2: C++ Interpreter & Board API Engine
 เน้นระบบการแปลและประมวลผลโค้ด C++ ใน Browser และการสร้าง API ของบอร์ดหุ่นยนต์

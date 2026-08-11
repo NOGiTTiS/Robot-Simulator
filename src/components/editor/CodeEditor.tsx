@@ -123,11 +123,27 @@ export function CodeEditor({
             range
           },
           {
+            label: 'fd2(speedL, speedR)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'fd2(${1:50}, ${2:50});',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Move robot forward with individual left and right speeds (-100 to 100)',
+            range
+          },
+          {
             label: 'bk(speed)',
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'bk(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             documentation: 'Move robot backward with speed (-100 to 100)',
+            range
+          },
+          {
+            label: 'bk2(speedL, speedR)',
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: 'bk2(${1:50}, ${2:50});',
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Move robot backward with individual left and right speeds (-100 to 100)',
             range
           },
           {

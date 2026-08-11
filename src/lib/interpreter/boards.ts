@@ -61,7 +61,9 @@ export function bindBoardApis(
 
   // Universal Movement & Control Bindings (Works across all boards)
   registerFn('fd', (speed: number = 50) => setDrive(speed, speed))
+  registerFn('fd2', (speedL: number = 50, speedR?: number) => setDrive(speedL, speedR ?? speedL))
   registerFn('bk', (speed: number = 50) => setDrive(-speed, -speed))
+  registerFn('bk2', (speedL: number = 50, speedR?: number) => setDrive(-speedL, -(speedR ?? speedL)))
   registerFn('tl', (speed: number = 50) => setDrive(0, speed))
   registerFn('tr', (speed: number = 50) => setDrive(speed, 0))
   registerFn('sl', (speed: number = 50) => setDrive(-speed, speed))
