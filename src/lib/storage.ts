@@ -1,4 +1,4 @@
-import { MapDefinition, SensorConfiguration, CodeTab } from '@/types/project'
+import { MapDefinition, SensorConfiguration, CodeTab, RobotSpec } from '@/types/project'
 
 export interface StoredProjectState {
   code: string
@@ -7,6 +7,8 @@ export interface StoredProjectState {
   boardType: string
   mapId: string
   sensorConfig: SensorConfiguration
+  robotSpec?: RobotSpec
+  customRobots?: RobotSpec[]
   fontSize: number
   speedMultiplier: number
   viewMode: '2D' | '3D'

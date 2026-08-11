@@ -5,6 +5,9 @@ export interface RobotPhysicalConfig {
   accelRate: number // mm/s^2 acceleration ramping
   decelRate: number // mm/s^2 deceleration ramping
   frictionCoeff: number // surface friction (0.0 to 1.0)
+  bodyWidth?: number // mm (chassis width)
+  bodyLength?: number // mm (chassis length)
+  color?: string // hex color code
 }
 
 export interface ExtendedPhysicsState {
@@ -29,7 +32,10 @@ export const DEFAULT_PHYSICS_CONFIG: RobotPhysicalConfig = {
   maxSpeed: 600, // 60 cm/s
   accelRate: 1800, // Reach top speed in ~0.33s
   decelRate: 2400, // Stop in ~0.25s
-  frictionCoeff: 0.9
+  frictionCoeff: 0.9,
+  bodyWidth: 140,
+  bodyLength: 160,
+  color: '#06b6d4'
 }
 
 export function createInitialPhysicsState(

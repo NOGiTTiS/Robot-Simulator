@@ -20,6 +20,24 @@ export interface CodeTab {
   isMain?: boolean
 }
 
+export interface RobotSpec {
+  id: string
+  name: string
+  boardType: 'ATOM-VX' | 'POP32i' | 'NANO' | 'ESP32'
+  bodyWidth: number
+  bodyLength: number
+  wheelBase: number
+  wheelRadius: number
+  maxSpeed: number
+  accelRate: number
+  decelRate: number
+  frictionCoeff: number
+  color: string
+  presetType: 'standard' | 'sumo' | 'speed' | 'custom'
+  isCustom?: boolean
+  description?: string
+}
+
 export interface RobotProject {
   id: string
   name: string
@@ -29,6 +47,8 @@ export interface RobotProject {
   activeTabId?: string
   mapId: string
   sensorConfig: SensorConfiguration
+  robotSpec?: RobotSpec
+  customRobots?: RobotSpec[]
   fontSize: number
   updatedAt: number
 }

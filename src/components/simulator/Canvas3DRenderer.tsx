@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
-import { MapDefinition, SensorConfigItem } from '@/types/project'
+import { MapDefinition, SensorConfigItem, RobotSpec } from '@/types/project'
 import { generateBuiltinMapCanvas } from '@/lib/mapRenderer'
 import { HardwareState } from '@/lib/interpreter/boards'
 
@@ -12,6 +12,7 @@ interface Canvas3DRendererProps {
   physicsState: ExtendedPhysicsState
   mapDef: MapDefinition
   boardType: string
+  robotSpec?: RobotSpec
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
@@ -21,6 +22,7 @@ export function Canvas3DRenderer({
   physicsState,
   mapDef,
   boardType,
+  robotSpec,
   sensors = [],
   hwState,
   onRepositionRobot
@@ -146,8 +148,14 @@ export function Canvas3DRenderer({
     const robotGroup = new THREE.Group()
     robotGroupRef.current = robotGroup
 
+    const bodyL_m = (robotSpec?.bodyLength || 160) / 1000
+    const bodyW_m = (robotSpec?.bodyWidth || 140) / 1000
+    const wheelBase_m = (robotSpec?.wheelBase || 140) / 1000
+    const wheelRadius_m = (robotSpec?.wheelRadius || 30) / 1000
+    const themeColorHex = robotSpec?.color ? parseInt(robotSpec.color.replace('#', ''), 16) : 0x06b6d4
+
     // Main Body Chassis
-    const chassisGeo = new THREE.BoxGeometry(0.16, 0.06, 0.14) // 16cm x 6cm x 14cm
+    const chassisGeo = new THREE.BoxGeometry(bodyL_m, 0.06, bodyW_m)
     const chassisMat = new THREE.MeshStandardMaterial({
       color: 0x1e293b,
       roughness: 0.2,
@@ -159,7 +167,7 @@ export function Canvas3DRenderer({
     robotGroup.add(chassisMesh)
 
     // Top Board Display Plate
-    const plateGeo = new THREE.BoxGeometry(0.09, 0.015, 0.09)
+    const plateGeo = new THREE.BoxGeometry(bodyL_m * 0.5, 0.015, bodyW_m * 0.5)
     const plateMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.1 })
     const plateMesh = new THREE.Mesh(plateGeo, plateMat)
     plateMesh.position.set(0, 0.075, 0)
@@ -167,23 +175,23 @@ export function Canvas3DRenderer({
 
     // Front Direction Light/Nose
     const noseGeo = new THREE.ConeGeometry(0.025, 0.04, 4)
-    const noseMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 })
+    const noseMat = new THREE.MeshBasicMaterial({ color: themeColorHex })
     const noseMesh = new THREE.Mesh(noseGeo, noseMat)
     noseMesh.rotation.z = -Math.PI / 2
-    noseMesh.position.set(0.09, 0.04, 0)
+    noseMesh.position.set(bodyL_m / 2 + 0.01, 0.04, 0)
     robotGroup.add(noseMesh)
 
     // Left & Right Wheels (Pre-rotated geometry so cylinder axis aligns with Z-axis axle)
-    const wheelGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.016, 24)
+    const wheelGeo = new THREE.CylinderGeometry(wheelRadius_m, wheelRadius_m, 0.016, 24)
     wheelGeo.rotateX(Math.PI / 2)
 
     const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7, metalness: 0.3 })
-    const spokeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3 })
-    const spokeGeo = new THREE.BoxGeometry(0.05, 0.006, 0.018)
+    const spokeMat = new THREE.MeshStandardMaterial({ color: themeColorHex, roughness: 0.3 })
+    const spokeGeo = new THREE.BoxGeometry(wheelRadius_m * 1.6, 0.006, 0.018)
 
     // Left Wheel Group
     const leftWheelGroup = new THREE.Group()
-    leftWheelGroup.position.set(0, 0.03, -0.078)
+    leftWheelGroup.position.set(0, wheelRadius_m, -wheelBase_m / 2 - 0.008)
     const leftWheelMesh = new THREE.Mesh(wheelGeo, wheelMat)
     leftWheelMesh.castShadow = true
     leftWheelGroup.add(leftWheelMesh)
@@ -195,7 +203,7 @@ export function Canvas3DRenderer({
 
     // Right Wheel Group
     const rightWheelGroup = new THREE.Group()
-    rightWheelGroup.position.set(0, 0.03, 0.078)
+    rightWheelGroup.position.set(0, wheelRadius_m, wheelBase_m / 2 + 0.008)
     const rightWheelMesh = new THREE.Mesh(wheelGeo, wheelMat)
     rightWheelMesh.castShadow = true
     rightWheelGroup.add(rightWheelMesh)
@@ -210,7 +218,7 @@ export function Canvas3DRenderer({
     for (let i = -2; i <= 2; i++) {
       const sensorDotGeo = new THREE.SphereGeometry(0.005, 8, 8)
       const sensorDot = new THREE.Mesh(sensorDotGeo, sensorMat)
-      sensorDot.position.set(0.08, 0.02, i * 0.025)
+      sensorDot.position.set(bodyL_m / 2, 0.02, (i * bodyW_m) / 6)
       robotGroup.add(sensorDot)
     }
 
@@ -252,7 +260,7 @@ export function Canvas3DRenderer({
         container.removeChild(renderer.domElement)
       }
     }
-  }, [mapDef, boardType])
+  }, [mapDef, boardType, robotSpec])
 
   // Update 3D Robot Position & Orientation from Physics State
   useEffect(() => {

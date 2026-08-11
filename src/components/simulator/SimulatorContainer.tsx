@@ -16,7 +16,7 @@ import {
 import { Canvas2DRenderer } from './Canvas2DRenderer'
 import { Canvas3DRenderer } from './Canvas3DRenderer'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
-import { MapDefinition, SensorConfigItem } from '@/types/project'
+import { MapDefinition, SensorConfigItem, RobotSpec } from '@/types/project'
 import { HardwareState } from '@/lib/interpreter/boards'
 import { useSensorSampler } from '@/lib/physics/mapSampler'
 
@@ -24,6 +24,7 @@ interface SimulatorContainerProps {
   viewMode: '2D' | '3D'
   mapDef: MapDefinition
   boardType: string
+  robotSpec?: RobotSpec
   isRunning: boolean
   physicsState: ExtendedPhysicsState
   trailPath: { x: number; y: number }[]
@@ -39,6 +40,7 @@ export function SimulatorContainer({
   viewMode,
   mapDef,
   boardType,
+  robotSpec,
   isRunning,
   physicsState,
   trailPath,
@@ -147,6 +149,7 @@ export function SimulatorContainer({
             physicsState={physicsState}
             mapDef={mapDef}
             boardType={boardType}
+            robotSpec={robotSpec}
             trailPath={trailPath}
             sensors={sensors}
             hwState={hwState}
@@ -157,6 +160,7 @@ export function SimulatorContainer({
             physicsState={physicsState}
             mapDef={mapDef}
             boardType={boardType}
+            robotSpec={robotSpec}
             sensors={sensors}
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}

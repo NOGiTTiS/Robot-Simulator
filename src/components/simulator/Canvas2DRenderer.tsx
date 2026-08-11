@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
-import { MapDefinition, SensorConfigItem } from '@/types/project'
+import { MapDefinition, SensorConfigItem, RobotSpec } from '@/types/project'
 import { generateBuiltinMapCanvas } from '@/lib/mapRenderer'
 import { samplePixelColor, raycastDistanceTof } from '@/lib/physics/mapSampler'
 import { HardwareState } from '@/lib/interpreter/boards'
@@ -11,6 +11,7 @@ interface Canvas2DRendererProps {
   physicsState: ExtendedPhysicsState
   mapDef: MapDefinition
   boardType: string
+  robotSpec?: RobotSpec
   trailPath: { x: number; y: number }[]
   sensors?: SensorConfigItem[]
   hwState?: HardwareState
@@ -21,6 +22,7 @@ export function Canvas2DRenderer({
   physicsState,
   mapDef,
   boardType,
+  robotSpec,
   trailPath,
   sensors = [],
   hwState,
@@ -144,15 +146,18 @@ export function Canvas2DRenderer({
     // --- ROBOT CHASSIS & SENSOR SAMPLING ---
     const robotX = offsetX + physicsState.x * scale
     const robotY = offsetY + physicsState.y * scale
-    const robotWidth = 140 * scale // 14cm
-    const robotLength = 160 * scale // 16cm
+    const robotWidth = (robotSpec?.bodyWidth || 140) * scale
+    const robotLength = (robotSpec?.bodyLength || 160) * scale
+    const wheelBase = (robotSpec?.wheelBase || 140) * scale
+    const wheelRadius = (robotSpec?.wheelRadius || 30) * scale
+    const robotColor = robotSpec?.color || '#06b6d4'
 
     ctx.save()
     ctx.translate(robotX, robotY)
 
     // Interactive Hover/Drag Glow
     if (isDragging || isHovered) {
-      ctx.strokeStyle = isDragging ? '#38bdf8' : '#38bdf880'
+      ctx.strokeStyle = isDragging ? robotColor : `${robotColor}80`
       ctx.lineWidth = isDragging ? 3 : 2
       ctx.setLineDash([6, 6])
       ctx.beginPath()
@@ -160,7 +165,7 @@ export function Canvas2DRenderer({
       ctx.stroke()
       ctx.setLineDash([])
 
-      ctx.fillStyle = isDragging ? 'rgba(56, 189, 248, 0.2)' : 'rgba(56, 189, 248, 0.1)'
+      ctx.fillStyle = isDragging ? `${robotColor}33` : `${robotColor}1a`
       ctx.beginPath()
       ctx.arc(0, 0, robotLength * 0.8, 0, Math.PI * 2)
       ctx.fill()
@@ -180,22 +185,22 @@ export function Canvas2DRenderer({
     ctx.fillStyle = '#0f172a'
     ctx.strokeStyle = '#475569'
     ctx.lineWidth = 1.5
-    const wheelWidth = 16 * scale
-    const wheelLength = 48 * scale
-    ctx.fillRect(-wheelLength / 2, -robotWidth / 2 - wheelWidth / 2, wheelLength, wheelWidth)
-    ctx.strokeRect(-wheelLength / 2, -robotWidth / 2 - wheelWidth / 2, wheelLength, wheelWidth)
+    const wheelWidth = 14 * scale
+    const wheelLength = wheelRadius * 2 * scale
+    ctx.fillRect(-wheelLength / 2, -wheelBase / 2 - wheelWidth / 2, wheelLength, wheelWidth)
+    ctx.strokeRect(-wheelLength / 2, -wheelBase / 2 - wheelWidth / 2, wheelLength, wheelWidth)
 
-    ctx.fillRect(-wheelLength / 2, robotWidth / 2 - wheelWidth / 2, wheelLength, wheelWidth)
-    ctx.strokeRect(-wheelLength / 2, robotWidth / 2 - wheelWidth / 2, wheelLength, wheelWidth)
+    ctx.fillRect(-wheelLength / 2, wheelBase / 2 - wheelWidth / 2, wheelLength, wheelWidth)
+    ctx.strokeRect(-wheelLength / 2, wheelBase / 2 - wheelWidth / 2, wheelLength, wheelWidth)
 
     // Robot Main Body
     const bodyRadius = 12 * scale
     ctx.fillStyle = isDragging ? '#0f172a' : '#1e293b'
-    ctx.strokeStyle = isDragging ? '#38bdf8' : '#06b6d4'
+    ctx.strokeStyle = isDragging ? robotColor : robotColor
     ctx.lineWidth = isDragging ? 3 : 2.5
 
     ctx.beginPath()
-    ctx.roundRect(-robotLength / 2, -robotWidth / 2 + 8 * scale, robotLength, robotWidth - 16 * scale, bodyRadius)
+    ctx.roundRect(-robotLength / 2, -robotWidth / 2, robotLength, robotWidth, bodyRadius)
     ctx.fill()
     ctx.stroke()
 
@@ -205,14 +210,14 @@ export function Canvas2DRenderer({
     ctx.roundRect(-robotLength * 0.25, -robotWidth * 0.25, robotLength * 0.5, robotWidth * 0.5, 4 * scale)
     ctx.fill()
 
-    ctx.fillStyle = '#38bdf8'
+    ctx.fillStyle = robotColor
     ctx.font = `bold ${Math.max(9, Math.floor(11 * scale))}px monospace`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(boardType, 0, 0)
 
     // Front Nose Direction Indicator
-    ctx.fillStyle = '#06b6d4'
+    ctx.fillStyle = robotColor
     ctx.beginPath()
     ctx.moveTo(robotLength / 2 + 10 * scale, 0)
     ctx.lineTo(robotLength / 2 - 4 * scale, -10 * scale)

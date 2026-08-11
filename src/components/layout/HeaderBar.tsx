@@ -1,11 +1,13 @@
 'use client'
 
-import { Cpu, Map, Play, Pause, RotateCcw, Box, Monitor, Download, Upload, Zap, Sliders, ChevronDown } from 'lucide-react'
+import { Cpu, Map, Play, Pause, RotateCcw, Box, Monitor, Download, Upload, Zap, Sliders, ChevronDown, Bot } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 
 interface HeaderBarProps {
   boardType: string
   onBoardChange: (board: string) => void
+  robotName?: string
+  onOpenRobotModal?: () => void
   mapId: string
   onMapChange: (map: string) => void
   customMaps?: MapDefinition[]
@@ -28,6 +30,8 @@ interface HeaderBarProps {
 export function HeaderBar({
   boardType,
   onBoardChange,
+  robotName = 'ATOM-VX Standard',
+  onOpenRobotModal,
   mapId,
   onMapChange,
   customMaps = [],
@@ -86,6 +90,16 @@ export function HeaderBar({
 
       {/* Selectors Section */}
       <div className="flex items-center gap-2">
+        {/* Robot Spec / Management Modal Button */}
+        <button
+          onClick={onOpenRobotModal}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-xs font-medium text-slate-200 hover:text-cyan-300 transition group"
+          title="Robot Specs & Presets Manager"
+        >
+          <Bot className="w-3.5 h-3.5 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="max-w-[140px] truncate">{robotName}</span>
+        </button>
+
         {/* Board Selector */}
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
           <Cpu className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
@@ -109,7 +123,7 @@ export function HeaderBar({
           title="Select Competition Map"
         >
           <Map className="w-3.5 h-3.5 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="max-w-[150px] truncate">
+          <span className="max-w-[140px] truncate">
             {customMaps.find((m) => m.id === mapId)?.name || builtinMaps.find((m) => m.id === mapId)?.name || 'Select Map'}
           </span>
           <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 shrink-0" />

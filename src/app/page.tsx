@@ -12,6 +12,7 @@ import { CustomMapModal } from '@/components/layout/CustomMapModal'
 import { MapSelectModal } from '@/components/layout/MapSelectModal'
 import { MapDrawerModal } from '@/components/layout/MapDrawerModal'
 import { MapEditModal } from '@/components/layout/MapEditModal'
+import { RobotModal } from '@/components/layout/RobotModal'
 import {
   InterpreterRunner,
   bindBoardApis,
@@ -22,11 +23,11 @@ import {
 import {
   stepPhysics,
   createInitialPhysicsState,
-  ExtendedPhysicsState,
-  DEFAULT_PHYSICS_CONFIG
+  ExtendedPhysicsState
 } from '@/lib/physics/kinematics'
 import { getMapDefinition } from '@/lib/maps'
-import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab } from '@/types/project'
+import { DEFAULT_ROBOT_SPEC } from '@/lib/robots'
+import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab, RobotSpec } from '@/types/project'
 import { loadProjectState, saveProjectState } from '@/lib/storage'
 
 const DEFAULT_CODE = `#include <ATOM_VX.h>
@@ -80,10 +81,13 @@ const DEFAULT_SENSORS: SensorConfigItem[] = [
 
 export default function Home() {
   const [boardType, setBoardType] = useState<string>('ATOM-VX')
+  const [robotSpec, setRobotSpec] = useState<RobotSpec>(DEFAULT_ROBOT_SPEC)
+  const [customRobots, setCustomRobots] = useState<RobotSpec[]>([])
   const [mapId, setMapId] = useState<string>('athletics-280x160')
   const [customMaps, setCustomMaps] = useState<MapDefinition[]>([])
   const [sensorConfig, setSensorConfig] = useState<SensorConfiguration>({ sensors: DEFAULT_SENSORS })
 
+  const [isRobotModalOpen, setIsRobotModalOpen] = useState(false)
   const [isSensorModalOpen, setIsSensorModalOpen] = useState(false)
   const [isMapSelectModalOpen, setIsMapSelectModalOpen] = useState(false)
   const [isMapDrawerModalOpen, setIsMapDrawerModalOpen] = useState(false)
@@ -110,6 +114,8 @@ export default function Home() {
     const saved = loadProjectState()
     if (saved) {
       if (saved.boardType) setBoardType(saved.boardType)
+      if (saved.robotSpec) setRobotSpec(saved.robotSpec)
+      if (saved.customRobots && Array.isArray(saved.customRobots)) setCustomRobots(saved.customRobots)
       if (saved.mapId) setMapId(saved.mapId)
       if (saved.files && Array.isArray(saved.files) && saved.files.length > 0) {
         setFiles(saved.files)
@@ -161,6 +167,8 @@ export default function Home() {
         files,
         activeTabId,
         boardType,
+        robotSpec,
+        customRobots,
         mapId,
         sensorConfig,
         fontSize,
@@ -170,7 +178,7 @@ export default function Home() {
       })
     }, 600)
     return () => clearTimeout(timer)
-  }, [files, activeTabId, boardType, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, customMaps, isLoaded])
+  }, [files, activeTabId, boardType, robotSpec, customRobots, mapId, sensorConfig, fontSize, speedMultiplier, viewMode, customMaps, isLoaded])
 
   // Get active map definition (built-in or custom uploaded)
   const mapDef = customMaps.find((m) => m.id === mapId) || getMapDefinition(mapId)
@@ -251,7 +259,7 @@ export default function Home() {
         motorRight,
         dt,
         { widthMm: activeMap.widthMm, heightMm: activeMap.heightMm },
-        DEFAULT_PHYSICS_CONFIG
+        robotSpec
       )
 
       physicsRef.current = nextPhysics
@@ -270,7 +278,7 @@ export default function Home() {
     }
     lastTimeRef.current = time
     animFrameRef.current = requestAnimationFrame(runPhysicsLoop)
-  }, [mapId, speedMultiplier, customMaps])
+  }, [mapId, speedMultiplier, customMaps, robotSpec])
 
   useEffect(() => {
     animFrameRef.current = requestAnimationFrame(runPhysicsLoop)
@@ -361,6 +369,37 @@ export default function Home() {
     }
 
     setLogs((prev) => [...prev, `Updated Map Dimensions: ${updatedMap.name}`])
+  }
+
+  // Robot management handlers
+  const handleSelectRobot = (newRobot: RobotSpec) => {
+    setRobotSpec(newRobot)
+    if (newRobot.boardType !== boardType) {
+      setBoardType(newRobot.boardType)
+    }
+    setLogs((prev) => [...prev, `Selected Robot: ${newRobot.name} (${newRobot.boardType})`])
+  }
+
+  const handleSaveCustomRobot = (newRobot: RobotSpec) => {
+    setCustomRobots((prev) => {
+      const filtered = prev.filter((r) => r.id !== newRobot.id)
+      return [...filtered, newRobot]
+    })
+    setRobotSpec(newRobot)
+    if (newRobot.boardType !== boardType) {
+      setBoardType(newRobot.boardType)
+    }
+    setLogs((prev) => [...prev, `Saved Custom Robot: ${newRobot.name}`])
+  }
+
+  const handleDeleteCustomRobot = (robotId: string) => {
+    const target = customRobots.find((r) => r.id === robotId)
+    setCustomRobots((prev) => prev.filter((r) => r.id !== robotId))
+
+    if (robotSpec.id === robotId) {
+      setRobotSpec(DEFAULT_ROBOT_SPEC)
+    }
+    setLogs((prev) => [...prev, `Deleted Custom Robot: ${target?.name || robotId}`])
   }
 
   const handleFontSizeChange = (sizeOrFn: number | ((prev: number) => number)) => {
@@ -546,6 +585,8 @@ export default function Home() {
       <HeaderBar
         boardType={boardType}
         onBoardChange={handleBoardChange}
+        robotName={robotSpec.name}
+        onOpenRobotModal={() => setIsRobotModalOpen(true)}
         mapId={mapId}
         onMapChange={handleMapChange}
         customMaps={customMaps}
@@ -587,6 +628,7 @@ export default function Home() {
               viewMode={viewMode}
               mapDef={mapDef}
               boardType={boardType}
+              robotSpec={robotSpec}
               isRunning={isRunning}
               physicsState={physicsState}
               trailPath={trailPath}
@@ -611,6 +653,17 @@ export default function Home() {
       />
 
       {/* 4. Modals */}
+      <RobotModal
+        isOpen={isRobotModalOpen}
+        onClose={() => setIsRobotModalOpen(false)}
+        activeRobot={robotSpec}
+        onSelectRobot={handleSelectRobot}
+        customRobots={customRobots}
+        onSaveCustomRobot={handleSaveCustomRobot}
+        onDeleteCustomRobot={handleDeleteCustomRobot}
+        onOpenSensorModal={() => setIsSensorModalOpen(true)}
+      />
+
       <MapSelectModal
         isOpen={isMapSelectModalOpen}
         onClose={() => setIsMapSelectModalOpen(false)}
