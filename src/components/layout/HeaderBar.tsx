@@ -91,8 +91,8 @@ export function HeaderBar({
     <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none">
       {/* 1. Brand & Logo */}
       <div className="flex items-center gap-2.5 min-w-max">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-white/20">
-          <Zap className="w-4 h-4 text-white fill-white" />
+        <div className="w-8 h-8 rounded-lg bg-slate-900/60 p-0.5 overflow-hidden flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-500/30">
+          <img src="/logo.png" alt="TUNorth Robot Logo" className="w-full h-full object-contain rounded-md" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">

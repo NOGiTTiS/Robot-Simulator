@@ -16,7 +16,12 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'TUNorth Robot Simulator',
   description: 'Web-Based Robot Programming Simulator for TUNorth',
-  manifest: '/manifest.json'
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon-32x32.png',
+    shortcut: '/favicon-32x32.png',
+    apple: '/logo.png'
+  }
 }
 
 export default function RootLayout({
