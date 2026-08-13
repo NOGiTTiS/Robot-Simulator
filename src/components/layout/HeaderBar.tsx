@@ -77,69 +77,63 @@ export function HeaderBar({
   onToggleTheme
 }: HeaderBarProps) {
   const builtinMaps = [
-    { id: 'athletics-280x160', name: 'Athletics (280x160cm)' },
-    { id: 'rt-td-122x244', name: 'RT-TD Field (122x244cm)' },
-    { id: 'robot-120x240', name: 'Robot Field (120x240cm)' },
-    { id: 'wall-line-track', name: 'Wall Line Track' },
-    { id: 'qbd-field', name: 'QBD Field' },
-    { id: 'line-junior', name: 'Programmable Line Junior' }
+    { id: 'athletics-280x160', name: 'สนามกรีฑา (280x160cm)' },
+    { id: 'rt-td-122x244', name: 'สนาม RT-TD (122x244cm)' },
+    { id: 'robot-120x240', name: 'สนามหุ่นยนต์ (120x240cm)' },
+    { id: 'wall-line-track', name: 'สนามแกะเส้นผสมกำแพง' },
+    { id: 'qbd-field', name: 'สนาม QBD Field' },
+    { id: 'line-junior', name: 'สนามซ้อมวิ่งเส้น Line Junior' }
   ]
 
   const speeds = [1, 2, 5]
 
   return (
-    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none">
+    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 font-sans">
       {/* 1. Brand & Logo */}
       <div className="flex items-center gap-2.5 min-w-max">
-        <div className="w-8 h-8 rounded-lg bg-slate-900/60 p-0.5 overflow-hidden flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-500/30">
-          <img src="/logo.png" alt="TUNorth Robot Logo" className="w-full h-full object-contain rounded-md" />
+        <div className="w-9 h-9 rounded-xl bg-brand-500 p-0.5 overflow-hidden flex items-center justify-center shadow-md shadow-brand-500/30 ring-2 ring-brand-400/40">
+          <img src="/logo.png" alt="TUNorth Robot Logo" className="w-full h-full object-contain rounded-lg" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-sm bg-gradient-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-white dark:via-slate-200 dark:to-cyan-400 bg-clip-text text-transparent tracking-tight">
+            <span className="font-bold text-sm bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 dark:from-white dark:via-brand-200 dark:to-brand-400 bg-clip-text text-transparent tracking-tight">
               TUNorth Robot Simulator
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-400 border border-cyan-300 dark:border-cyan-800/50">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800/50 font-semibold">
               v1.0
             </span>
           </div>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
         </div>
       </div>
 
       {/* 2. Selectors Section (Robot, Map, Sensors) */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         {/* Robot Spec / Management Modal Button */}
         <button
           onClick={onOpenRobotModal}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-xs font-medium text-slate-200 hover:text-cyan-300 transition group"
-          title={`Robot Specs & Presets Manager (${boardType || 'Board'})`}
+          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 transition-all shadow-xs group flex items-center justify-center"
+          title={`เลือกหุ่นยนต์ (${robotName} - ${boardType || 'บอร์ดควบคุม'})`}
         >
-          <Bot className="w-3.5 h-3.5 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="max-w-[150px] truncate">{robotName}</span>
+          <Bot className="w-4 h-4 text-brand-500 dark:text-brand-400 shrink-0 group-hover:scale-110 transition-transform" />
         </button>
 
         {/* Map Selector Modal Button */}
         <button
           onClick={onOpenMapSelectModal}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 text-xs font-medium text-slate-200 hover:text-emerald-300 transition group"
-          title="Select Competition Map"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs group flex items-center justify-center"
+          title={`เลือกสนามแข่งขัน (${customMaps.find((m) => m.id === mapId)?.name || builtinMaps.find((m) => m.id === mapId)?.name || 'สนามมาตรฐาน'})`}
         >
-          <Map className="w-3.5 h-3.5 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="max-w-[130px] truncate">
-            {customMaps.find((m) => m.id === mapId)?.name || builtinMaps.find((m) => m.id === mapId)?.name || 'Select Map'}
-          </span>
-          <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 shrink-0" />
+          <Map className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
         </button>
 
         {/* Sensors Configurator Modal Button */}
         <button
           onClick={onOpenSensorModal}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 text-xs font-medium text-slate-300 hover:text-emerald-300 transition"
-          title="Configure Sensors"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs flex items-center justify-center"
+          title="เลือกและปรับแต่งตำแหน่งเซนเซอร์"
         >
-          <Sliders className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Sensors</span>
+          <Sliders className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
         </button>
       </div>
 
@@ -148,21 +142,21 @@ export function HeaderBar({
         {/* Run / Pause Button */}
         <button
           onClick={onToggleRun}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-md transition-all active:scale-95 ${
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 ${
             isRunning
-              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
-              : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 shadow-emerald-950/40'
+              ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-900/20'
+              : 'bg-brand-500 hover:bg-brand-600 text-white shadow-brand-900/20'
           }`}
         >
           {isRunning ? (
             <>
-              <Pause className="w-3.5 h-3.5 fill-amber-300" />
-              <span>Pause</span>
+              <Pause className="w-3.5 h-3.5 fill-current" />
+              <span>หยุดชั่วคราว</span>
             </>
           ) : (
             <>
-              <Play className="w-3.5 h-3.5 fill-emerald-300" />
-              <span>Run</span>
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>เริ่มทำงาน</span>
             </>
           )}
         </button>
@@ -170,23 +164,23 @@ export function HeaderBar({
         {/* Reset Button */}
         <button
           onClick={onReset}
-          title="Reset Simulation"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 text-slate-300 border border-slate-700 hover:bg-slate-700/80 hover:text-white transition active:scale-95"
+          title="รีเซ็ตการจำลองหุ่นยนต์"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all active:scale-95 shadow-xs"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset</span>
+          <span>รีเซ็ต</span>
         </button>
 
         {/* Speed Multipliers */}
-        <div className="flex items-center bg-slate-900/90 rounded-lg p-0.5 border border-slate-800">
+        <div className="flex items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
           {speeds.map((s) => (
             <button
               key={s}
               onClick={() => onSpeedChange(s)}
-              className={`px-2 py-0.5 rounded text-[11px] font-mono font-medium transition ${
+              className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition-all ${
                 speedMultiplier === s
-                  ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-brand-500 text-white shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               {s}x
@@ -198,53 +192,50 @@ export function HeaderBar({
       {/* 4. Layout, View Mode, Files & Fullscreen Section */}
       <div className="flex items-center gap-2">
         {/* Panel Layout Mode Selector (Split / Code / Sim) */}
-        <div className="flex items-center bg-slate-900/90 rounded-lg p-0.5 border border-slate-800">
+        <div className="flex items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => onPanelModeChange('split')}
-            title="Split View (Code + Simulator)"
-            className={`p-1 px-2 rounded text-xs font-medium transition flex items-center gap-1 ${
+            title="แสดงผลแบ่งหน้าจอ (โค้ด + สนามจำลอง)"
+            className={`p-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center ${
               panelMode === 'split'
-                ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-brand-500 text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <Columns className="w-3.5 h-3.5" />
-            <span className="hidden xl:inline text-[11px]">Split</span>
+            <Columns className="w-4 h-4" />
           </button>
           <button
             onClick={() => onPanelModeChange('editor')}
-            title="Full Editor View"
-            className={`p-1 px-2 rounded text-xs font-medium transition flex items-center gap-1 ${
+            title="แสดงผลหน้าต่างโค้ดเต็มหน้าจอ"
+            className={`p-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center ${
               panelMode === 'editor'
-                ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-brand-500 text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <Code2 className="w-3.5 h-3.5" />
-            <span className="hidden xl:inline text-[11px]">Code</span>
+            <Code2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => onPanelModeChange('simulator')}
-            title="Full Simulator View"
-            className={`p-1 px-2 rounded text-xs font-medium transition flex items-center gap-1 ${
+            title="แสดงผลสนามจำลองเต็มหน้าจอ"
+            className={`p-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center ${
               panelMode === 'simulator'
-                ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-brand-500 text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <Tv className="w-3.5 h-3.5" />
-            <span className="hidden xl:inline text-[11px]">Sim</span>
+            <Tv className="w-4 h-4" />
           </button>
         </div>
 
         {/* 2D / 3D View Mode Toggle */}
-        <div className="flex items-center bg-slate-900/90 rounded-lg p-0.5 border border-slate-800">
+        <div className="flex items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => onViewModeChange('2D')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               viewMode === '2D'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-brand-500 text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Monitor className="w-3.5 h-3.5" />
@@ -252,10 +243,10 @@ export function HeaderBar({
           </button>
           <button
             onClick={() => onViewModeChange('3D')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               viewMode === '3D'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-brand-500 text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Box className="w-3.5 h-3.5" />
@@ -264,11 +255,11 @@ export function HeaderBar({
         </div>
 
         {/* Import & Export */}
-        <div className="flex items-center gap-1 pl-1 border-l border-slate-800">
+        <div className="flex items-center gap-1 pl-1 border-l border-slate-200 dark:border-slate-800">
           <button
             onClick={onImport}
-            title="Import .ino / .cpp file"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition flex items-center gap-1"
+            title="นำเข้าไฟล์โค้ด (.ino / .cpp)"
+            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-all flex items-center gap-1"
           >
             <Upload className="w-4 h-4" />
           </button>
@@ -276,23 +267,23 @@ export function HeaderBar({
           <div className="group relative">
             <button
               onClick={() => onExport('ino')}
-              title="Export code (.ino)"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition flex items-center gap-1"
+              title="ส่งออกไฟล์โค้ด (.ino)"
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-all flex items-center gap-1"
             >
               <Download className="w-4 h-4" />
             </button>
-            <div className="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col bg-slate-900 border border-slate-800 rounded-lg p-1 shadow-xl z-50 min-w-max text-xs">
+            <div className="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1.5 shadow-xl z-50 min-w-max text-xs font-medium">
               <button
                 onClick={() => onExport('ino')}
-                className="px-3 py-1.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white rounded flex items-center gap-2"
+                className="px-3 py-2 text-left text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/60 hover:text-brand-600 dark:hover:text-brand-300 rounded-lg flex items-center gap-2 transition-all"
               >
-                <span>Export as .ino (Arduino)</span>
+                <span>ส่งออกไฟล์ .ino (Arduino)</span>
               </button>
               <button
                 onClick={() => onExport('cpp')}
-                className="px-3 py-1.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white rounded flex items-center gap-2"
+                className="px-3 py-2 text-left text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/60 hover:text-brand-600 dark:hover:text-brand-300 rounded-lg flex items-center gap-2 transition-all"
               >
-                <span>Export as .cpp (C++)</span>
+                <span>ส่งออกไฟล์ .cpp (C++)</span>
               </button>
             </div>
           </div>
@@ -300,15 +291,15 @@ export function HeaderBar({
           {/* FullScreen Mode Toggle Button */}
           <button
             onClick={onToggleFullscreen}
-            title={isFullscreen ? 'Exit FullScreen (Esc)' : 'Enter FullScreen Mode'}
-            className={`p-1.5 rounded-lg transition flex items-center gap-1 ml-1 ${
+            title={isFullscreen ? 'ออกจากโหมดเต็มหน้าจอ (Esc)' : 'เข้าสู่โหมดเต็มหน้าจอ'}
+            className={`p-2 rounded-xl transition-all flex items-center gap-1 ${
               isFullscreen
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30'
+                ? 'bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-300 border border-brand-300 dark:border-brand-800'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800'
             }`}
           >
             {isFullscreen ? (
-              <Minimize2 className="w-4 h-4 text-cyan-400" />
+              <Minimize2 className="w-4 h-4 text-brand-500 dark:text-brand-400" />
             ) : (
               <Maximize2 className="w-4 h-4" />
             )}
@@ -317,14 +308,21 @@ export function HeaderBar({
           {/* Light / Dark Mode Toggle Button */}
           {onToggleTheme && (
             <button
+              id="themeToggle"
               onClick={onToggleTheme}
-              title={theme === 'dark' ? 'เปลี่ยนเป็น Light Mode (สว่าง)' : 'เปลี่ยนเป็น Dark Mode (มืด)'}
-              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center gap-1 active:scale-95"
+              title={theme === 'dark' ? 'เปลี่ยนเป็น Light Mode (โหมดสว่าง)' : 'เปลี่ยนเป็น Dark Mode (โหมดมืด)'}
+              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-200 dark:border-slate-700 shadow-xs active:scale-95 ml-1"
             >
               {theme === 'light' ? (
-                <Sun className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <>
+                  <Sun className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  <span className="hidden sm:inline">Light Mode</span>
+                </>
               ) : (
-                <Moon className="w-4 h-4 text-cyan-300" />
+                <>
+                  <Moon className="w-4 h-4 text-brand-300 fill-brand-300" />
+                  <span className="hidden sm:inline">Dark Mode</span>
+                </>
               )}
             </button>
           )}
@@ -333,5 +331,6 @@ export function HeaderBar({
     </header>
   )
 }
+
 
 

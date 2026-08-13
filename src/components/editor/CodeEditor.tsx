@@ -36,15 +36,15 @@ interface CodeEditorProps {
 
 function CodeEditorSkeleton() {
   return (
-    <div className="w-full h-full bg-white dark:bg-slate-950 flex flex-col justify-between p-4 font-mono select-none animate-pulse">
+    <div className="w-full h-full bg-slate-50 dark:bg-slate-950 flex flex-col justify-between p-4 font-mono select-none animate-pulse">
       <div className="space-y-2">
         <div className="h-4 bg-slate-200 dark:bg-slate-800/60 rounded w-1/3" />
         <div className="h-4 bg-slate-200 dark:bg-slate-800/40 rounded w-1/2" />
         <div className="h-4 bg-slate-200 dark:bg-slate-800/30 rounded w-2/3" />
         <div className="h-4 bg-slate-200 dark:bg-slate-800/50 rounded w-2/5" />
       </div>
-      <div className="flex items-center justify-center gap-2 text-xs text-cyan-600 dark:text-cyan-400/80 bg-slate-100 dark:bg-slate-900/60 py-2 rounded-lg border border-cyan-200 dark:border-cyan-900/30">
-        <Sparkles className="w-4 h-4 animate-spin text-cyan-500" />
+      <div className="flex items-center justify-center gap-2 text-xs text-brand-600 dark:text-brand-300 bg-slate-100 dark:bg-slate-900/60 py-2.5 rounded-xl border border-brand-200 dark:border-brand-900/40">
+        <Sparkles className="w-4 h-4 animate-spin text-brand-500" />
         <span>กำลังโหลด Monaco C++ Editor...</span>
       </div>
       <div className="space-y-2">
@@ -104,7 +104,7 @@ export function CodeEditor({
     setMonacoLoaded(true)
     setUseFallback(false)
 
-    // Register custom C++ / Arduino autocomplete triggers
+    // Register custom C++ / Arduino autocomplete triggers in Thai
     monaco.languages.registerCompletionItemProvider('cpp', {
       provideCompletionItems: (model: any, position: any) => {
         const word = model.getWordUntilPosition(position)
@@ -121,7 +121,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'fd(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Move robot forward with speed (-100 to 100)',
+            documentation: 'สั่งหุ่นยนต์เคลื่อนที่ไปข้างหน้าตามความเร็วที่กำหนด (-100 ถึง 100)',
             range
           },
           {
@@ -129,7 +129,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'fd2(${1:50}, ${2:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Move robot forward with individual left and right speeds (-100 to 100)',
+            documentation: 'สั่งหุ่นยนต์เคลื่อนที่ไปข้างหน้า โดยแยกความเร็วล้อซ้ายและขวา (-100 ถึง 100)',
             range
           },
           {
@@ -137,7 +137,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'bk(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Move robot backward with speed (-100 to 100)',
+            documentation: 'สั่งหุ่นยนต์ถอยหลังตามความเร็วที่กำหนด (-100 ถึง 100)',
             range
           },
           {
@@ -145,7 +145,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'bk2(${1:50}, ${2:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Move robot backward with individual left and right speeds (-100 to 100)',
+            documentation: 'สั่งหุ่นยนต์ถอยหลัง โดยแยกความเร็วล้อซ้ายและขวา (-100 ถึง 100)',
             range
           },
           {
@@ -153,7 +153,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'tl(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Turn left (Left wheel stops 0, Right wheel speed)',
+            documentation: 'สั่งหุ่นยนต์เลี้ยวซ้าย (ล้อซ้ายหยุด 0, ล้อขวาหมุนไปข้างหน้า)',
             range
           },
           {
@@ -161,7 +161,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'tr(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Turn right (Left wheel speed, Right wheel stops 0)',
+            documentation: 'สั่งหุ่นยนต์เลี้ยวขวา (ล้อซ้ายหมุนไปข้างหน้า, ล้อขวาหยุด 0)',
             range
           },
           {
@@ -169,7 +169,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'sl(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Spin left (Left wheel backward -speed, Right wheel forward speed)',
+            documentation: 'สั่งหุ่นยนต์หมุนกลับตัวไปทางซ้าย (Spin Left)',
             range
           },
           {
@@ -177,14 +177,14 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'sr(${1:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Spin right (Left wheel forward speed, Right wheel backward -speed)',
+            documentation: 'สั่งหุ่นยนต์หมุนกลับตัวไปทางขวา (Spin Right)',
             range
           },
           {
             label: 'ao()',
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'ao();',
-            documentation: 'Stop all motors',
+            documentation: 'สั่งหยุดการทำงานของมอเตอร์ทั้งหมด (Stop All Motors)',
             range
           },
           {
@@ -192,7 +192,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'motor(${1:1}, ${2:50});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Set motor channel (1-4) speed (-100 to 100)',
+            documentation: 'กำหนดความเร็วของมอเตอร์ตามช่องสัญญาณ (1-4) (-100 ถึง 100)',
             range
           },
           {
@@ -200,7 +200,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'analog(${1:0})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Read analog sensor value from pin (0-1023)',
+            documentation: 'อ่านค่าเซนเซอร์อนาล็อกตามหมายเลขพิน (0-1023)',
             range
           },
           {
@@ -208,7 +208,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'in(${1:0})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Read digital sensor value (0 or 1)',
+            documentation: 'อ่านค่าเซนเซอร์ดิจิทัล (0 หรือ 1)',
             range
           },
           {
@@ -216,14 +216,14 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'gl(${1:0})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Get line sensor raw reading',
+            documentation: 'อ่านค่าความสว่างสะท้อนกลับจากเซนเซอร์ตรวจจับเส้น',
             range
           },
           {
             label: 'knob()',
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'knob()',
-            documentation: 'Read potentiometer knob value (0-1023)',
+            documentation: 'อ่านค่าตำแหน่งลูกบิดวอลลุ่มปรับแต่ง (0-1023)',
             range
           },
           {
@@ -231,14 +231,14 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'delay(${1:1000});',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Pause execution for specified milliseconds',
+            documentation: 'หน่วงเวลาการทำงาน (มิลลิวินาที)',
             range
           },
           {
             label: 'millis()',
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'millis()',
-            documentation: 'Returns milliseconds since program start',
+            documentation: 'คืนค่าเวลาเป็นมิลลิวินาทีนับตั้งแต่โปรแกรมเริ่มทำงาน',
             range
           },
           {
@@ -246,7 +246,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'map(${1:val}, ${2:0}, ${3:1023}, ${4:0}, ${5:100})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Re-maps a number from one range to another',
+            documentation: 'แปลงช่วงของตัวเลขจากช่วงหนึ่งไปยังอีกช่วงหนึ่ง',
             range
           },
           {
@@ -254,7 +254,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'constrain(${1:val}, ${2:0}, ${3:100})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Constrains a number to be within a range',
+            documentation: 'จำกัดช่วงค่าของตัวเลขไม่ให้เกินขอบเขตต่ำสุดและสูงสุด',
             range
           },
           {
@@ -262,7 +262,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'abs(${1:x})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Calculates the absolute value of a number',
+            documentation: 'คำนวณค่าสัมบูรณ์ของตัวเลข (Absolute Value)',
             range
           },
           {
@@ -270,7 +270,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'min(${1:a}, ${2:b})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Calculates the minimum of two numbers',
+            documentation: 'หาค่าต่ำสุดระหว่างตัวเลขสองค่า',
             range
           },
           {
@@ -278,7 +278,7 @@ export function CodeEditor({
             kind: monaco.languages.CompletionItemKind.Function,
             insertText: 'max(${1:a}, ${2:b})',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'Calculates the maximum of two numbers',
+            documentation: 'หาค่าสูงสุดระหว่างตัวเลขสองค่า',
             range
           }
         ]
@@ -364,7 +364,7 @@ export function CodeEditor({
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1)
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-900 select-none">
+    <div className="h-full flex flex-col bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-900 select-none font-sans transition-colors duration-300">
       {/* 1. Arduino IDE Style Multi-Tab Header Bar */}
       <div className="h-10 bg-slate-100 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-2 shrink-0 gap-2 overflow-hidden">
         {/* Scrollable Tabs List */}
@@ -379,22 +379,22 @@ export function CodeEditor({
                 key={tab.id}
                 onClick={() => onSelectTab(tab.id)}
                 onDoubleClick={(e) => handleStartRename(tab, e)}
-                className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono transition cursor-pointer shrink-0 border-t border-x ${
+                className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-t-xl text-xs font-mono transition cursor-pointer shrink-0 border-t border-x ${
                   isActive
-                    ? 'bg-white dark:bg-slate-950 text-cyan-600 dark:text-cyan-300 border-slate-300 dark:border-slate-800 font-semibold shadow-sm shadow-cyan-500/10'
+                    ? 'bg-white dark:bg-slate-950 text-brand-600 dark:text-brand-300 border-slate-300 dark:border-slate-800 font-semibold shadow-xs'
                     : 'bg-slate-200/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-300/80 dark:hover:bg-slate-800/80 hover:text-slate-800 dark:hover:text-slate-200 border-transparent'
                 }`}
               >
                 {tab.name.endsWith('.ino') ? (
                   <FileCode
                     className={`w-3.5 h-3.5 ${
-                      isActive ? 'text-cyan-400' : 'text-slate-500 group-hover:text-slate-400'
+                      isActive ? 'text-brand-500 dark:text-brand-400' : 'text-slate-500 group-hover:text-slate-400'
                     }`}
                   />
                 ) : (
                   <Code
                     className={`w-3.5 h-3.5 ${
-                      isActive ? 'text-teal-400' : 'text-slate-500 group-hover:text-slate-400'
+                      isActive ? 'text-teal-500 dark:text-teal-400' : 'text-slate-500 group-hover:text-slate-400'
                     }`}
                   />
                 )}
@@ -411,14 +411,14 @@ export function CodeEditor({
                       }}
                       onBlur={() => handleSaveRename(tab.id)}
                       autoFocus
-                      className="bg-slate-900 text-cyan-200 px-1 py-0.5 rounded border border-cyan-500 outline-none text-xs w-24 font-mono"
+                      className="bg-white dark:bg-slate-900 text-brand-700 dark:text-brand-200 px-1.5 py-0.5 rounded-lg border border-brand-500 outline-none text-xs w-24 font-mono"
                     />
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         handleSaveRename(tab.id)
                       }}
-                      className="text-emerald-400 hover:text-emerald-300"
+                      className="text-emerald-500 hover:text-emerald-400"
                     >
                       <Check className="w-3.5 h-3.5" />
                     </button>
@@ -427,8 +427,8 @@ export function CodeEditor({
                   <>
                     <span>{tab.name}</span>
                     {isMain && (
-                      <span className="text-[9px] px-1 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800/50 font-sans">
-                        main
+                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800/50 font-sans font-semibold">
+                        หลัก
                       </span>
                     )}
                   </>
@@ -438,7 +438,7 @@ export function CodeEditor({
                 {!isEditing && (
                   <button
                     onClick={(e) => handleStartRename(tab, e)}
-                    className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-slate-300 transition p-0.5 rounded"
+                    className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition p-0.5 rounded"
                     title="เปลี่ยนชื่อไฟล์ (Rename)"
                   >
                     <Edit2 className="w-3 h-3" />
@@ -452,7 +452,7 @@ export function CodeEditor({
                       e.stopPropagation()
                       setDeletingTab(tab)
                     }}
-                    className={`p-0.5 rounded-full hover:bg-rose-950/80 hover:text-rose-400 transition ${
+                    className={`p-0.5 rounded-full hover:bg-rose-100 dark:hover:bg-rose-950 hover:text-rose-600 dark:hover:text-rose-400 transition ${
                       isActive ? 'text-slate-400' : 'text-slate-500 opacity-60 group-hover:opacity-100'
                     }`}
                     title="ลบแท็บ (Delete Tab)"
@@ -463,7 +463,7 @@ export function CodeEditor({
 
                 {/* Active Underline Indicator */}
                 {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-full" />
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-500 rounded-full" />
                 )}
               </div>
             )
@@ -472,10 +472,10 @@ export function CodeEditor({
           {/* New Tab Button (+) */}
           <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs bg-slate-800/60 hover:bg-cyan-600/20 text-slate-400 hover:text-cyan-300 border border-slate-700/60 hover:border-cyan-500/40 transition shrink-0 font-mono"
-            title="เพิ่ม Tab โค้ดใหม่ (New Tab)"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs bg-slate-200/80 hover:bg-brand-100 dark:bg-slate-800/60 dark:hover:bg-brand-950/60 text-slate-700 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-300 border border-slate-300/80 dark:border-slate-700/60 hover:border-brand-400 transition-all shrink-0 font-mono font-medium"
+            title="เพิ่ม Tab โค้ดใหม่"
           >
-            <Plus className="w-3.5 h-3.5 text-cyan-400" />
+            <Plus className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400" />
             <span>Tab</span>
           </button>
         </div>
@@ -485,37 +485,37 @@ export function CodeEditor({
           {useFallback && (
             <button
               onClick={() => setUseFallback(false)}
-              className="text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1 transition"
+              className="text-[11px] px-2 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center gap-1 transition-all"
               title="ลองโหลด Monaco Editor อีกครั้ง"
             >
-              <RefreshCw className="w-3 h-3 text-cyan-400" /> Retry Monaco
+              <RefreshCw className="w-3 h-3 text-brand-500" /> โหลด Monaco อีกครั้ง
             </button>
           )}
 
           {/* Font Adjuster */}
-          <div className="flex items-center gap-1 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800 text-xs">
-            <Type className="w-3 h-3 text-slate-400" />
-            <span className="font-mono text-slate-300 text-[11px] min-w-[26px] text-center">
+          <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-900 px-2 py-0.5 rounded-xl border border-slate-300/80 dark:border-slate-800 text-xs">
+            <Type className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+            <span className="font-mono text-slate-700 dark:text-slate-300 text-[11px] min-w-[26px] text-center font-semibold">
               {fontSize}px
             </span>
             <button
               onClick={() => onFontSizeChange((prev) => Math.min(32, prev + 2))}
-              title="Increase Font Size (A+)"
-              className="p-1 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
+              title="เพิ่มขนาดฟอนต์ (A+)"
+              className="p-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition"
             >
               <Plus className="w-3 h-3" />
             </button>
             <button
               onClick={() => onFontSizeChange((prev) => Math.max(10, prev - 2))}
-              title="Decrease Font Size (A-)"
-              className="p-1 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition"
+              title="ลดขนาดฟอนต์ (A-)"
+              className="p-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition"
             >
               <Minus className="w-3 h-3" />
             </button>
             <button
               onClick={() => onFontSizeChange(14)}
-              title="Reset Font Size to 14px"
-              className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition"
+              title="รีเซ็ตขนาดฟอนต์เป็น 14px"
+              className="p-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
             >
               <RotateCcw className="w-3 h-3" />
             </button>
@@ -527,9 +527,9 @@ export function CodeEditor({
       <div className="flex-1 w-full overflow-hidden relative">
         {useFallback ? (
           /* Fallback Textarea Editor */
-          <div className="w-full h-full flex bg-slate-950 font-mono overflow-auto">
+          <div className="w-full h-full flex bg-slate-50 dark:bg-slate-950 font-mono overflow-auto">
             <div
-              className="select-none px-3 py-3 text-slate-600 bg-slate-900/40 text-right border-r border-slate-800/80"
+              className="select-none px-3 py-3 text-slate-400 dark:text-slate-600 bg-slate-200/50 dark:bg-slate-900/40 text-right border-r border-slate-300 dark:border-slate-800/80"
               style={{ fontSize: `${fontSize}px`, lineHeight: '1.5' }}
             >
               {lineNumbers.map((num) => (
@@ -540,14 +540,14 @@ export function CodeEditor({
               value={currentCode}
               onChange={(e) => onChangeCode(activeTab.id, e.target.value)}
               spellCheck={false}
-              className="flex-1 w-full h-full p-3 bg-transparent text-slate-100 focus:outline-none resize-none font-mono"
+              className="flex-1 w-full h-full p-3 bg-transparent text-slate-900 dark:text-slate-100 focus:outline-none resize-none font-mono"
               style={{ fontSize: `${fontSize}px`, lineHeight: '1.5', tabSize: 2 }}
             />
           </div>
         ) : (
           /* Monaco Editor */
           <Editor
-            key={activeTab.id}
+            key={`${activeTab.id}-${theme}`}
             height="100%"
             defaultLanguage="cpp"
             theme={theme === 'dark' ? 'vs-dark' : 'vs'}
@@ -575,22 +575,22 @@ export function CodeEditor({
       {/* 3. Modal: Add New Tab */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 text-slate-100 font-semibold">
-                <FileCode className="w-5 h-5 text-cyan-400" />
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold">
+                <FileCode className="w-5 h-5 text-brand-500" />
                 <span>เพิ่ม Tab โค้ดใหม่ (New Sketch Tab)</span>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-white transition"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3">
-              <label className="text-xs text-slate-300">ชื่อไฟล์ / ชื่อ Tab:</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">ชื่อไฟล์ / ชื่อ Tab:</label>
               <input
                 type="text"
                 placeholder="เช่น motor.ino หรือ sensor.h"
@@ -603,19 +603,19 @@ export function CodeEditor({
                   if (e.key === 'Enter') handleConfirmAddTab()
                 }}
                 autoFocus
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded-xl text-slate-100 outline-none font-mono text-sm"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-brand-500 rounded-xl text-slate-900 dark:text-slate-100 outline-none font-mono text-xs transition-all"
               />
 
               {/* Quick Type Selectors */}
               <div className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-400">นามสกุลแนะนำ:</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">นามสกุลแนะนำ:</span>
                 <button
                   type="button"
                   onClick={() => {
                     const base = newTabName.split('.')[0] || 'sub'
                     setNewTabName(`${base}.ino`)
                   }}
-                  className="px-2 py-0.5 text-xs rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 font-mono transition"
+                  className="px-2.5 py-1 text-xs rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-300 font-mono font-medium transition"
                 >
                   .ino
                 </button>
@@ -625,7 +625,7 @@ export function CodeEditor({
                     const base = newTabName.split('.')[0] || 'header'
                     setNewTabName(`${base}.h`)
                   }}
-                  className="px-2 py-0.5 text-xs rounded bg-slate-800 hover:bg-slate-700 text-teal-300 font-mono transition"
+                  className="px-2.5 py-1 text-xs rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 font-mono font-medium transition"
                 >
                   .h
                 </button>
@@ -635,30 +635,30 @@ export function CodeEditor({
                     const base = newTabName.split('.')[0] || 'helpers'
                     setNewTabName(`${base}.cpp`)
                   }}
-                  className="px-2 py-0.5 text-xs rounded bg-slate-800 hover:bg-slate-700 text-indigo-300 font-mono transition"
+                  className="px-2.5 py-1 text-xs rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-mono font-medium transition"
                 >
                   .cpp
                 </button>
               </div>
 
               {addError && (
-                <div className="text-xs text-rose-400 bg-rose-950/40 p-2 rounded-lg border border-rose-900/50 flex items-center gap-1.5">
+                <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 p-2.5 rounded-xl border border-rose-200 dark:border-rose-900/50 flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{addError}</span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={handleConfirmAddTab}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-cyan-500/20 transition flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md shadow-brand-900/20 transition flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" />
                 <span>สร้าง Tab ใหม่</span>
@@ -671,31 +671,31 @@ export function CodeEditor({
       {/* 4. Modal: Confirm Delete Tab */}
       {deletingTab && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center gap-3 text-rose-400 font-semibold border-b border-slate-800 pb-3">
-              <div className="w-9 h-9 rounded-xl bg-rose-950/80 border border-rose-800/60 flex items-center justify-center shrink-0">
-                <Trash2 className="w-5 h-5 text-rose-400" />
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400 font-semibold border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-950 border border-rose-200 dark:border-rose-800/60 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               </div>
               <div>
-                <h3 className="text-slate-100 text-sm font-bold">ยืนยันการลบ Tab โค้ด</h3>
-                <p className="text-xs text-slate-400 font-normal">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+                <h3 className="text-slate-900 dark:text-slate-100 text-sm font-bold">ยืนยันการลบ Tab โค้ด</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300">
-              คุณต้องการลบไฟล์ <span className="font-mono text-cyan-300 font-bold">{deletingTab.name}</span> ใช่หรือไม่?
+            <p className="text-xs text-slate-700 dark:text-slate-300">
+              คุณต้องการลบไฟล์ <span className="font-mono text-brand-600 dark:text-brand-300 font-bold">{deletingTab.name}</span> ใช่หรือไม่?
             </p>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setDeletingTab(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-lg shadow-rose-600/20 transition flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md shadow-rose-900/20 transition flex items-center gap-1.5"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>ลบไฟล์</span>

@@ -1,5 +1,52 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-prompt), var(--font-inter), sans-serif;
+  --font-prompt: var(--font-prompt), sans-serif;
+  --font-mono: var(--font-mono), monospace;
+
+  /* Brand Palette Tokens from @design (KruSittigonHub Design System) */
+  --color-brand-50: #f5f0ff;
+  --color-brand-100: #ebd9ff;
+  --color-brand-200: #d7b3ff;
+  --color-brand-300: #ba7eff;
+  --color-brand-400: #9d47ff;
+  --color-brand-500: #5f06c4;
+  --color-brand-600: #5203ad;
+  --color-brand-700: #430293;
+  --color-brand-800: #38037a;
+  --color-brand-900: #2f0463;
+  --color-brand-950: #1b023a;
+}
+
+:root {
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-card: #f8fafc;
+  --border-color: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --brand-primary: #5f06c4;
+  --brand-hover: #5203ad;
+}
+
+html.dark {
+  --bg-app: #020617;
+  --bg-surface: #0f172a;
+  --bg-surface-elevated: #1e293b;
+  --bg-card: #0b0f19;
+  --border-color: #1e293b;
+  --border-subtle: #0f172a;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --brand-primary: #5f06c4;
+  --brand-hover: #5203ad;
+}
+
 @layer utilities {
   /* Custom scrollbar styling */
   ::-webkit-scrollbar {
@@ -48,7 +95,7 @@
   }
 
   .glass-header {
-    background: rgba(10, 15, 30, 0.85);
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -67,4 +114,6 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  font-family: var(--font-prompt), var(--font-sans), sans-serif;
 }
+

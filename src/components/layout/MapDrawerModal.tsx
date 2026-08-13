@@ -263,83 +263,83 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
   const spawnTopPercent = ((startY / (heightCm * 10)) * 100).toFixed(1)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-5xl bg-slate-900/95 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200 font-sans select-none">
+      <div className="w-full max-w-5xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[90vh] transition-colors duration-300">
         {/* Header */}
-        <div className="px-6 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60 shrink-0">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-900/60">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+            <div className="p-2.5 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 shadow-xs">
               <Paintbrush className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
-                เครื่องมือวาดสนามแข่งขัน (Interactive Map Designer)
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                สตูดิโอวาดสนามแข่งขัน (Interactive Map Painter)
               </h2>
-              <p className="text-xs text-slate-400">
-                วาดเส้นทาง จุดเริ่มต้น-จุดสิ้นสุด และสร้างสนามแข่งขันในรูปแบบของคุณเอง
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                วาดเส้นสนาม สี่เหลี่ยม วงกลม และกำหนดจุดเกิดหุ่นยนต์ได้อย่างอิสระ
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Main Body */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-          {/* Left Toolbar Side Panel */}
-          <div className="w-full lg:w-72 bg-slate-950/60 border-r border-slate-800 p-4 space-y-4 overflow-y-auto custom-scrollbar shrink-0">
+        {/* Workspace Body */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+          {/* Left Control Sidebar */}
+          <div className="w-full md:w-80 p-5 space-y-4 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 overflow-y-auto custom-scrollbar bg-slate-50/60 dark:bg-slate-950/60">
             {/* Map Title Input */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">ชื่อสนาม</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">ชื่อสนามแข่งขัน</label>
               <input
                 type="text"
                 value={mapName}
                 onChange={(e) => setMapName(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 transition-all font-sans"
               />
             </div>
 
             {/* Field Dimensions */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">กว้าง (cm)</label>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">กว้าง (ซม.)</label>
                 <input
                   type="number"
                   min="50"
                   max="500"
                   value={widthCm}
                   onChange={(e) => setWidthCm(Math.max(50, Number(e.target.value)))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                 />
               </div>
-              <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">ยาว (cm)</label>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">ยาว (ซม.)</label>
                 <input
                   type="number"
                   min="50"
                   max="500"
                   value={heightCm}
                   onChange={(e) => setHeightCm(Math.max(50, Number(e.target.value)))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                 />
               </div>
             </div>
 
             {/* Drawing Tools Grid */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-2">เครื่องมือวาด (Tools)</label>
-              <div className="grid grid-cols-3 gap-1.5">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-800 dark:text-slate-200">เครื่องมือวาดภาพ</label>
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setActiveTool('pen')}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-xs font-bold transition-all ${
                     activeTool === 'pen'
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800'
+                      ? 'bg-brand-500 text-white shadow-md shadow-brand-900/20 border-brand-500'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                   title="พู่กันวาดเส้นอิสระ"
                 >
@@ -349,10 +349,10 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
 
                 <button
                   onClick={() => setActiveTool('line')}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-xs font-bold transition-all ${
                     activeTool === 'line'
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800'
+                      ? 'bg-brand-500 text-white shadow-md shadow-brand-900/20 border-brand-500'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                   title="วาดเส้นตรง"
                 >
@@ -362,10 +362,10 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
 
                 <button
                   onClick={() => setActiveTool('rect')}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-xs font-bold transition-all ${
                     activeTool === 'rect'
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800'
+                      ? 'bg-brand-500 text-white shadow-md shadow-brand-900/20 border-brand-500'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                   title="วาดสี่เหลี่ยม"
                 >
@@ -375,10 +375,10 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
 
                 <button
                   onClick={() => setActiveTool('circle')}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-xs font-bold transition-all ${
                     activeTool === 'circle'
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800'
+                      ? 'bg-brand-500 text-white shadow-md shadow-brand-900/20 border-brand-500'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                   title="วาดวงกลม"
                 >
@@ -388,10 +388,10 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
 
                 <button
                   onClick={() => setActiveTool('eraser')}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-xs font-bold transition-all ${
                     activeTool === 'eraser'
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800'
+                      ? 'bg-amber-500 text-white shadow-md shadow-amber-900/20 border-amber-500'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                   title="ยางลบ"
                 >
@@ -401,10 +401,10 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
 
                 <button
                   onClick={() => setActiveTool('spawn')}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-xs font-bold transition-all ${
                     activeTool === 'spawn'
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-sm'
-                      : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800'
+                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-900/20 border-emerald-500'
+                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                   title="กำหนดจุดวางหุ่นยนต์"
                 >
@@ -415,10 +415,10 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
             </div>
 
             {/* Stroke Width Slider */}
-            <div>
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">ขนาดเส้น (Line Width)</span>
-                <span className="font-mono text-cyan-400">{strokeWidth}px</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-700 dark:text-slate-300">ขนาดเส้น</span>
+                <span className="font-mono text-brand-600 dark:text-brand-300 font-bold">{strokeWidth}px</span>
               </div>
               <input
                 type="range"
@@ -426,22 +426,22 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
                 max="80"
                 value={strokeWidth}
                 onChange={(e) => setStrokeWidth(Number(e.target.value))}
-                className="w-full accent-cyan-400 cursor-pointer"
+                className="w-full accent-brand-500 cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-0.5">
+              <div className="flex justify-between text-[10px] text-slate-400 font-mono">
                 <span>4px</span>
-                <span className="text-cyan-400 font-semibold">20px (มาตรฐาน 2cm)</span>
+                <span className="text-brand-600 dark:text-brand-300 font-semibold">20px (มาตรฐาน 2 ซม.)</span>
                 <span>80px</span>
               </div>
             </div>
 
             {/* Color Palette */}
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 mb-2">
-                <Palette className="w-3.5 h-3.5 text-cyan-400" />
-                <span>จานสี (Colors)</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                <Palette className="w-4 h-4 text-brand-500" />
+                <span>จานสี</span>
               </div>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-3 gap-2">
                 {presetColors.map((c) => (
                   <button
                     key={c.value}
@@ -449,14 +449,14 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
                       setStrokeColor(c.value)
                       if (activeTool === 'eraser') setActiveTool('pen')
                     }}
-                    className={`flex items-center gap-1.5 p-1.5 rounded-lg border text-[10px] font-medium transition ${
+                    className={`flex items-center gap-1.5 p-2 rounded-xl border text-[10px] font-bold transition-all ${
                       strokeColor === c.value && activeTool !== 'eraser'
-                        ? 'border-cyan-400 bg-slate-900 text-white shadow-sm'
-                        : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200'
+                        ? 'border-brand-500 bg-brand-50 dark:bg-slate-900 text-brand-700 dark:text-brand-300 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     <span
-                      className="w-3.5 h-3.5 rounded-full border border-white/20 shrink-0"
+                      className="w-3.5 h-3.5 rounded-full border border-slate-300 dark:border-slate-700 shrink-0"
                       style={{ backgroundColor: c.value }}
                     />
                     <span className="truncate">{c.label.split(' ')[0]}</span>
@@ -466,37 +466,37 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
             </div>
 
             {/* Robot Spawn Position Coordinates */}
-            <div className="pt-2 border-t border-slate-800/80 space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                <MapPin className="w-3.5 h-3.5" />
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <MapPin className="w-4 h-4" />
                 <span>พิกัดจุดวางหุ่นยนต์</span>
               </div>
-              <div className="grid grid-cols-3 gap-1.5">
-                <div>
-                  <label className="block text-[10px] text-slate-400">Start X (mm)</label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Start X (มม.)</label>
                   <input
                     type="number"
                     value={startX}
                     onChange={(e) => setStartX(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                   />
                 </div>
-                <div>
-                  <label className="block text-[10px] text-slate-400">Start Y (mm)</label>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Start Y (มม.)</label>
                   <input
                     type="number"
                     value={startY}
                     onChange={(e) => setStartY(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                   />
                 </div>
-                <div>
-                  <label className="block text-[10px] text-slate-400">Heading (deg)</label>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">มุมมุ่งหน้า (องศา)</label>
                   <input
                     type="number"
                     value={startHeading}
                     onChange={(e) => setStartHeading(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                   />
                 </div>
               </div>
@@ -504,15 +504,15 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
           </div>
 
           {/* Right Drawing Canvas Workspace */}
-          <div className="flex-1 bg-slate-950 p-4 flex flex-col items-center justify-between overflow-hidden relative">
+          <div className="flex-1 bg-slate-100/60 dark:bg-slate-950 p-5 flex flex-col items-center justify-between overflow-hidden relative">
             {/* Top Canvas Action Bar */}
-            <div className="w-full flex items-center justify-between gap-2 mb-2 bg-slate-900/80 p-2 rounded-xl border border-slate-800 shrink-0">
+            <div className="w-full flex items-center justify-between gap-2 mb-3 bg-white dark:bg-slate-900/90 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shrink-0 shadow-xs">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleUndo}
                   disabled={historyIndex <= 0}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-xs text-slate-200 transition"
-                  title="Undo"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all"
+                  title="ย้อนกลับ"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>ย้อนกลับ</span>
@@ -520,21 +520,21 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
                 <button
                   onClick={handleRedo}
                   disabled={historyIndex >= history.length - 1}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-xs text-slate-200 transition"
-                  title="Redo"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all"
+                  title="ทำซ้ำ"
                 >
                   <RotateCw className="w-3.5 h-3.5" />
                   <span>ทำซ้ำ</span>
                 </button>
               </div>
 
-              <div className="text-xs font-mono text-slate-400">
-                ขนาดสนาม: {widthCm} × {heightCm} cm
+              <div className="text-xs font-mono text-slate-600 dark:text-slate-400 font-bold">
+                ขนาดสนาม: {widthCm} × {heightCm} ซม.
               </div>
 
               <button
                 onClick={handleClearCanvas}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-xs font-medium transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-xs font-semibold transition-all shadow-xs"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>ล้างกระดาน</span>
@@ -543,20 +543,14 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
 
             {/* Drawing Canvas Area */}
             <div className="flex-1 w-full flex items-center justify-center relative overflow-hidden p-2">
-              <div className="relative shadow-2xl rounded-lg overflow-hidden border-2 border-slate-700/80 bg-white">
+              <div className="relative shadow-2xl rounded-2xl overflow-hidden border-2 border-slate-300 dark:border-slate-700/80 bg-white">
                 <canvas
                   ref={canvasRef}
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
-                  className={`block cursor-${
-                    activeTool === 'eraser'
-                      ? 'cell'
-                      : activeTool === 'spawn'
-                      ? 'crosshair'
-                      : 'crosshair'
-                  }`}
+                  className="block cursor-crosshair"
                   style={{
                     maxWidth: '100%',
                     maxHeight: '60vh',
@@ -573,7 +567,7 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
                   }}
                 >
                   <div className="w-6 h-6 rounded-full bg-emerald-500/30 border-2 border-emerald-400 flex items-center justify-center animate-ping absolute" />
-                  <div className="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-bold text-[10px] flex items-center justify-center shadow-lg ring-2 ring-white">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shadow-lg ring-2 ring-white">
                     S
                   </div>
                 </div>
@@ -581,16 +575,16 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
             </div>
 
             {/* Footer Bottom Actions */}
-            <div className="w-full pt-3 border-t border-slate-800 flex items-center justify-between shrink-0">
-              <span className="text-xs text-slate-400">
-                เคล็ดลับ: ใช้เครื่องมือ &quot;จุดเริ่มต้น&quot; เพื่อคลิกเลือกจุดวางหุ่นยนต์บนสนาม
+            <div className="w-full pt-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                คำแนะนำ: เลือกเครื่องมือ &quot;จุดเริ่มต้น&quot; แล้วคลิกบนกระดานเพื่อกำหนดจุดเกิดหุ่นยนต์
               </span>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition"
+                  className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all"
                 >
                   ยกเลิก
                 </button>
@@ -598,9 +592,9 @@ export function MapDrawerModal({ isOpen, onClose, onAddMap }: MapDrawerModalProp
                 <button
                   type="button"
                   onClick={handleSaveMap}
-                  className="px-5 py-2 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"
+                  className="px-5 py-2 text-xs font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-brand-900/20 active:scale-95"
                 >
-                  <Check className="w-4 h-4" /> บันทึกและนำไปใช้
+                  <Check className="w-4 h-4" /> บันทึกและนำไปใช้งาน
                 </button>
               </div>
             </div>

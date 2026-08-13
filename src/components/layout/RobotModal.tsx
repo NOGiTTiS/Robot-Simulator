@@ -35,13 +35,13 @@ interface RobotModalProps {
 }
 
 const COLOR_PALETTES = [
+  { name: 'Brand Purple', value: '#5f06c4' },
   { name: 'Cyan Tech', value: '#06b6d4' },
   { name: 'Amber Gold', value: '#f59e0b' },
   { name: 'Emerald Speed', value: '#10b981' },
   { name: 'Indigo Core', value: '#6366f1' },
   { name: 'Rose Cyber', value: '#f43f5e' },
   { name: 'Purple Void', value: '#a855f7' },
-  { name: 'Crimson Power', value: '#dc2626' },
   { name: 'Dark Steel', value: '#475569' }
 ]
 
@@ -88,12 +88,13 @@ export function RobotModal({
     ctx.save()
     ctx.scale(dpr, dpr)
 
-    // Clear background
-    ctx.fillStyle = '#020617'
+    // Clear background adaptive
+    const isDark = document.documentElement.classList.contains('dark')
+    ctx.fillStyle = isDark ? '#020617' : '#f8fafc'
     ctx.fillRect(0, 0, width, height)
 
     // Draw Grid Lines
-    ctx.strokeStyle = '#1e293b'
+    ctx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0'
     ctx.lineWidth = 1
     const gridSize = 20
     for (let x = 0; x < width; x += gridSize) {
@@ -109,93 +110,81 @@ export function RobotModal({
       ctx.stroke()
     }
 
-    // Center origin
+    // Draw Robot Body at Center
     const centerX = width / 2
     const centerY = height / 2
 
-    // Scale factor (pixel per mm)
-    const previewScale = Math.min(width / 320, height / 320)
-
-    const bodyW = editRobot.bodyWidth * previewScale
-    const bodyL = editRobot.bodyLength * previewScale
-    const wheelB = editRobot.wheelBase * previewScale
-    const wheelR = editRobot.wheelRadius * previewScale
+    // Scale mm to preview px
+    const scale = 1.2
+    const bodyW = editRobot.bodyWidth * scale
+    const bodyL = editRobot.bodyLength * scale
+    const wheelR = (editRobot.wheelRadius || 32) * scale
+    const wheelW = 14 * scale
 
     ctx.save()
     ctx.translate(centerX, centerY)
 
-    // Left & Right Wheels
-    const wheelWidth = 14 * previewScale
-    const wheelLength = wheelR * 2
+    // Wheels (Top/Bottom or Left/Right)
+    ctx.fillStyle = isDark ? '#0f172a' : '#334155'
+    ctx.strokeStyle = isDark ? '#64748b' : '#94a3b8'
+    ctx.lineWidth = 2
 
-    ctx.fillStyle = '#0f172a'
-    ctx.strokeStyle = '#64748b'
-    ctx.lineWidth = 1.5
+    // Left Wheel
+    ctx.fillRect(-wheelR, -bodyW / 2 - wheelW / 2, wheelR * 2, wheelW)
+    ctx.strokeRect(-wheelR, -bodyW / 2 - wheelW / 2, wheelR * 2, wheelW)
 
-    // Left wheel
-    ctx.fillRect(-wheelLength / 2, -wheelB / 2 - wheelWidth / 2, wheelLength, wheelWidth)
-    ctx.strokeRect(-wheelLength / 2, -wheelB / 2 - wheelWidth / 2, wheelLength, wheelWidth)
+    // Right Wheel
+    ctx.fillRect(-wheelR, bodyW / 2 - wheelW / 2, wheelR * 2, wheelW)
+    ctx.strokeRect(-wheelR, bodyW / 2 - wheelW / 2, wheelR * 2, wheelW)
 
-    // Right wheel
-    ctx.fillRect(-wheelLength / 2, wheelB / 2 - wheelWidth / 2, wheelLength, wheelWidth)
-    ctx.strokeRect(-wheelLength / 2, wheelB / 2 - wheelWidth / 2, wheelLength, wheelWidth)
-
-    // Main Body Chassis
-    ctx.fillStyle = '#0f172a'
-    ctx.strokeStyle = editRobot.color || '#06b6d4'
+    // Chassis Box
+    ctx.fillStyle = isDark ? '#0f172a' : '#ffffff'
+    ctx.strokeStyle = editRobot.color || '#5f06c4'
     ctx.lineWidth = 3
 
-    const radius = 10 * previewScale
     ctx.beginPath()
-    ctx.roundRect(-bodyL / 2, -bodyW / 2, bodyL, bodyW, radius)
+    ctx.roundRect(-bodyL / 2, -bodyW / 2, bodyL, bodyW, 12)
     ctx.fill()
     ctx.stroke()
 
-    // Inner Glow
-    ctx.fillStyle = `${editRobot.color || '#06b6d4'}22`
+    // Inner Accent Fill
+    ctx.fillStyle = `${editRobot.color || '#5f06c4'}22`
     ctx.fill()
 
-    // Board Badge
-    ctx.fillStyle = '#1e293b'
-    ctx.strokeStyle = '#334155'
+    // Board Chip Representation
+    ctx.fillStyle = isDark ? '#1e293b' : '#f1f5f9'
+    ctx.strokeStyle = isDark ? '#334155' : '#cbd5e1'
     ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.roundRect(-bodyL * 0.25, -bodyW * 0.25, bodyL * 0.5, bodyW * 0.5, 4)
-    ctx.fill()
-    ctx.stroke()
+    ctx.fillRect(-25, -20, 50, 40)
+    ctx.strokeRect(-25, -20, 50, 40)
 
-    ctx.fillStyle = editRobot.color || '#06b6d4'
-    ctx.font = `bold ${Math.max(10, Math.floor(11 * previewScale))}px sans-serif`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(editRobot.boardType, 0, 0)
-
-    // Front Arrow / Nose
-    ctx.fillStyle = editRobot.color || '#06b6d4'
+    // Front Direction Arrow
+    ctx.fillStyle = editRobot.color || '#5f06c4'
     ctx.beginPath()
-    ctx.moveTo(bodyL / 2 + 10 * previewScale, 0)
-    ctx.lineTo(bodyL / 2 - 4 * previewScale, -8 * previewScale)
-    ctx.lineTo(bodyL / 2 - 4 * previewScale, 8 * previewScale)
+    ctx.moveTo(bodyL / 2 - 10, -10)
+    ctx.lineTo(bodyL / 2 + 5, 0)
+    ctx.lineTo(bodyL / 2 - 10, 10)
     ctx.closePath()
     ctx.fill()
 
-    // Dimension Annotations
-    ctx.strokeStyle = '#475569'
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = '10px monospace'
+    // Center Cross
+    ctx.strokeStyle = editRobot.color || '#5f06c4'
+    ctx.beginPath()
+    ctx.arc(0, 0, 4, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Dimension Guidelines
+    ctx.strokeStyle = isDark ? '#475569' : '#94a3b8'
+    ctx.fillStyle = isDark ? '#94a3b8' : '#64748b'
+    ctx.font = '11px sans-serif'
 
     // Width label
     ctx.beginPath()
     ctx.moveTo(-bodyL / 2 - 12, -bodyW / 2)
     ctx.lineTo(-bodyL / 2 - 12, bodyW / 2)
     ctx.stroke()
-
-    ctx.save()
-    ctx.translate(-bodyL / 2 - 16, 0)
-    ctx.rotate(-Math.PI / 2)
-    ctx.textAlign = 'center'
-    ctx.fillText(`${editRobot.bodyWidth}mm`, 0, 0)
-    ctx.restore()
+    ctx.textAlign = 'right'
+    ctx.fillText(`${editRobot.bodyWidth}mm`, -bodyL / 2 - 16, 4)
 
     // Length label
     ctx.beginPath()
@@ -223,7 +212,7 @@ export function RobotModal({
     const customSpec: RobotSpec = {
       ...editRobot,
       id: editRobot.isCustom ? editRobot.id : newId,
-      name: editRobot.name.trim() || 'Custom Robot',
+      name: editRobot.name.trim() || 'หุ่นยนต์ปรับแต่งเอง',
       isCustom: true,
       presetType: 'custom'
     }
@@ -275,23 +264,23 @@ export function RobotModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden backdrop-blur-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in select-none font-sans">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden backdrop-blur-xl transition-colors duration-300">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-900/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-2xl bg-brand-500 flex items-center justify-center shadow-md shadow-brand-900/20 text-white font-bold">
+              <Bot className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                จัดการหุ่นยนต์ (Robot Management)
-                <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/60 font-mono font-medium">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                จัดการหุ่นยนต์และสเปก (Robot Manager)
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800/60 font-mono font-semibold">
                   {activeRobot.name}
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
-                เลือกพรีเซ็ตสำเร็จรูป หรือปรับแต่งโครงสร้าง มอเตอร์ สี และฟิสิกส์ตัวถังหุ่นยนต์
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                เลือกโมเดลสำเร็จรูป หรือปรับแต่งโครงสร้าง มอเตอร์ สี และฟิสิกส์ตัวถังหุ่นยนต์
               </p>
             </div>
           </div>
@@ -299,15 +288,15 @@ export function RobotModal({
           <div className="flex items-center gap-2">
             <button
               onClick={handleImportRobotJson}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition flex items-center gap-1.5"
-              title="Import Robot Spec (.json)"
+              className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-xs"
+              title="นำเข้าสเปกหุ่นยนต์ (.json)"
             >
-              <Upload className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Import Spec</span>
+              <Upload className="w-4 h-4 text-brand-500" />
+              <span>นำเข้าไฟล์ Spec</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition"
+              className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -315,25 +304,25 @@ export function RobotModal({
         </div>
 
         {/* Tab Header Navigation */}
-        <div className="px-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
+        <div className="px-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-100/50 dark:bg-slate-950/40">
           <div className="flex items-center gap-1 py-2">
             <button
               onClick={() => setActiveTab('presets')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'presets'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-brand-500 text-white shadow-md shadow-brand-900/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800/60'
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>พรีเซ็ตหุ่นยนต์ ({allPresets.length})</span>
+              <span>โมเดลหุ่นยนต์สำเร็จรูป ({allPresets.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('customizer')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'customizer'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-brand-500 text-white shadow-md shadow-brand-900/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800/60'
               }`}
             >
               <Sliders className="w-4 h-4" />
@@ -342,15 +331,15 @@ export function RobotModal({
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 cursor-pointer bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition">
+            <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-all shadow-xs">
               <input
                 type="checkbox"
                 checked={autoSyncSensors}
                 onChange={(e) => setAutoSyncSensors(e.target.checked)}
-                className="w-3.5 h-3.5 rounded accent-cyan-500 cursor-pointer"
+                className="w-3.5 h-3.5 rounded accent-brand-500 cursor-pointer"
               />
-              <span className="text-xs text-slate-300 font-medium select-none">
-                อัปเดต Default Sensors อัตโนมัติ
+              <span className="text-xs text-slate-700 dark:text-slate-300 font-semibold select-none">
+                อัปเดตเซนเซอร์เริ่มต้นอัตโนมัติ
               </span>
             </label>
 
@@ -359,7 +348,7 @@ export function RobotModal({
                 onClose()
                 onOpenSensorModal()
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-medium transition"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-50 dark:bg-brand-950/60 hover:bg-brand-100 dark:hover:bg-brand-900 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 text-xs font-semibold transition-all shadow-xs"
             >
               <Sliders className="w-3.5 h-3.5" />
               <span>ตั้งค่าเซนเซอร์ &rarr;</span>
@@ -374,15 +363,15 @@ export function RobotModal({
               {/* Built-in Presets Grid */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
-                    <span>พรีเซ็ตหุ่นยนต์มาตรฐาน (Built-in Robot Presets)</span>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-brand-500" />
+                    <span>โมเดลหุ่นยนต์มาตรฐาน (Built-in Robot Presets)</span>
                   </h3>
                   <button
                     onClick={() => {
                       setEditRobot({
                         id: `custom-${Date.now()}`,
-                        name: 'My Custom Robot',
+                        name: 'หุ่นยนต์ปรับแต่งเอง',
                         boardType: 'ATOM-VX',
                         bodyWidth: 150,
                         bodyLength: 170,
@@ -392,13 +381,13 @@ export function RobotModal({
                         accelRate: 2000,
                         decelRate: 2600,
                         frictionCoeff: 0.9,
-                        color: '#06b6d4',
+                        color: '#5f06c4',
                         presetType: 'custom',
                         isCustom: true
                       })
                       setActiveTab('customizer')
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold text-xs transition shadow-md shadow-cyan-950/40"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs transition-all shadow-md shadow-brand-900/20 active:scale-95"
                   >
                     <Plus className="w-4 h-4" />
                     <span>สร้างหุ่นยนต์ใหม่ (New Custom Bot)</span>
@@ -411,55 +400,55 @@ export function RobotModal({
                     return (
                       <div
                         key={r.id}
-                        className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
+                        className={`p-4 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
                           isActive
-                            ? 'bg-slate-900 border-cyan-500 ring-1 ring-cyan-500/50 shadow-lg shadow-cyan-950/40'
-                            : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/40'
+                            ? 'bg-brand-50/50 dark:bg-slate-900 border-brand-500 ring-2 ring-brand-500/30 shadow-md'
+                            : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 hover:border-brand-300 dark:hover:border-slate-700'
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
                               <span
-                                className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm"
-                                style={{ backgroundColor: r.color || '#06b6d4' }}
+                                className="w-4 h-4 rounded-full shrink-0 shadow-xs border border-white/20"
+                                style={{ backgroundColor: r.color || '#5f06c4' }}
                               />
-                              <h4 className="font-bold text-sm text-slate-200">{r.name}</h4>
+                              <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">{r.name}</h4>
                             </div>
 
                             <div className="flex items-center gap-1.5">
-                              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">
+                              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-brand-700 dark:text-brand-300 font-semibold border border-slate-300 dark:border-slate-700">
                                 {r.boardType}
                               </span>
                               {r.isCustom && (
-                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-400 border border-indigo-800">
+                                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 font-semibold border border-brand-300 dark:border-brand-800">
                                   Custom
                                 </span>
                               )}
                             </div>
                           </div>
 
-                          <p className="text-xs text-slate-400 mt-2 line-clamp-2">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">
                             {r.description || 'หุ่นยนต์ปรับแต่งเฉพาะกิจ'}
                           </p>
 
                           {/* Robot Quick Stats */}
-                          <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-800/80 text-[11px] font-mono">
-                            <div className="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                              <div className="text-slate-500 text-[10px]">ขนาดตัวถัง</div>
-                              <div className="text-slate-200 font-semibold mt-0.5">
-                                {r.bodyWidth}x{r.bodyLength} <span className="text-[9px] text-slate-500">mm</span>
+                          <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-200 dark:border-slate-800/80 text-[11px] font-mono">
+                            <div className="bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                              <div className="text-slate-500 dark:text-slate-400 text-[10px] font-sans">ขนาดตัวถัง</div>
+                              <div className="text-slate-900 dark:text-slate-100 font-bold mt-0.5">
+                                {r.bodyWidth}x{r.bodyLength} <span className="text-[9px] text-slate-400 font-sans">มม.</span>
                               </div>
                             </div>
-                            <div className="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                              <div className="text-slate-500 text-[10px]">ความเร็วสูงสุด</div>
-                              <div className="text-amber-300 font-semibold mt-0.5">
-                                {(r.maxSpeed / 10).toFixed(0)} <span className="text-[9px] text-slate-500">cm/s</span>
+                            <div className="bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                              <div className="text-slate-500 dark:text-slate-400 text-[10px] font-sans">ความเร็วสูงสุด</div>
+                              <div className="text-amber-600 dark:text-amber-400 font-bold mt-0.5">
+                                {(r.maxSpeed / 10).toFixed(0)} <span className="text-[9px] text-slate-400 font-sans">ซม./วิ</span>
                               </div>
                             </div>
-                            <div className="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                              <div className="text-slate-500 text-[10px]">การยึดเกาะ</div>
-                              <div className="text-emerald-400 font-semibold mt-0.5">
+                            <div className="bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                              <div className="text-slate-500 dark:text-slate-400 text-[10px] font-sans">การยึดเกาะ</div>
+                              <div className="text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
                                 {Math.round(r.frictionCoeff * 100)}%
                               </div>
                             </div>
@@ -474,24 +463,24 @@ export function RobotModal({
                                 setEditRobot(r)
                                 setActiveTab('customizer')
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition"
+                              className="px-3 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all"
                             >
                               แก้ไข / ปรับแต่ง
                             </button>
                             <button
                               onClick={() => handleExportRobotJson(r)}
-                              title="Export Spec JSON"
-                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                              title="ส่งออก Spec JSON"
+                              className="p-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all"
                             >
-                              <Download className="w-3.5 h-3.5" />
+                              <Download className="w-4 h-4" />
                             </button>
                             {r.isCustom && (
                               <button
                                 onClick={() => onDeleteCustomRobot(r.id)}
                                 title="ลบหุ่นยนต์นี้"
-                                className="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-400 transition border border-rose-800/40"
+                                className="p-1.5 rounded-xl bg-rose-100 dark:bg-rose-950/60 hover:bg-rose-200 dark:hover:bg-rose-900 text-rose-600 dark:text-rose-400 transition-all border border-rose-200 dark:border-rose-800/40"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             )}
                           </div>
@@ -499,10 +488,10 @@ export function RobotModal({
                           <button
                             onClick={() => handleApplyRobot(r)}
                             disabled={isActive}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
+                            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                               isActive
-                                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-default'
-                                : 'bg-cyan-600 hover:bg-cyan-500 text-slate-950 shadow-md shadow-cyan-950/40'
+                                ? 'bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800 cursor-default'
+                                : 'bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-900/20 active:scale-95'
                             }`}
                           >
                             {isActive ? (
@@ -511,7 +500,7 @@ export function RobotModal({
                                 <span>กำลังใช้งานอยู่</span>
                               </>
                             ) : (
-                              <span>เลือกใช้งานหุ่นยนต์นี้</span>
+                              <span>เลือกใช้งาน</span>
                             )}
                           </button>
                         </div>
@@ -524,218 +513,171 @@ export function RobotModal({
           ) : (
             /* Customizer Tab */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Form Controls Column */}
+              {/* Left Column: Form Controls */}
               <div className="lg:col-span-7 space-y-5">
-                {/* 1. General Info */}
-                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-4">
-                  <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Bot className="w-4 h-4" />
-                    <span>ข้อมูลทั่วไป & บอร์ดไมโครคอนโทรลเลอร์</span>
-                  </h4>
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <Bot className="w-4 h-4 text-brand-500" />
+                    <span>ข้อมูลและสีประจำหุ่นยนต์</span>
+                  </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs text-slate-400 mb-1 block">ชื่อหุ่นยนต์ (Robot Name)</label>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">ชื่อหุ่นยนต์</label>
                       <input
                         type="text"
                         value={editRobot.name}
                         onChange={(e) => setEditRobot({ ...editRobot, name: e.target.value })}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
-                        placeholder="ตั้งชื่อหุ่นยนต์..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs outline-none focus:border-brand-500 transition-all font-sans"
                       />
                     </div>
 
-                    <div>
-                      <label className="text-xs text-slate-400 mb-1 block">บอร์ดประมวลผล (Board Type)</label>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">บอร์ดควบคุม</label>
                       <select
                         value={editRobot.boardType}
-                        onChange={(e) =>
-                          setEditRobot({
-                            ...editRobot,
-                            boardType: e.target.value as RobotSpec['boardType']
-                          })
-                        }
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-medium"
+                        onChange={(e) => setEditRobot({ ...editRobot, boardType: e.target.value as any })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs outline-none focus:border-brand-500 transition-all font-sans"
                       >
                         <option value="ATOM-VX">PT-BOT ATOM-VX</option>
                         <option value="POP32i">POP32 / POP32i</option>
-                        <option value="NANO">Arduino Nano</option>
-                        <option value="ESP32">ESP32 Board</option>
+                        <option value="NANO">Arduino Nano (ATmega328P)</option>
+                        <option value="ESP32">ESP32 DevKit</option>
                       </select>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="text-xs text-slate-400 mb-1.5 block">ธีมสีตัวถัง (Robot Color Theme)</label>
-                    <div className="flex items-center gap-2 flex-wrap">
+                  {/* Color Palette Selector */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">สีของตัวถังหุ่นยนต์</label>
+                    <div className="flex flex-wrap gap-2">
                       {COLOR_PALETTES.map((c) => (
                         <button
                           key={c.value}
+                          type="button"
                           onClick={() => setEditRobot({ ...editRobot, color: c.value })}
-                          className={`w-7 h-7 rounded-lg transition-transform ${
-                            editRobot.color === c.value
-                              ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-slate-900'
-                              : 'hover:scale-105 opacity-80 hover:opacity-100'
+                          className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
+                            editRobot.color === c.value ? 'ring-2 ring-brand-500 scale-110' : 'hover:scale-105'
                           }`}
                           style={{ backgroundColor: c.value }}
                           title={c.name}
-                        />
+                        >
+                          {editRobot.color === c.value && <Check className="w-4 h-4 text-white drop-shadow-xs" />}
+                        </button>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                {/* 2. Chassis & Wheel Dimensions */}
-                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-4">
-                  <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Maximize2 className="w-4 h-4" />
-                    <span>มิติและขนาดตัวถัง (Chassis & Wheels)</span>
-                  </h4>
+                {/* Body Dimensions */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <Maximize2 className="w-4 h-4 text-brand-500" />
+                    <span>มิติและขนาดตัวถัง (Robot Geometry)</span>
+                  </h3>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">ความกว้างตัวถัง (Width)</span>
-                        <span className="text-cyan-400 font-mono font-semibold">{editRobot.bodyWidth} mm</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">ความกว้างตัวถัง (มม.)</label>
                       <input
-                        type="range"
+                        type="number"
                         min="80"
                         max="300"
-                        step="5"
                         value={editRobot.bodyWidth}
                         onChange={(e) => setEditRobot({ ...editRobot, bodyWidth: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
-
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">ความยาวตัวถัง (Length)</span>
-                        <span className="text-cyan-400 font-mono font-semibold">{editRobot.bodyLength} mm</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">ความยาวตัวถัง (มม.)</label>
                       <input
-                        type="range"
-                        min="80"
-                        max="300"
-                        step="5"
+                        type="number"
+                        min="100"
+                        max="350"
                         value={editRobot.bodyLength}
                         onChange={(e) => setEditRobot({ ...editRobot, bodyLength: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">ระยะห่างระหว่างล้อ (Wheel Base)</span>
-                        <span className="text-indigo-400 font-mono font-semibold">{editRobot.wheelBase} mm</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">ระยะห่างล้อ (WheelBase) (มม.)</label>
                       <input
-                        type="range"
-                        min="70"
-                        max="260"
-                        step="5"
+                        type="number"
+                        min="80"
+                        max="280"
                         value={editRobot.wheelBase}
                         onChange={(e) => setEditRobot({ ...editRobot, wheelBase: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-indigo-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
-
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">รัศมีล้อ (Wheel Radius)</span>
-                        <span className="text-indigo-400 font-mono font-semibold">{editRobot.wheelRadius} mm</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">รัศมีล้อ (Wheel Radius) (มม.)</label>
                       <input
-                        type="range"
+                        type="number"
                         min="15"
                         max="60"
-                        step="1"
                         value={editRobot.wheelRadius}
                         onChange={(e) => setEditRobot({ ...editRobot, wheelRadius: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-indigo-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* 3. Motor & Physics Performance */}
-                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-4">
-                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Gauge className="w-4 h-4" />
-                    <span>สมรรถนะมอเตอร์ & ฟิสิกส์ (Motor & Friction)</span>
-                  </h4>
+                {/* Physics & Motor Specifications */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <Gauge className="w-4 h-4 text-brand-500" />
+                    <span>สมรรถนะมอเตอร์และฟิสิกส์ (Motor & Physics)</span>
+                  </h3>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">ความเร็วสูงสุด (Top Speed)</span>
-                        <span className="text-amber-400 font-mono font-semibold">
-                          {(editRobot.maxSpeed / 10).toFixed(0)} cm/s
-                        </span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">ความเร็วสูงสุด (มม./วิ)</label>
                       <input
-                        type="range"
+                        type="number"
                         min="200"
-                        max="1500"
+                        max="2000"
                         step="50"
                         value={editRobot.maxSpeed}
                         onChange={(e) => setEditRobot({ ...editRobot, maxSpeed: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
-
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">แรงเสียดทานล้อ (Traction)</span>
-                        <span className="text-emerald-400 font-mono font-semibold">
-                          {Math.round(editRobot.frictionCoeff * 100)}%
-                        </span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">สัมประสิทธิ์การยึดเกาะ (0.1 - 1.0)</label>
                       <input
-                        type="range"
-                        min="0.5"
+                        type="number"
+                        min="0.1"
                         max="1.0"
-                        step="0.02"
+                        step="0.05"
                         value={editRobot.frictionCoeff}
                         onChange={(e) => setEditRobot({ ...editRobot, frictionCoeff: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-emerald-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">อัตราการเร่ง (Accel Ramping)</span>
-                        <span className="text-slate-300 font-mono font-semibold">{editRobot.accelRate} mm/s²</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">อัตราการเร่ง (มม./วิ²)</label>
                       <input
-                        type="range"
-                        min="600"
+                        type="number"
+                        min="500"
                         max="5000"
                         step="100"
                         value={editRobot.accelRate}
                         onChange={(e) => setEditRobot({ ...editRobot, accelRate: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-slate-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
-
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-400">อัตราการเบรก (Decel Ramping)</span>
-                        <span className="text-slate-300 font-mono font-semibold">{editRobot.decelRate} mm/s²</span>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">อัตราการเบรก (มม./วิ²)</label>
                       <input
-                        type="range"
-                        min="800"
+                        type="number"
+                        min="500"
                         max="6000"
                         step="100"
                         value={editRobot.decelRate}
                         onChange={(e) => setEditRobot({ ...editRobot, decelRate: Number(e.target.value) })}
-                        className="w-full h-1.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-slate-400"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-brand-500"
                       />
                     </div>
                   </div>
@@ -744,37 +686,37 @@ export function RobotModal({
 
               {/* Right Column: Live Interactive 2D Canvas Preview & Apply Actions */}
               <div className="lg:col-span-5 flex flex-col gap-4">
-                <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex-1 flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-cyan-400" />
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex-1 flex flex-col justify-between space-y-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-brand-500" />
                       <span>ตัวอย่างหุ่นยนต์ Real-time 2D</span>
                     </span>
-                    <span className="text-[10px] font-mono text-slate-500">Live Scale Preview</span>
+                    <span className="text-[10px] font-mono text-slate-400">Live Scale Preview</span>
                   </div>
 
                   {/* 2D Canvas Viewport */}
-                  <div className="w-full h-64 bg-slate-950 rounded-xl border border-slate-800/80 overflow-hidden relative">
+                  <div className="w-full h-64 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden relative shadow-inner">
                     <canvas ref={canvasRef} className="w-full h-full block" />
                   </div>
 
                   {/* Spec Summary Card */}
-                  <div className="mt-4 p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs font-mono space-y-2">
+                  <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono space-y-2 shadow-xs">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Chassis Ratio:</span>
-                      <span className="text-slate-200">
-                        {(editRobot.bodyWidth / editRobot.bodyLength).toFixed(2)} (W/L)
+                      <span className="text-slate-500 dark:text-slate-400 font-sans">อัตราส่วนตัวถัง (W/L):</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-bold">
+                        {(editRobot.bodyWidth / editRobot.bodyLength).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Est 0-60 cm/s Time:</span>
-                      <span className="text-cyan-400">
-                        {(600 / editRobot.accelRate).toFixed(2)} s
+                      <span className="text-slate-500 dark:text-slate-400 font-sans">เวลาเร่ง 0-60 ซม./วิ:</span>
+                      <span className="text-brand-600 dark:text-brand-300 font-bold">
+                        {(600 / editRobot.accelRate).toFixed(2)} วินาที
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Max Turning Speed:</span>
-                      <span className="text-amber-300">
+                      <span className="text-slate-500 dark:text-slate-400 font-sans">ความเร็วหมุนกลับตัว:</span>
+                      <span className="text-amber-600 dark:text-amber-400 font-bold">
                         {((editRobot.maxSpeed * 2) / editRobot.wheelBase).toFixed(1)} rad/s
                       </span>
                     </div>
@@ -785,14 +727,14 @@ export function RobotModal({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleSaveAsCustom}
-                    className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition"
+                    className="flex-1 py-3 rounded-xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-brand-700 dark:text-brand-300 border border-slate-300 dark:border-slate-700 text-xs font-bold transition-all shadow-xs"
                   >
-                    บันทึกเป็นหุ่นยนต์ของฉัน 💾
+                    บันทึกสเปกนี้ 💾
                   </button>
 
                   <button
                     onClick={() => handleApplyRobot(editRobot)}
-                    className="flex-1 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 text-xs font-bold transition shadow-lg shadow-cyan-950/40"
+                    className="flex-1 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-all shadow-md shadow-brand-900/20 active:scale-95"
                   >
                     นำไปใช้งานทันที 🚀
                   </button>

@@ -65,19 +65,19 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-lg bg-slate-900/95 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200 font-sans select-none">
+      <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-900/60">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+            <div className="p-2.5 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 shadow-xs">
               <Settings2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                 แก้ไขขนาดและข้อมูลสนาม (Edit Map Dimensions)
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 ปรับแต่งความกว้าง ความยาว และพิกัดวางหุ่นยนต์บนสนาม
               </p>
             </div>
@@ -85,7 +85,7 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -95,34 +95,34 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
           {/* Map Preview Image Thumbnail */}
           {mapDef.imageUrl && (
-            <div className="w-full h-28 bg-slate-950 rounded-xl overflow-hidden flex items-center justify-center p-2 border border-slate-800 relative">
+            <div className="w-full h-28 bg-slate-100 dark:bg-slate-950 rounded-2xl overflow-hidden flex items-center justify-center p-2 border border-slate-200 dark:border-slate-800 relative shadow-inner">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={mapDef.imageUrl}
                 alt={mapDef.name}
-                className="w-full h-full object-contain rounded"
+                className="w-full h-full object-contain rounded-lg"
               />
-              <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-slate-900/80 text-cyan-300 text-[10px] font-mono border border-slate-800 backdrop-blur-sm">
-                ขนาดเดิม: {Math.round(mapDef.widthMm / 10)} × {Math.round(mapDef.heightMm / 10)} cm
+              <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-slate-900/90 text-brand-700 dark:text-brand-300 text-[10px] font-mono font-bold border border-slate-200 dark:border-slate-800 backdrop-blur-sm shadow-xs">
+                ขนาดเดิม: {Math.round(mapDef.widthMm / 10)} × {Math.round(mapDef.heightMm / 10)} ซม.
               </div>
             </div>
           )}
 
           {/* Map Title Name */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">ชื่อสนามแข่งขัน</label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">ชื่อสนามแข่งขัน</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 transition-all font-sans"
             />
           </div>
 
           {/* Quick Preset Buttons */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-brand-500" />
               <span>ขนาดมาตรฐานยอดนิยม (Quick Presets)</span>
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -134,10 +134,10 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
                     setWidthCm(p.w)
                     setHeightCm(p.h)
                   }}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
+                  className={`px-3 py-1.5 rounded-xl text-[11px] font-mono font-semibold border transition-all ${
                     widthCm === p.w && heightCm === p.h
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
-                      : 'bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800'
+                      ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
+                      : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                 >
                   {p.label}
@@ -148,10 +148,10 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
 
           {/* Field Dimensions (cm) */}
           <div className="grid grid-cols-2 gap-3 pt-1">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1">
-                <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-                <span>ความกว้าง Width (cm)</span>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Maximize2 className="w-3.5 h-3.5 text-brand-500" />
+                <span>ความกว้าง Width (ซม.)</span>
               </label>
               <input
                 type="number"
@@ -159,14 +159,14 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
                 max="600"
                 value={widthCm}
                 onChange={(e) => setWidthCm(Math.max(50, Number(e.target.value)))}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1">
-                <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-                <span>ความยาว Height (cm)</span>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Maximize2 className="w-3.5 h-3.5 text-brand-500" />
+                <span>ความยาว Height (ซม.)</span>
               </label>
               <input
                 type="number"
@@ -174,72 +174,72 @@ export function MapEditModal({ isOpen, onClose, mapDef, onUpdateMap }: MapEditMo
                 max="600"
                 value={heightCm}
                 onChange={(e) => setHeightCm(Math.max(50, Number(e.target.value)))}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
               />
             </div>
           </div>
 
           {/* Initial Robot Spawn Coordinates */}
-          <div className="pt-3 border-t border-slate-800/80 space-y-2">
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                <MapPin className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <MapPin className="w-4 h-4" />
                 <span>พิกัดจุดวางหุ่นยนต์เริ่มต้น</span>
               </div>
               <button
                 type="button"
                 onClick={handleCenterSpawn}
-                className="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-mono"
+                className="text-xs text-brand-600 dark:text-brand-400 hover:underline font-bold"
               >
                 ย้ายไปกึ่งกลางสนาม
               </button>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="block text-[10px] text-slate-400 mb-0.5">Start X (mm)</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Start X (มม.)</label>
                 <input
                   type="number"
                   value={startX}
                   onChange={(e) => setStartX(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                 />
               </div>
 
-              <div>
-                <label className="block text-[10px] text-slate-400 mb-0.5">Start Y (mm)</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Start Y (มม.)</label>
                 <input
                   type="number"
                   value={startY}
                   onChange={(e) => setStartY(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                 />
               </div>
 
-              <div>
-                <label className="block text-[10px] text-slate-400 mb-0.5">Heading (deg)</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Heading (องศา)</label>
                 <input
                   type="number"
                   value={startHeading}
                   onChange={(e) => setStartHeading(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                 />
               </div>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-800/60">
+          <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl transition"
+              className="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all"
             >
               ยกเลิก
             </button>
             <button
               type="submit"
-              className="px-5 py-2 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"
+              className="px-5 py-2 text-xs font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-brand-900/20 active:scale-95"
             >
               <Check className="w-4 h-4" /> บันทึกการแก้ไขสนาม
             </button>

@@ -99,31 +99,31 @@ export function SensorConfigModal({
   const visHeightPx = Math.max(110, Math.min(220, Math.round(robotL * vizScale)))
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200 font-sans select-none">
+      <div className="w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-900/60">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="p-2.5 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 shadow-xs">
               <Sliders className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-                ตั้งค่าเซนเซอร์ (Interactive Sensor Configurator)
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                ตั้งค่าตำแหน่งเซนเซอร์ (Sensor Configurator)
                 {activeRobot && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700 font-mono font-medium flex items-center gap-1">
-                    <Bot className="w-3 h-3" /> {activeRobot.name}
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800 font-mono font-semibold flex items-center gap-1">
+                    <Bot className="w-3.5 h-3.5" /> {activeRobot.name}
                   </span>
                 )}
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 กำหนดตำแหน่งเซนเซอร์อ่านเส้น IR, TOF Laser ระยะทาง และ IMU เข็มทิศบนตัวถังหุ่นยนต์
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -132,13 +132,13 @@ export function SensorConfigModal({
         {/* Modal Body */}
         <div className="grid grid-cols-1 md:grid-cols-12 flex-1 overflow-hidden">
           {/* Left: Sensor List Controls */}
-          <div className="md:col-span-7 p-6 space-y-4 overflow-y-auto custom-scrollbar border-b md:border-b-0 md:border-r border-slate-800">
+          <div className="md:col-span-7 p-6 space-y-4 overflow-y-auto custom-scrollbar border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
             {/* Model Defaults & Quick Add Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
               {activeRobot && (
                 <button
                   onClick={handleResetToModelDefaults}
-                  className="px-3 py-1.5 text-xs font-semibold bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/40 rounded-lg transition flex items-center gap-1.5 shadow-sm"
+                  className="px-3.5 py-2 text-xs font-bold bg-brand-50 dark:bg-brand-950/60 hover:bg-brand-100 dark:hover:bg-brand-900 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 rounded-xl transition-all flex items-center gap-1.5 shadow-xs"
                   title="โหลดตำแหน่งและชนิดเซนเซอร์มาตรฐานของโมเดลนี้"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
@@ -149,19 +149,19 @@ export function SensorConfigModal({
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => handleAddSensor('IR_LINE')}
-                  className="px-2.5 py-1.5 text-[11px] font-medium bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg transition flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl transition-all flex items-center gap-1 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" /> + IR Line
                 </button>
                 <button
                   onClick={() => handleAddSensor('DISTANCE_TOF')}
-                  className="px-2.5 py-1.5 text-[11px] font-medium bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-bold bg-brand-50 dark:bg-brand-950/60 hover:bg-brand-100 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 rounded-xl transition-all flex items-center gap-1 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" /> + TOF Laser
                 </button>
                 <button
                   onClick={() => handleAddSensor('GYRO_IMU')}
-                  className="px-2.5 py-1.5 text-[11px] font-medium bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-lg transition flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-bold bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-xl transition-all flex items-center gap-1 shadow-xs"
                 >
                   <Plus className="w-3.5 h-3.5" /> + Gyro/IMU
                 </button>
@@ -171,37 +171,37 @@ export function SensorConfigModal({
             {/* Sensor List */}
             <div className="space-y-3">
               {sensors.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 text-xs border border-dashed border-slate-800 rounded-xl">
+                <div className="text-center py-8 text-slate-500 text-xs border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl font-medium">
                   ยังไม่ได้ติดตั้งเซนเซอร์ คลิกปุ่มด้านบนหรือเลือก &quot;โหลด Default Sensors&quot; เพื่อเพิ่มเซนเซอร์
                 </div>
               ) : (
                 sensors.map((sensor, idx) => (
                   <div
                     key={sensor.id}
-                    className={`p-3 rounded-xl border transition space-y-2 ${
+                    className={`p-3.5 rounded-2xl border transition-all space-y-2.5 ${
                       sensor.enabled
-                        ? 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
-                        : 'bg-slate-950/20 border-slate-800/40 opacity-50'
+                        ? 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 hover:border-brand-300 dark:hover:border-slate-700'
+                        : 'bg-slate-100/50 dark:bg-slate-950/20 border-slate-200 dark:border-slate-800/40 opacity-50'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleToggleEnable(sensor.id)}
-                          className={`p-1 rounded-md transition ${
-                            sensor.enabled ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-slate-600 hover:bg-slate-800'
+                          className={`p-1.5 rounded-lg transition-all ${
+                            sensor.enabled ? 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40' : 'text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
                           }`}
                         >
                           {sensor.enabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                         </button>
 
                         <span
-                          className={`text-xs font-mono font-semibold px-2 py-0.5 rounded ${
+                          className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border ${
                             sensor.type === 'IR_LINE'
-                              ? 'bg-emerald-500/20 text-emerald-300'
+                              ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
                               : sensor.type === 'DISTANCE_TOF'
-                              ? 'bg-cyan-500/20 text-cyan-300'
-                              : 'bg-purple-500/20 text-purple-300'
+                              ? 'bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border-brand-300 dark:border-brand-800'
+                              : 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-800'
                           }`}
                         >
                           #{idx + 1} {sensor.type}
@@ -210,7 +210,7 @@ export function SensorConfigModal({
 
                       <button
                         onClick={() => handleRemoveSensor(sensor.id)}
-                        className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-lg transition-all"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -219,47 +219,47 @@ export function SensorConfigModal({
                     {/* Sensor parameters */}
                     <div className="grid grid-cols-4 gap-2 pt-1">
                       <div>
-                        <label className="block text-[10px] text-slate-400">Pin / Channel</label>
+                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Pin / Channel</label>
                         <input
                           type="number"
                           min="0"
                           max="32"
                           value={sensor.pin}
                           onChange={(e) => handleUpdateSensor(sensor.id, { pin: Number(e.target.value) })}
-                          className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-slate-400">Offset X (mm)</label>
+                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Offset X (มม.)</label>
                         <input
                           type="number"
                           min="-150"
                           max="200"
                           value={sensor.offsetX}
                           onChange={(e) => handleUpdateSensor(sensor.id, { offsetX: Number(e.target.value) })}
-                          className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-slate-400">Offset Y (mm)</label>
+                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Offset Y (มม.)</label>
                         <input
                           type="number"
                           min="-150"
                           max="150"
                           value={sensor.offsetY}
                           onChange={(e) => handleUpdateSensor(sensor.id, { offsetY: Number(e.target.value) })}
-                          className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-slate-400">Angle (deg)</label>
+                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Angle (องศา)</label>
                         <input
                           type="number"
                           min="-180"
                           max="180"
                           value={sensor.angle}
                           onChange={(e) => handleUpdateSensor(sensor.id, { angle: Number(e.target.value) })}
-                          className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
                         />
                       </div>
                     </div>
@@ -270,14 +270,14 @@ export function SensorConfigModal({
           </div>
 
           {/* Right: Live Interactive Robot Visualizer */}
-          <div className="md:col-span-5 p-6 bg-slate-950 flex flex-col items-center justify-center relative min-h-[320px]">
-            <div className="text-xs font-semibold text-slate-300 mb-3 flex items-center gap-1.5">
-              <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
+          <div className="md:col-span-5 p-6 bg-slate-100/50 dark:bg-slate-950 flex flex-col items-center justify-center relative min-h-[320px]">
+            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-1.5">
+              <Radio className="w-4 h-4 text-brand-500 animate-pulse" />
               <span>ผังตำแหน่งเซนเซอร์บนตัวถังหุ่นยนต์</span>
             </div>
 
             {/* Robot Chassis Canvas Box */}
-            <div className="w-64 h-72 border border-slate-800 rounded-2xl bg-slate-900/60 relative flex items-center justify-center shadow-inner overflow-hidden">
+            <div className="w-64 h-72 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/60 relative flex items-center justify-center shadow-inner overflow-hidden">
               {/* Chassis outline matching activeRobot dimensions */}
               <div
                 style={{
@@ -285,9 +285,9 @@ export function SensorConfigModal({
                   height: `${visHeightPx}px`,
                   borderColor: chassisColor
                 }}
-                className="border-2 rounded-xl bg-slate-900/90 relative flex items-center justify-center shadow-lg transition-all"
+                className="border-2 rounded-xl bg-slate-50 dark:bg-slate-900/90 relative flex items-center justify-center shadow-lg transition-all"
               >
-                <span className="text-[10px] font-mono text-slate-500 text-center px-1">
+                <span className="text-[10px] font-mono text-slate-400 text-center px-1">
                   {robotW}x{robotL}mm
                 </span>
 
@@ -300,8 +300,6 @@ export function SensorConfigModal({
                 {/* Render Sensors on Visualizer */}
                 {sensors.map((sensor) => {
                   if (!sensor.enabled) return null
-                  // Map X offset (mm) to Visualizer Top px (forward is -Y from center)
-                  // Map Y offset (mm) to Visualizer Right px (right is +X from center)
                   const centerX = visWidthPx / 2
                   const centerY = visHeightPx / 2
 
@@ -315,15 +313,15 @@ export function SensorConfigModal({
                       className="absolute -translate-x-1/2 -translate-y-1/2 group"
                     >
                       <div
-                        className={`w-3.5 h-3.5 rounded-full border-2 shadow-md transition ${
+                        className={`w-3.5 h-3.5 rounded-full border-2 shadow-md transition-transform hover:scale-125 ${
                           sensor.type === 'IR_LINE'
                             ? 'bg-emerald-500 border-white'
                             : sensor.type === 'DISTANCE_TOF'
-                            ? 'bg-cyan-500 border-white'
+                            ? 'bg-brand-500 border-white'
                             : 'bg-purple-500 border-white'
                         }`}
                       />
-                      <div className="absolute top-4 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-950 text-cyan-300 text-[9px] px-1.5 py-0.5 rounded border border-slate-700 whitespace-nowrap z-10 font-mono shadow-xl">
+                      <div className="absolute top-4 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[9px] px-2 py-0.5 rounded-lg border border-slate-700 whitespace-nowrap z-10 font-mono shadow-xl">
                         Pin {sensor.pin} ({sensor.type})
                       </div>
                     </div>
@@ -332,17 +330,17 @@ export function SensorConfigModal({
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-400 mt-3 text-center">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3 text-center font-medium">
               ตำแหน่งเซนเซอร์จะปรับตำแหน่งจริงตามมิติตัวถังในมุมมอง 2D และ 3D อัตโนมัติ
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/50 flex items-center justify-end gap-3">
+        <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/50 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-xl transition shadow-lg shadow-emerald-500/20"
+            className="px-5 py-2 text-xs font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl transition-all shadow-md shadow-brand-900/20 active:scale-95"
           >
             ใช้ตำแหน่งเซนเซอร์นี้ & ปิดหน้าต่าง
           </button>
