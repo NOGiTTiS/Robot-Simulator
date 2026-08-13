@@ -23,7 +23,8 @@ import {
   Moon,
   BookOpen,
   Volume2,
-  VolumeX
+  VolumeX,
+  Smartphone
 } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 import { BUILTIN_MAPS } from '@/lib/maps'
@@ -57,6 +58,8 @@ interface HeaderBarProps {
   onToggleTheme?: () => void
   isMuted?: boolean
   onToggleMute?: () => void
+  isSmallScreen?: boolean
+  onOpenSmallScreenNotice?: () => void
 }
 
 export function HeaderBar({
@@ -84,29 +87,41 @@ export function HeaderBar({
   theme = 'dark',
   onToggleTheme,
   isMuted = false,
-  onToggleMute
+  onToggleMute,
+  isSmallScreen = false,
+  onOpenSmallScreenNotice
 }: HeaderBarProps) {
   const speeds = [1, 2, 5]
 
   const activeMapName = customMaps.find((m) => m.id === mapId)?.name || BUILTIN_MAPS.find((m) => m.id === mapId)?.name || 'สนามมาตรฐาน'
 
   return (
-    <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 font-sans">
+    <header className="h-14 glass-header px-3 md:px-4 flex items-center justify-between gap-2 md:gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 font-sans overflow-x-auto no-scrollbar">
       {/* 1. Brand & Logo */}
-      <div className="flex items-center gap-2.5 min-w-max">
-        <div className="w-9 h-9 rounded-xl bg-brand-500 p-0.5 overflow-hidden flex items-center justify-center shadow-md shadow-brand-500/30 ring-2 ring-brand-400/40">
+      <div className="flex items-center gap-2 md:gap-2.5 shrink-0 min-w-max">
+        <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-brand-500 p-0.5 overflow-hidden flex items-center justify-center shadow-md shadow-brand-500/30 ring-2 ring-brand-400/40">
           <img src="/logo.png" alt="TUNorth Robot Logo" className="w-full h-full object-contain rounded-lg" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-sm bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 dark:from-white dark:via-brand-200 dark:to-brand-400 bg-clip-text text-transparent tracking-tight">
+            <span className="font-bold text-xs md:text-sm bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 dark:from-white dark:via-brand-200 dark:to-brand-400 bg-clip-text text-transparent tracking-tight">
               TUNorth Robot Simulator
             </span>
             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800/50 font-semibold">
               v1.0
             </span>
+            {isSmallScreen && (
+              <button
+                onClick={onOpenSmallScreenNotice}
+                className="hidden sm:flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 font-bold hover:bg-amber-500/30 transition-all cursor-pointer"
+                title="คลิกเพื่อดูคำแนะนำขนาดหน้าจอ"
+              >
+                <Smartphone className="w-3 h-3 animate-pulse" />
+                <span>หน้าจอเล็ก</span>
+              </button>
+            )}
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
+          <p className="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
         </div>
       </div>
 

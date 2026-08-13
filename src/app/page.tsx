@@ -14,6 +14,7 @@ import { MapDrawerModal } from '@/components/layout/MapDrawerModal'
 import { MapEditModal } from '@/components/layout/MapEditModal'
 import { RobotModal } from '@/components/layout/RobotModal'
 import { CodeTemplatesModal } from '@/components/layout/CodeTemplatesModal'
+import { SmallScreenWarningModal } from '@/components/layout/SmallScreenWarningModal'
 import { CodeTemplate } from '@/lib/templates'
 import {
   InterpreterRunner,
@@ -92,6 +93,10 @@ export default function Home() {
   const [isCodeTemplatesModalOpen, setIsCodeTemplatesModalOpen] = useState(false)
   const [editingMap, setEditingMap] = useState<MapDefinition | null>(null)
 
+  const [screenWidth, setScreenWidth] = useState<number>(0)
+  const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false)
+  const [isSmallScreenModalOpen, setIsSmallScreenModalOpen] = useState<boolean>(false)
+
   const [files, setFiles] = useState<CodeTab[]>(DEFAULT_FILES)
   const [activeTabId, setActiveTabId] = useState<string>('tab-main')
 
@@ -149,6 +154,38 @@ export default function Home() {
     document.addEventListener('fullscreenchange', handleFullscreenChange)
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
+
+  // Listen to Screen Size changes for Smartphone / Small screen detection
+  useEffect(() => {
+    const handleScreenResize = () => {
+      const w = window.innerWidth
+      setScreenWidth(w)
+      const small = w < 768
+      setIsSmallScreen(small)
+
+      try {
+        const dismissed = sessionStorage.getItem('tunorth_dismiss_small_screen') === 'true'
+        if (small && !dismissed) {
+          setIsSmallScreenModalOpen(true)
+        }
+      } catch (err) {
+        console.error('Storage error loading small screen notice preference', err)
+      }
+    }
+
+    handleScreenResize()
+    window.addEventListener('resize', handleScreenResize)
+    return () => window.removeEventListener('resize', handleScreenResize)
+  }, [])
+
+  const handleContinueSmallScreenAnyway = () => {
+    try {
+      sessionStorage.setItem('tunorth_dismiss_small_screen', 'true')
+    } catch (err) {
+      console.error('Storage error saving small screen notice preference', err)
+    }
+    setIsSmallScreenModalOpen(false)
+  }
 
   const handleToggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -837,6 +874,8 @@ export default function Home() {
         onToggleTheme={handleToggleTheme}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}
+        isSmallScreen={isSmallScreen}
+        onOpenSmallScreenNotice={() => setIsSmallScreenModalOpen(true)}
       />
 
       {/* 2. Main Resizable Panels */}
@@ -958,6 +997,13 @@ export default function Home() {
         onClose={() => setIsCodeTemplatesModalOpen(false)}
         onSelectTemplate={handleSelectTemplate}
         currentTabName={files.find((f) => f.id === activeTabId)?.name || 'main.ino'}
+      />
+
+      <SmallScreenWarningModal
+        isOpen={isSmallScreenModalOpen}
+        onClose={() => setIsSmallScreenModalOpen(false)}
+        onContinueAnyway={handleContinueSmallScreenAnyway}
+        screenWidth={screenWidth}
       />
     </div>
   )
