@@ -657,11 +657,11 @@ export default function Home() {
     return (
       <div className="h-screen w-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 font-sans select-none">
         <div className="flex flex-col items-center gap-4 bg-slate-900/80 p-8 rounded-2xl border border-slate-800 backdrop-blur-xl shadow-2xl">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 animate-pulse">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 animate-pulse">
             <Zap className="w-6 h-6 text-white" />
           </div>
           <div className="text-center">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold bg-linear-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
               TUNorth Robot Simulator
             </h1>
             <p className="text-xs text-slate-400 mt-1">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>

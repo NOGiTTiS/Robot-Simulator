@@ -139,7 +139,7 @@ export function ResizableSplit({
       {/* Left Pane (Code Editor) */}
       <div
         style={{ width: `${splitRatio}%` }}
-        className="h-full flex flex-col min-w-[200px] overflow-hidden"
+        className="h-full flex flex-col min-w-50 overflow-hidden"
       >
         {leftComponent}
       </div>
@@ -160,7 +160,7 @@ export function ResizableSplit({
       {/* Right Pane (Simulator Canvas) */}
       <div
         style={{ width: `${100 - splitRatio}%` }}
-        className="h-full flex flex-col min-w-[200px] overflow-hidden relative"
+        className="h-full flex flex-col min-w-50 overflow-hidden relative"
       >
         {rightComponent}
       </div>
