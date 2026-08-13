@@ -358,10 +358,10 @@ export function SimulatorContainer({
 
             <span className="text-slate-300 dark:text-slate-700 mx-0.5">|</span>
 
-            {/* Quick Presets */}
+            {/* Quick Reset to 0° */}
             <button
               onClick={() => onRotateRobot(0, 0)}
-              title="หันหน้าทิศตะวันออก (0°)"
+              title="ตั้งมุมเริ่มต้น (0°)"
               className={`px-2 py-1 rounded-lg text-[11px] font-mono transition-all font-bold ${
                 headingDeg === 0
                   ? 'bg-brand-500 text-white shadow-xs'
@@ -369,28 +369,6 @@ export function SimulatorContainer({
               }`}
             >
               0&deg;
-            </button>
-            <button
-              onClick={() => onRotateRobot(0, 90)}
-              title="หันหน้าทิศเหนือ (90°)"
-              className={`px-2 py-1 rounded-lg text-[11px] font-mono transition-all font-bold ${
-                headingDeg === 90
-                  ? 'bg-brand-500 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              90&deg;
-            </button>
-            <button
-              onClick={() => onRotateRobot(0, 180)}
-              title="หันหน้าทิศตะวันตก (180°)"
-              className={`px-2 py-1 rounded-lg text-[11px] font-mono transition-all font-bold ${
-                Math.abs(headingDeg) === 180
-                  ? 'bg-brand-500 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              180&deg;
             </button>
 
             {/* Angle Slider Input */}

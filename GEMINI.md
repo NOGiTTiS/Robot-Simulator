@@ -30,6 +30,7 @@
 ```
 D:\RobotSIM
 ├── docs/
+│   ├── deployment.md          # คู่มือการ Deploy ระบบขึ้น Ubuntu Server ของโรงเรียน
 │   └── spec.md                # ข้อกำหนดระบบและ Checklist แบ่ง Phase (Source of Truth)
 ├── src/
 │   ├── app/

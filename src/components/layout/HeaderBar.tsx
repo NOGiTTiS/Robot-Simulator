@@ -110,43 +110,36 @@ export function HeaderBar({
         </div>
       </div>
 
-      {/* 2. Selectors Section (Robot, Map, Sensors, Code Examples) */}
+      {/* 2. Selectors Section (Robot, Map, Sensors) */}
       <div className="flex items-center gap-1.5">
-        {/* Code Examples Modal Button */}
-        <button
-          onClick={onOpenCodeTemplatesModal}
-          className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 group"
-          title="คลังตัวอย่างโค้ดมาตรฐาน (Code Examples)"
-        >
-          <BookOpen className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="hidden lg:inline">ตัวอย่างโค้ด</span>
-        </button>
-
         {/* Robot Spec / Management Modal Button */}
         <button
           onClick={onOpenRobotModal}
-          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 transition-all shadow-xs group flex items-center justify-center"
+          className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 transition-all shadow-xs group flex items-center gap-1.5 font-semibold text-xs"
           title={`เลือกหุ่นยนต์ (${robotName} - ${boardType || 'บอร์ดควบคุม'})`}
         >
           <Bot className="w-4 h-4 text-brand-500 dark:text-brand-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="hidden sm:inline">หุ่นยนต์</span>
         </button>
 
         {/* Map Selector Modal Button */}
         <button
           onClick={onOpenMapSelectModal}
-          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs group flex items-center justify-center"
+          className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs group flex items-center gap-1.5 font-semibold text-xs"
           title={`เลือกสนามแข่งขัน (${activeMapName})`}
         >
           <Map className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="hidden sm:inline">สนาม</span>
         </button>
 
         {/* Sensors Configurator Modal Button */}
         <button
           onClick={onOpenSensorModal}
-          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs flex items-center justify-center"
+          className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs flex items-center gap-1.5 font-semibold text-xs"
           title="เลือกและปรับแต่งตำแหน่งเซนเซอร์"
         >
           <Sliders className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+          <span className="hidden sm:inline">เซนเซอร์</span>
         </button>
       </div>
 
