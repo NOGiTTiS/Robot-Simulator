@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
 import { MapDefinition, SensorConfigItem, RobotSpec } from '@/types/project'
+import { ObstacleItem } from '@/types/obstacle'
 import { generateBuiltinMapCanvas } from '@/lib/mapRenderer'
 import { samplePixelColor, raycastDistanceTof } from '@/lib/physics/mapSampler'
 import { HardwareState } from '@/lib/interpreter/boards'
@@ -19,6 +20,10 @@ interface Canvas2DRendererProps {
   hwState?: HardwareState
   onRepositionRobot?: (x: number, y: number) => void
   theme?: 'dark' | 'light'
+  obstacles?: ObstacleItem[]
+  selectedObstacleId?: string | null
+  onSelectObstacle?: (id: string | null) => void
+  onUpdateObstacle?: (obs: ObstacleItem) => void
 }
 
 export function Canvas2DRenderer({
@@ -32,7 +37,11 @@ export function Canvas2DRenderer({
   sensors = [],
   hwState,
   onRepositionRobot,
-  theme = 'dark'
+  theme = 'dark',
+  obstacles = [],
+  selectedObstacleId = null,
+  onSelectObstacle,
+  onUpdateObstacle
 }: Canvas2DRendererProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -41,6 +50,9 @@ export function Canvas2DRenderer({
   const customImgRef = useRef<HTMLImageElement | null>(null)
 
   const isDraggingRef = useRef<boolean>(false)
+  const dragModeRef = useRef<'robot' | 'obstacle' | 'rotate_obs' | null>(null)
+  const draggingObsIdRef = useRef<string | null>(null)
+
   const [isHovered, setIsHovered] = useState<boolean>(false)
   const [isDragging, setIsDragging] = useState<boolean>(false)
 
@@ -149,7 +161,103 @@ export function Canvas2DRenderer({
       ctx.stroke()
     }
 
-    // --- ROBOT CHASSIS & SENSOR SAMPLING ---
+    // --- DRAW INTERACTIVE OBSTACLES ---
+    obstacles.forEach((obs) => {
+      const obsCanvasX = offsetX + obs.x * scale
+      const obsCanvasY = offsetY + obs.y * scale
+      const obsW = obs.width * scale
+      const obsH = obs.height * scale
+      const isSelected = obs.id === selectedObstacleId
+
+      ctx.save()
+      ctx.translate(obsCanvasX, obsCanvasY)
+      ctx.rotate((obs.rotation * Math.PI) / 180)
+
+      if (obs.type === 'cylinder') {
+        const radius = obsW / 2
+        // Glow / Selection
+        if (isSelected) {
+          ctx.strokeStyle = '#38bdf8'
+          ctx.lineWidth = 3
+          ctx.beginPath()
+          ctx.arc(0, 0, radius + 4, 0, Math.PI * 2)
+          ctx.stroke()
+        }
+
+        // Gradient 3D Cylinder Fill
+        const grad = ctx.createRadialGradient(-radius * 0.3, -radius * 0.3, radius * 0.1, 0, 0, radius)
+        grad.addColorStop(0, '#38bdf8')
+        grad.addColorStop(0.7, obs.color || '#0284c7')
+        grad.addColorStop(1, '#0c4a6e')
+
+        ctx.fillStyle = grad
+        ctx.strokeStyle = '#0284c7'
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.arc(0, 0, radius, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.stroke()
+
+        // Center dot
+        ctx.fillStyle = '#ffffff'
+        ctx.beginPath()
+        ctx.arc(0, 0, 3, 0, Math.PI * 2)
+        ctx.fill()
+      } else {
+        // Box or Wall
+        if (isSelected) {
+          ctx.strokeStyle = '#38bdf8'
+          ctx.lineWidth = 3
+          ctx.strokeRect(-obsW / 2 - 3, -obsH / 2 - 3, obsW + 6, obsH + 6)
+        }
+
+        ctx.fillStyle = obs.color || (obs.type === 'wall' ? '#475569' : '#d97706')
+        ctx.strokeStyle = obs.type === 'wall' ? '#334155' : '#92400e'
+        ctx.lineWidth = 2.5
+        ctx.beginPath()
+        ctx.roundRect(-obsW / 2, -obsH / 2, obsW, obsH, Math.min(8, obsW * 0.1))
+        ctx.fill()
+        ctx.stroke()
+
+        // Texture for box/wall
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+        ctx.lineWidth = 1.5
+        ctx.beginPath()
+        ctx.moveTo(-obsW / 2 + 6, -obsH / 2 + 6)
+        ctx.lineTo(obsW / 2 - 6, obsH / 2 - 6)
+        ctx.stroke()
+      }
+
+      // If Selected: Draw Rotate Handle & Glow Ring
+      if (isSelected) {
+        // Connecting line from top edge to rotate handle
+        ctx.strokeStyle = '#38bdf8'
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.moveTo(0, -obsH / 2)
+        ctx.lineTo(0, -obsH / 2 - 20)
+        ctx.stroke()
+
+        // Handle Circle
+        ctx.fillStyle = '#38bdf8'
+        ctx.strokeStyle = '#ffffff'
+        ctx.lineWidth = 2.5
+        ctx.beginPath()
+        ctx.arc(0, -obsH / 2 - 20, 9, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.stroke()
+
+        // Center dot inside handle
+        ctx.fillStyle = '#ffffff'
+        ctx.beginPath()
+        ctx.arc(0, -obsH / 2 - 20, 3, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      ctx.restore()
+    })
+
+    // --- DRAW ROBOT CHASSIS & SENSORS ---
     const robotX = offsetX + physicsState.x * scale
     const robotY = offsetY + physicsState.y * scale
     const robotWidth = (robotSpec?.bodyWidth || 140) * scale
@@ -162,16 +270,16 @@ export function Canvas2DRenderer({
     ctx.translate(robotX, robotY)
 
     // Interactive Hover/Drag Glow
-    if (isDragging || isHovered) {
-      ctx.strokeStyle = isDragging ? robotColor : `${robotColor}80`
-      ctx.lineWidth = isDragging ? 3 : 2
+    if (isDragging && dragModeRef.current === 'robot') {
+      ctx.strokeStyle = robotColor
+      ctx.lineWidth = 3
       ctx.setLineDash([6, 6])
       ctx.beginPath()
       ctx.arc(0, 0, robotLength * 0.8, 0, Math.PI * 2)
       ctx.stroke()
       ctx.setLineDash([])
 
-      ctx.fillStyle = isDragging ? `${robotColor}33` : `${robotColor}1a`
+      ctx.fillStyle = `${robotColor}33`
       ctx.beginPath()
       ctx.arc(0, 0, robotLength * 0.8, 0, Math.PI * 2)
       ctx.fill()
@@ -201,9 +309,9 @@ export function Canvas2DRenderer({
 
     // Robot Main Body
     const bodyRadius = 12 * scale
-    ctx.fillStyle = isDragging ? '#0f172a' : '#1e293b'
-    ctx.strokeStyle = isDragging ? robotColor : robotColor
-    ctx.lineWidth = isDragging ? 3 : 2.5
+    ctx.fillStyle = isDragging && dragModeRef.current === 'robot' ? '#0f172a' : '#1e293b'
+    ctx.strokeStyle = robotColor
+    ctx.lineWidth = 2.5
 
     ctx.beginPath()
     ctx.roundRect(-robotLength / 2, -robotWidth / 2, robotLength, robotWidth, bodyRadius)
@@ -248,9 +356,7 @@ export function Canvas2DRenderer({
       const sensorLocalCanvasY = sensor.offsetY * scale
 
       if (sensor.type === 'IR_LINE') {
-        let grayscale = 1000
         let isLine = false
-
         if (activeMapCtx && mapCanvasRef.current) {
           const sample = samplePixelColor(
             activeMapCtx,
@@ -261,37 +367,23 @@ export function Canvas2DRenderer({
             sensorWorldX,
             sensorWorldY
           )
-          grayscale = sample.grayscale
           isLine = sample.isLine
         }
 
-        // Update hardware state for C++ interpreter
-        if (hwState) {
-          hwState.analogPins[sensor.pin] = grayscale
-          hwState.digitalPins[sensor.pin] = isLine ? 1 : 0
-        }
-
         if (showSensorsOverlay) {
-          // Render IR Sensor Dot (Green if line, Red if floor)
-          ctx.fillStyle = isLine ? '#10b981' : '#ef4444'
-          ctx.beginPath()
-          ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 4 * scale, 0, Math.PI * 2)
-          ctx.fill()
+          ctx.fillStyle = isLine ? '#ef4444' : '#10b981'
           ctx.strokeStyle = '#ffffff'
-          ctx.lineWidth = 1
-          ctx.stroke()
-
-          // Glowing halo
-          ctx.fillStyle = isLine ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'
+          ctx.lineWidth = 1.5
           ctx.beginPath()
-          ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 7 * scale, 0, Math.PI * 2)
+          ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, Math.max(3.5, 4.5 * scale), 0, Math.PI * 2)
           ctx.fill()
+          ctx.stroke()
         }
       } else if (sensor.type === 'DISTANCE_TOF') {
         const sensorRad = physicsState.heading + (sensor.angle * Math.PI) / 180
         let distanceMm = 2000
-        let hitWorldX = sensorWorldX + Math.cos(sensorRad) * 2000
-        let hitWorldY = sensorWorldY + Math.sin(sensorRad) * 2000
+        let hitX = sensorWorldX + Math.cos(sensorRad) * 2000
+        let hitY = sensorWorldY + Math.sin(sensorRad) * 2000
 
         if (activeMapCtx && mapCanvasRef.current) {
           const ray = raycastDistanceTof(
@@ -303,65 +395,72 @@ export function Canvas2DRenderer({
             sensorWorldX,
             sensorWorldY,
             sensorRad,
-            2000
+            2000,
+            obstacles
           )
           distanceMm = ray.distanceMm
-          hitWorldX = ray.hitX
-          hitWorldY = ray.hitY
-        }
-
-        const distanceCm = Math.round(distanceMm / 10)
-        if (hwState) {
-          hwState.analogPins[sensor.pin] = distanceCm
+          hitX = ray.hitX
+          hitY = ray.hitY
         }
 
         if (showSensorsOverlay) {
-          // Render TOF Laser Ray Beam (Cyan)
-          const hitLocalX = (hitWorldX - physicsState.x) * cosH + (hitWorldY - physicsState.y) * sinH
-          const hitLocalY = -(hitWorldX - physicsState.x) * sinH + (hitWorldY - physicsState.y) * cosH
-
-          ctx.strokeStyle = '#06b6d4'
-          ctx.lineWidth = 1.5
-          ctx.setLineDash([4, 2])
+          ctx.fillStyle = '#f59e0b'
           ctx.beginPath()
-          ctx.moveTo(sensorLocalCanvasX, sensorLocalCanvasY)
-          ctx.lineTo(hitLocalX * scale, hitLocalY * scale)
-          ctx.stroke()
-          ctx.setLineDash([])
-
-          // Laser Hit Dot
-          ctx.fillStyle = '#38bdf8'
-          ctx.beginPath()
-          ctx.arc(hitLocalX * scale, hitLocalY * scale, 3 * scale, 0, Math.PI * 2)
+          ctx.arc(sensorLocalCanvasX, sensorLocalCanvasY, 4 * scale, 0, Math.PI * 2)
           ctx.fill()
-        }
-      } else if (sensor.type === 'GYRO_IMU') {
-        const headingDeg = Math.round((physicsState.heading * 180) / Math.PI)
-        if (hwState) {
-          hwState.analogPins[sensor.pin] = headingDeg
-        }
 
-        if (showSensorsOverlay) {
-          // Compass Ring Overlay around chassis
-          ctx.strokeStyle = '#a855f780' // Purple opacity
-          ctx.lineWidth = 1
-          ctx.setLineDash([2, 2])
+          ctx.save()
+          ctx.rotate(-physicsState.heading)
+
+          const sensorCanvasWorldX = robotX + sensorLocalCanvasX * cosH - sensorLocalCanvasY * sinH
+          const sensorCanvasWorldY = robotY + sensorLocalCanvasX * sinH + sensorLocalCanvasY * cosH
+          const hitCanvasX = offsetX + hitX * scale
+          const hitCanvasY = offsetY + hitY * scale
+
+          ctx.strokeStyle = distanceMm < 2000 ? '#f59e0b' : '#f59e0b40'
+          ctx.lineWidth = 1.5
+          ctx.setLineDash([4, 4])
           ctx.beginPath()
-          ctx.arc(0, 0, robotLength * 0.6, 0, Math.PI * 2)
+          ctx.moveTo(sensorCanvasWorldX - robotX, sensorCanvasWorldY - robotY)
+          ctx.lineTo(hitCanvasX - robotX, hitCanvasY - robotY)
           ctx.stroke()
           ctx.setLineDash([])
+
+          if (distanceMm < 2000) {
+            ctx.fillStyle = '#ef4444'
+            ctx.beginPath()
+            ctx.arc(hitCanvasX - robotX, hitCanvasY - robotY, 4, 0, Math.PI * 2)
+            ctx.fill()
+          }
+
+          ctx.restore()
         }
       }
     })
 
     ctx.restore()
     ctx.restore()
-  }, [physicsState, mapDef, boardType, trailPath, sensors, hwState, isHovered, isDragging])
+  }, [
+    mapDef,
+    physicsState,
+    boardType,
+    robotSpec,
+    trailPath,
+    showSensorsOverlay,
+    showTrail,
+    sensors,
+    isDragging,
+    isHovered,
+    theme,
+    obstacles,
+    selectedObstacleId
+  ])
 
-  // Main 2D Render Loop & ResizeObserver
   useEffect(() => {
     renderCanvas()
+  }, [renderCanvas])
 
+  useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
@@ -388,15 +487,42 @@ export function Canvas2DRenderer({
     [physicsState.x, physicsState.y]
   )
 
-  const handleContainerMouseMove = (e: React.MouseEvent) => {
-    if (isDraggingRef.current) return
-    const container = containerRef.current
-    if (!container) return
-    const rect = container.getBoundingClientRect()
-    const canvasX = e.clientX - rect.left
-    const canvasY = e.clientY - rect.top
-    setIsHovered(isPointerOverRobot(canvasX, canvasY))
-  }
+  const findClickedObstacle = useCallback(
+    (canvasX: number, canvasY: number) => {
+      const { offsetX, offsetY, scale } = transformRef.current
+      for (const obs of obstacles) {
+        const obsCanvasX = offsetX + obs.x * scale
+        const obsCanvasY = offsetY + obs.y * scale
+        const obsW = obs.width * scale
+        const obsH = obs.height * scale
+
+        // Calculate local coordinates of mouse relative to obstacle center & rotation
+        const dx = canvasX - obsCanvasX
+        const dy = canvasY - obsCanvasY
+        const rad = (-obs.rotation * Math.PI) / 180
+        const localX = Math.cos(rad) * dx - Math.sin(rad) * dy
+        const localY = Math.sin(rad) * dx + Math.cos(rad) * dy
+
+        // 1. Rotate Handle Hit Check (if obstacle is currently selected)
+        const isSelected = obs.id === selectedObstacleId
+        if (isSelected) {
+          const handleLocalX = 0
+          const handleLocalY = -obsH / 2 - 20
+          const distToHandle = Math.hypot(localX - handleLocalX, localY - handleLocalY)
+          if (distToHandle <= 22) {
+            return { obs, mode: 'rotate_obs' as const }
+          }
+        }
+
+        // 2. Obstacle Body Hit Check
+        if (Math.abs(localX) <= obsW / 2 + 8 && Math.abs(localY) <= obsH / 2 + 8) {
+          return { obs, mode: 'obstacle' as const }
+        }
+      }
+      return null
+    },
+    [obstacles, selectedObstacleId]
+  )
 
   const handlePointerDown = (e: React.PointerEvent) => {
     const container = containerRef.current
@@ -406,34 +532,75 @@ export function Canvas2DRenderer({
     const canvasX = e.clientX - rect.left
     const canvasY = e.clientY - rect.top
 
-    if (!isPointerOverRobot(canvasX, canvasY)) return
+    // Check click on robot
+    if (isPointerOverRobot(canvasX, canvasY)) {
+      isDraggingRef.current = true
+      dragModeRef.current = 'robot'
+      setIsDragging(true)
+      container.setPointerCapture(e.pointerId)
+      return
+    }
 
-    isDraggingRef.current = true
-    setIsDragging(true)
-    container.setPointerCapture(e.pointerId)
+    // Check click on obstacles (Body or Rotate Handle)
+    const obsHit = findClickedObstacle(canvasX, canvasY)
+    if (obsHit) {
+      isDraggingRef.current = true
+      dragModeRef.current = obsHit.mode
+      draggingObsIdRef.current = obsHit.obs.id
+      if (onSelectObstacle) onSelectObstacle(obsHit.obs.id)
+      setIsDragging(true)
+      container.setPointerCapture(e.pointerId)
+      return
+    }
+
+    // Clicked outside -> deselect obstacle
+    if (onSelectObstacle) onSelectObstacle(null)
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current || !onRepositionRobot || !containerRef.current) return
-
+    if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const canvasX = e.clientX - rect.left
     const canvasY = e.clientY - rect.top
 
     const { offsetX, offsetY, scale } = transformRef.current
+
+    if (!isDraggingRef.current) {
+      setIsHovered(isPointerOverRobot(canvasX, canvasY))
+      return
+    }
+
     const mapX = (canvasX - offsetX) / scale
     const mapY = (canvasY - offsetY) / scale
 
-    const margin = 80
-    const clampedX = Math.max(margin, Math.min(mapDef.widthMm - margin, mapX))
-    const clampedY = Math.max(margin, Math.min(mapDef.heightMm - margin, mapY))
-
-    onRepositionRobot(clampedX, clampedY)
+    if (dragModeRef.current === 'robot' && onRepositionRobot) {
+      const margin = 80
+      const clampedX = Math.max(margin, Math.min(mapDef.widthMm - margin, mapX))
+      const clampedY = Math.max(margin, Math.min(mapDef.heightMm - margin, mapY))
+      onRepositionRobot(clampedX, clampedY)
+    } else if (dragModeRef.current === 'obstacle' && draggingObsIdRef.current && onUpdateObstacle) {
+      const obs = obstacles.find((o) => o.id === draggingObsIdRef.current)
+      if (obs) {
+        onUpdateObstacle({ ...obs, x: mapX, y: mapY })
+      }
+    } else if (dragModeRef.current === 'rotate_obs' && draggingObsIdRef.current && onUpdateObstacle) {
+      const obs = obstacles.find((o) => o.id === draggingObsIdRef.current)
+      if (obs) {
+        const obsCanvasX = offsetX + obs.x * scale
+        const obsCanvasY = offsetY + obs.y * scale
+        const angleRad = Math.atan2(canvasY - obsCanvasY, canvasX - obsCanvasX)
+        let angleDeg = Math.round((angleRad * 180) / Math.PI) + 90
+        if (angleDeg < 0) angleDeg += 360
+        onUpdateObstacle({ ...obs, rotation: angleDeg })
+      }
+    }
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
     if (isDraggingRef.current) {
       isDraggingRef.current = false
+      dragModeRef.current = null
+      draggingObsIdRef.current = null
       setIsDragging(false)
       if (containerRef.current && containerRef.current.hasPointerCapture(e.pointerId)) {
         containerRef.current.releasePointerCapture(e.pointerId)
@@ -444,7 +611,6 @@ export function Canvas2DRenderer({
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleContainerMouseMove}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -462,4 +628,3 @@ export function Canvas2DRenderer({
     </div>
   )
 }
-

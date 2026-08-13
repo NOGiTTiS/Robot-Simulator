@@ -21,7 +21,9 @@ import {
   Tv,
   Sun,
   Moon,
-  BookOpen
+  BookOpen,
+  Volume2,
+  VolumeX
 } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 import { BUILTIN_MAPS } from '@/lib/maps'
@@ -53,6 +55,8 @@ interface HeaderBarProps {
   onPanelModeChange: (mode: 'split' | 'editor' | 'simulator') => void
   theme?: 'dark' | 'light'
   onToggleTheme?: () => void
+  isMuted?: boolean
+  onToggleMute?: () => void
 }
 
 export function HeaderBar({
@@ -78,7 +82,9 @@ export function HeaderBar({
   panelMode,
   onPanelModeChange,
   theme = 'dark',
-  onToggleTheme
+  onToggleTheme,
+  isMuted = false,
+  onToggleMute
 }: HeaderBarProps) {
   const speeds = [1, 2, 5]
 
@@ -311,6 +317,25 @@ export function HeaderBar({
               <Maximize2 className="w-4 h-4" />
             )}
           </button>
+
+          {/* Audio Mute / Unmute Toggle Button */}
+          {onToggleMute && (
+            <button
+              onClick={onToggleMute}
+              title={isMuted ? 'เปิดเสียงสังเคราะห์ Buzzer (Unmute)' : 'ปิดเสียงสังเคราะห์ Buzzer (Mute)'}
+              className={`p-2 rounded-xl transition-all flex items-center gap-1 border ${
+                isMuted
+                  ? 'bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 border-transparent'
+              }`}
+            >
+              {isMuted ? (
+                <VolumeX className="w-4 h-4 text-rose-500" />
+              ) : (
+                <Volume2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              )}
+            </button>
+          )}
 
           {/* Light / Dark Mode Toggle Button */}
           {onToggleTheme && (

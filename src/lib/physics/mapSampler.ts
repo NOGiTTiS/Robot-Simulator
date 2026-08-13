@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { ExtendedPhysicsState } from './kinematics'
 import { MapDefinition, SensorConfigItem } from '@/types/project'
+import { ObstacleItem } from '@/types/obstacle'
 import { HardwareState } from '@/lib/interpreter/boards'
 import { generateBuiltinMapCanvas } from '@/lib/mapRenderer'
 
@@ -49,6 +50,28 @@ export function samplePixelColor(
   return { r, g, b, a, grayscale, isLine }
 }
 
+export function isPointInsideObstacle(x: number, y: number, obs: ObstacleItem): boolean {
+  if (obs.type === 'cylinder') {
+    const dx = x - obs.x
+    const dy = y - obs.y
+    const radius = obs.width / 2
+    return dx * dx + dy * dy <= radius * radius
+  } else {
+    // box or wall
+    const rad = (obs.rotation * Math.PI) / 180
+    const cosR = Math.cos(-rad)
+    const sinR = Math.sin(-rad)
+
+    const dx = x - obs.x
+    const dy = y - obs.y
+
+    const localX = cosR * dx - sinR * dy
+    const localY = sinR * dx + cosR * dy
+
+    return Math.abs(localX) <= obs.width / 2 && Math.abs(localY) <= obs.height / 2
+  }
+}
+
 export function raycastDistanceTof(
   ctx: CanvasRenderingContext2D,
   canvasWidth: number,
@@ -58,7 +81,8 @@ export function raycastDistanceTof(
   startXMm: number,
   startYMm: number,
   angleRad: number,
-  maxDistanceMm = 2000
+  maxDistanceMm = 2000,
+  obstacles: ObstacleItem[] = []
 ): { distanceMm: number; hitX: number; hitY: number } {
   const stepMm = 10
   let distance = 0
@@ -69,6 +93,15 @@ export function raycastDistanceTof(
 
     if (curX <= 10 || curX >= mapWidthMm - 10 || curY <= 10 || curY >= mapHeightMm - 10) {
       return { distanceMm: Math.round(distance), hitX: curX, hitY: curY }
+    }
+
+    // Check interaction with active placement obstacles
+    if (Array.isArray(obstacles) && obstacles.length > 0) {
+      for (const obs of obstacles) {
+        if (isPointInsideObstacle(curX, curY, obs)) {
+          return { distanceMm: Math.round(distance), hitX: curX, hitY: curY }
+        }
+      }
     }
 
     const sample = samplePixelColor(ctx, canvasWidth, canvasHeight, mapWidthMm, mapHeightMm, curX, curY)
@@ -93,7 +126,8 @@ export function updateHardwareSensors(
   sensors: SensorConfigItem[],
   mapCtx: CanvasRenderingContext2D | null,
   mapCanvas: HTMLCanvasElement | null,
-  mapDef: MapDefinition
+  mapDef: MapDefinition,
+  obstacles: ObstacleItem[] = []
 ) {
   if (!hwState || !Array.isArray(sensors)) return
 
@@ -140,7 +174,8 @@ export function updateHardwareSensors(
           sensorWorldX,
           sensorWorldY,
           sensorRad,
-          2000
+          2000,
+          obstacles
         )
         distanceMm = ray.distanceMm
       }
@@ -158,7 +193,8 @@ export function useSensorSampler(
   physicsState: ExtendedPhysicsState,
   mapDef: MapDefinition,
   sensors: SensorConfigItem[],
-  hwState?: HardwareState
+  hwState?: HardwareState,
+  obstacles: ObstacleItem[] = []
 ) {
   const mapCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const mapCtxRef = useRef<CanvasRenderingContext2D | null>(null)
@@ -195,7 +231,9 @@ export function useSensorSampler(
       sensors,
       mapCtxRef.current,
       mapCanvasRef.current,
-      mapDef
+      mapDef,
+      obstacles
     )
-  }, [physicsState, sensors, hwState, mapDef])
+  }, [physicsState, sensors, hwState, mapDef, obstacles])
 }
+

@@ -7,20 +7,21 @@ import {
   Gauge,
   Activity,
   AlertTriangle,
-  Sliders,
-  Map as MapIcon,
-  RotateCcw,
-  RotateCw,
   Compass,
   Eye,
   EyeOff,
   Route,
-  Trash2
+  Trash2,
+  Box,
+  Plus,
+  Circle,
+  Square
 } from 'lucide-react'
 import { Canvas2DRenderer } from './Canvas2DRenderer'
 import { Canvas3DRenderer } from './Canvas3DRenderer'
 import { ExtendedPhysicsState } from '@/lib/physics/kinematics'
 import { MapDefinition, SensorConfigItem, RobotSpec } from '@/types/project'
+import { ObstacleItem, ObstacleType } from '@/types/obstacle'
 import { HardwareState } from '@/lib/interpreter/boards'
 import { useSensorSampler } from '@/lib/physics/mapSampler'
 
@@ -44,6 +45,13 @@ interface SimulatorContainerProps {
   onRepositionRobot?: (x: number, y: number) => void
   onRotateRobot?: (deltaDeg: number, absoluteDeg?: number) => void
   theme?: 'dark' | 'light'
+  obstacles?: ObstacleItem[]
+  selectedObstacleId?: string | null
+  onAddObstacle?: (type: ObstacleType) => void
+  onSelectObstacle?: (id: string | null) => void
+  onUpdateObstacle?: (obs: ObstacleItem) => void
+  onDeleteObstacle?: (id: string) => void
+  onClearObstacles?: () => void
 }
 
 export function SimulatorContainer({
@@ -65,10 +73,17 @@ export function SimulatorContainer({
   onOpenMapModal,
   onRepositionRobot,
   onRotateRobot,
-  theme = 'dark'
+  theme = 'dark',
+  obstacles = [],
+  selectedObstacleId = null,
+  onAddObstacle,
+  onSelectObstacle,
+  onUpdateObstacle,
+  onDeleteObstacle,
+  onClearObstacles
 }: SimulatorContainerProps) {
   // Continuous sensor sampler hook (updates hardware state in both 2D and 3D mode)
-  useSensorSampler(physicsState, mapDef, sensors, hwState)
+  useSensorSampler(physicsState, mapDef, sensors, hwState, obstacles)
 
   // Convert radians to degrees [-180, 180]
   const headingDeg = Math.round((physicsState.heading * 180) / Math.PI)
@@ -80,8 +95,8 @@ export function SimulatorContainer({
     <div className="h-full flex flex-col bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 relative overflow-hidden select-none font-sans transition-colors duration-300">
       {/* Canvas Top Telemetry & Controls Bar Overlay */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
-        {/* Left Badge: View Mode & Visual Overlays (Sensors Overlay & Motion Trail) */}
-        <div className="flex items-center gap-2 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 pointer-events-auto shadow-lg text-xs font-medium">
+        {/* Left Badge: View Mode & Visual Overlays (Sensors Overlay & Motion Trail & Obstacles Toolbar) */}
+        <div className="flex items-center gap-2 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 pointer-events-auto shadow-lg text-xs font-medium flex-wrap">
           <Layers className="w-4 h-4 text-brand-500 dark:text-brand-400" />
           <span className="font-semibold text-slate-900 dark:text-slate-100">
             มุมมอง {viewMode} &bull; {mapDef.name}
@@ -135,6 +150,58 @@ export function SimulatorContainer({
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
+          )}
+
+          <span className="text-slate-300 dark:text-slate-700">|</span>
+
+          {/* --- INTERACTIVE OBSTACLES TOOLBAR --- */}
+          {onAddObstacle && (
+            <div className="flex items-center gap-1 font-sans">
+              <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                <Box className="w-3.5 h-3.5" /> สิ่งกีดขวาง:
+              </span>
+              <button
+                onClick={() => onAddObstacle('box')}
+                className="px-2 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950/80 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-200 text-[11px] font-semibold flex items-center gap-1 border border-amber-300 dark:border-amber-800 transition"
+                title="คลิกเพื่อวางสิ่งกีดขวางทรงกล่องไม้ (15x15 ซม.)"
+              >
+                <Square className="w-3 h-3" /> +กล่อง
+              </button>
+              <button
+                onClick={() => onAddObstacle('cylinder')}
+                className="px-2 py-0.5 rounded-lg bg-sky-100 dark:bg-sky-950/80 hover:bg-sky-200 dark:hover:bg-sky-900 text-sky-800 dark:text-sky-200 text-[11px] font-semibold flex items-center gap-1 border border-sky-300 dark:border-sky-800 transition"
+                title="คลิกเพื่อวางสิ่งกีดขวางทรงกระบอก (Ø12 ซม.)"
+              >
+                <Circle className="w-3 h-3" /> +ทรงกระบอก
+              </button>
+              <button
+                onClick={() => onAddObstacle('wall')}
+                className="px-2 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-[11px] font-semibold flex items-center gap-1 border border-slate-300 dark:border-slate-700 transition"
+                title="คลิกเพื่อวางกำแพงสิ่งกีดขวาง (30x5 ซม.)"
+              >
+                <Plus className="w-3 h-3" /> +กำแพง
+              </button>
+
+              {selectedObstacleId && onDeleteObstacle && (
+                <button
+                  onClick={() => onDeleteObstacle(selectedObstacleId)}
+                  className="px-2 py-0.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs animate-pulse transition"
+                  title="ลบสิ่งกีดขวางที่เลือกอยู่"
+                >
+                  <Trash2 className="w-3 h-3" /> ลบที่เลือก
+                </button>
+              )}
+
+              {obstacles.length > 0 && onClearObstacles && (
+                <button
+                  onClick={onClearObstacles}
+                  className="px-2 py-0.5 rounded-lg text-slate-500 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] font-semibold transition"
+                  title="ลบสิ่งกีดขวางทั้งหมดบนสนาม"
+                >
+                  ล้าง ({obstacles.length})
+                </button>
+              )}
+            </div>
           )}
         </div>
 
@@ -199,6 +266,10 @@ export function SimulatorContainer({
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}
             theme={theme}
+            obstacles={obstacles}
+            selectedObstacleId={selectedObstacleId}
+            onSelectObstacle={onSelectObstacle}
+            onUpdateObstacle={onUpdateObstacle}
           />
         ) : (
           <Canvas3DRenderer
@@ -213,6 +284,10 @@ export function SimulatorContainer({
             hwState={hwState}
             onRepositionRobot={onRepositionRobot}
             theme={theme}
+            obstacles={obstacles}
+            selectedObstacleId={selectedObstacleId}
+            onSelectObstacle={onSelectObstacle}
+            onUpdateObstacle={onUpdateObstacle}
           />
         )}
       </div>
@@ -256,7 +331,7 @@ export function SimulatorContainer({
               title="หมุนซ้าย -90°"
               className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-brand-100 dark:hover:bg-brand-950/80 text-slate-700 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-slate-700/60 font-mono transition-all text-[11px] font-semibold flex items-center gap-0.5"
             >
-              <RotateCcw className="w-3 h-3" /> -90&deg;
+              -90&deg;
             </button>
             <button
               onClick={() => onRotateRobot(-15)}
@@ -278,7 +353,7 @@ export function SimulatorContainer({
               title="หมุนขวา +90°"
               className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-brand-100 dark:hover:bg-brand-950/80 text-slate-700 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-slate-700/60 font-mono transition-all text-[11px] font-semibold flex items-center gap-0.5"
             >
-              +90&deg; <RotateCw className="w-3 h-3" />
+              +90&deg;
             </button>
 
             <span className="text-slate-300 dark:text-slate-700 mx-0.5">|</span>

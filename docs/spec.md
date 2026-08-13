@@ -276,7 +276,7 @@ export interface RobotSpec {
 ### 📌 Phase 7: Future Enhancements & Advanced Learning Features (Roadmap)
 เน้นการพัฒนาฟังก์ชันต่อยอดเพื่อเพิ่มความยืดหยุ่น ประสบการณ์ผู้ใช้ และสื่อการเรียนการสอน
 - [x] 7.1 พัฒนาระบบ **Preset Code Templates Selector (คลังตัวอย่างโค้ด)** บน HeaderBar (`Basic Movement`, `Line Tracker`, `PID Follower`, `Obstacle Avoidance`)
-- [ ] 7.2 พัฒนาระบบ **Interactive Obstacle Placement** สำหรับคลิกวางสิ่งกีดขวางบน Viewport แบบ Real-time
-- [ ] 7.3 พัฒนาระบบ **Keyboard Shortcuts Control** (`Ctrl+Enter` รัน/หยุด, `Ctrl+R` รีเซ็ต, `Ctrl+S` เอ็กซ์พอร์ต)
-- [ ] 7.4 พัฒนาระบบ **Audio Mute / Unmute Toggle Button** สำหรับเปิด/ปิดเสียง Buzzer สังเคราะห์บน HeaderBar
+- [x] 7.2 พัฒนาระบบ **Interactive Obstacle Placement** สำหรับคลิกวางสิ่งกีดขวางบน Viewport แบบ Real-time
+- [x] 7.3 พัฒนาระบบ **Keyboard Shortcuts Control** (`Ctrl+Enter` รัน/หยุด, `Ctrl+R` รีเซ็ต, `Ctrl+S` เอ็กซ์พอร์ต)
+- [x] 7.4 พัฒนาระบบ **Audio Mute / Unmute Toggle Button** สำหรับเปิด/ปิดเสียง Buzzer สังเคราะห์บน HeaderBar
 

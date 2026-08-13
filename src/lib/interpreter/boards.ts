@@ -40,9 +40,18 @@ export function resetHardwareState(hwState: HardwareState) {
 }
 
 let sharedAudioCtx: AudioContext | null = null
+let isAudioMuted = false
+
+export function setAudioMuted(muted: boolean) {
+  isAudioMuted = muted
+}
+
+export function getAudioMuted(): boolean {
+  return isAudioMuted
+}
 
 function playBuzzerTone(frequency: number = 1000, durationMs: number = 100) {
-  if (typeof window === 'undefined') return
+  if (isAudioMuted || typeof window === 'undefined') return
   try {
     const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
     if (!AudioCtx) return

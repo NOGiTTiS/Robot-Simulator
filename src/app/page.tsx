@@ -27,6 +27,7 @@ import {
   createInitialPhysicsState,
   ExtendedPhysicsState
 } from '@/lib/physics/kinematics'
+import { setAudioMuted } from '@/lib/interpreter/boards'
 import { getMapDefinition } from '@/lib/maps'
 import {
   DEFAULT_ROBOT_SPEC,
@@ -36,6 +37,7 @@ import {
   syncSensorsWithRobotDimensions
 } from '@/lib/robots'
 import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab, RobotSpec } from '@/types/project'
+import { ObstacleItem, ObstacleType, OBSTACLE_PRESETS } from '@/types/obstacle'
 import { loadProjectState, saveProjectState } from '@/lib/storage'
 
 const DEFAULT_CODE = `#include <POP32.h>
@@ -78,6 +80,9 @@ export default function Home() {
     sensors: getDefaultSensorsForRobot(DEFAULT_ROBOT_SPEC)
   })
 
+  const [obstacles, setObstacles] = useState<ObstacleItem[]>([])
+  const [selectedObstacleId, setSelectedObstacleId] = useState<string | null>(null)
+
   const [isRobotModalOpen, setIsRobotModalOpen] = useState(false)
   const [isSensorModalOpen, setIsSensorModalOpen] = useState(false)
   const [isMapSelectModalOpen, setIsMapSelectModalOpen] = useState(false)
@@ -99,10 +104,37 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
   const [panelMode, setPanelMode] = useState<'split' | 'editor' | 'simulator'>('split')
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [isMuted, setIsMuted] = useState<boolean>(false)
   const [logs, setLogs] = useState<string[]>([
     'TUNorth Robot Simulator System v1.0 Ready',
     'Board POP32i selected.'
   ])
+
+  // Load saved mute state on mount
+  useEffect(() => {
+    try {
+      const savedMute = localStorage.getItem('tunorth_robot_muted')
+      if (savedMute === 'true') {
+        setIsMuted(true)
+        setAudioMuted(true)
+      }
+    } catch (err) {
+      console.error('Error loading audio mute state', err)
+    }
+  }, [])
+
+  const handleToggleMute = () => {
+    setIsMuted((prev) => {
+      const nextMuted = !prev
+      setAudioMuted(nextMuted)
+      localStorage.setItem('tunorth_robot_muted', String(nextMuted))
+      setLogs((prevLogs) => [
+        ...prevLogs,
+        nextMuted ? 'ปิดเสียง Buzzer สังเคราะห์ (Muted) 🔇' : 'เปิดเสียง Buzzer สังเคราะห์ (Unmuted) 🔊'
+      ])
+      return nextMuted
+    })
+  }
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
 
@@ -616,6 +648,39 @@ export default function Home() {
     setLogs((prev) => [...prev, 'Simulation reset 🔄'])
   }
 
+  const handleAddObstacle = (type: ObstacleType) => {
+    const preset = OBSTACLE_PRESETS.find((p) => p.type === type) || OBSTACLE_PRESETS[0]
+    const newObs: ObstacleItem = {
+      id: `obs_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      type,
+      x: mapDef.widthMm / 2 + (Math.random() - 0.5) * 400,
+      y: mapDef.heightMm / 2 + (Math.random() - 0.5) * 400,
+      width: preset.width,
+      height: preset.height,
+      rotation: 0,
+      color: preset.color
+    }
+    setObstacles((prev) => [...prev, newObs])
+    setSelectedObstacleId(newObs.id)
+    setLogs((prev) => [...prev, `เพิ่มสิ่งกีดขวาง: ${preset.label} 🧊`])
+  }
+
+  const handleUpdateObstacle = (updatedObs: ObstacleItem) => {
+    setObstacles((prev) => prev.map((o) => (o.id === updatedObs.id ? updatedObs : o)))
+  }
+
+  const handleDeleteObstacle = (id: string) => {
+    setObstacles((prev) => prev.filter((o) => o.id !== id))
+    if (selectedObstacleId === id) setSelectedObstacleId(null)
+    setLogs((prev) => [...prev, 'ลบสิ่งกีดขวางออกจากสนาม 🗑️'])
+  }
+
+  const handleClearObstacles = () => {
+    setObstacles([])
+    setSelectedObstacleId(null)
+    setLogs((prev) => [...prev, 'ล้างสิ่งกีดขวางทั้งหมดบนสนาม 🧹'])
+  }
+
   const handleExport = (format: 'ino' | 'cpp' = 'ino') => {
     const ext = format === 'cpp' ? 'cpp' : 'ino'
     const activeTab = files.find((f) => f.id === activeTabId) || files[0]
@@ -674,6 +739,50 @@ export default function Home() {
     input.click()
   }
 
+  // Global Keyboard Shortcuts (Ctrl+Enter: Run/Pause, Ctrl+R: Reset, Ctrl+S: Export, Esc: Close Modals)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+      const modifier = isMac ? e.metaKey : e.ctrlKey
+
+      // Ctrl+Enter or Cmd+Enter: Toggle Run / Pause
+      if (modifier && e.key === 'Enter') {
+        e.preventDefault()
+        handleToggleRun()
+        return
+      }
+
+      // Ctrl+R or Cmd+R: Reset simulation (prevent page reload)
+      if (modifier && (e.key === 'r' || e.key === 'R')) {
+        e.preventDefault()
+        handleReset()
+        return
+      }
+
+      // Ctrl+S or Cmd+S: Export sketch code
+      if (modifier && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault()
+        handleExport('ino')
+        return
+      }
+
+      // Esc: Close all active modals & deselect objects
+      if (e.key === 'Escape') {
+        setIsRobotModalOpen(false)
+        setIsSensorModalOpen(false)
+        setIsMapSelectModalOpen(false)
+        setIsMapDrawerModalOpen(false)
+        setIsMapEditModalOpen(false)
+        setIsCustomMapModalOpen(false)
+        setIsCodeTemplatesModalOpen(false)
+        setSelectedObstacleId(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleToggleRun, handleReset, handleExport])
+
   if (!isLoaded) {
     return (
       <div className="h-screen w-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 font-sans select-none">
@@ -726,6 +835,8 @@ export default function Home() {
         onPanelModeChange={handlePanelModeChange}
         theme={theme}
         onToggleTheme={handleToggleTheme}
+        isMuted={isMuted}
+        onToggleMute={handleToggleMute}
       />
 
       {/* 2. Main Resizable Panels */}
@@ -770,6 +881,13 @@ export default function Home() {
               onRepositionRobot={handleRepositionRobot}
               onRotateRobot={handleRotateRobot}
               theme={theme}
+              obstacles={obstacles}
+              selectedObstacleId={selectedObstacleId}
+              onAddObstacle={handleAddObstacle}
+              onSelectObstacle={setSelectedObstacleId}
+              onUpdateObstacle={handleUpdateObstacle}
+              onDeleteObstacle={handleDeleteObstacle}
+              onClearObstacles={handleClearObstacles}
             />
           }
         />
