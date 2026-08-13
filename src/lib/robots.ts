@@ -133,6 +133,101 @@ export const BUILTIN_ROBOT_PRESETS: RobotSpec[] = [
       { id: 's-can-tof-rgt', type: 'DISTANCE_TOF', pin: 6, offsetX: 80, offsetY: 40, angle: 20, enabled: true },
       { id: 's-can-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
     ]
+  },
+  {
+    id: 'atom-vx-line-2ch',
+    name: 'PT-BOT ATOM-VX Standard 2 ch',
+    boardType: 'ATOM-VX',
+    bodyWidth: 140,
+    bodyLength: 160,
+    wheelBase: 140,
+    wheelRadius: 30,
+    maxSpeed: 650,
+    accelRate: 1900,
+    decelRate: 2500,
+    frictionCoeff: 0.9,
+    color: '#5f06c4',
+    presetType: 'standard',
+    isCustom: false,
+    description: 'หุ่นยนต์มาตรฐานบอร์ด PT-BOT ATOM-VX พร้อมเซนเซอร์อ่านเส้น 2 ช่อง เหมาะสำหรับการเริ่มต้นซ้อมจำลอง',
+    defaultSensors: [
+      { id: 's-atom2-0', type: 'IR_LINE', pin: 0, offsetX: 70, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-atom2-1', type: 'IR_LINE', pin: 1, offsetX: 70, offsetY: 20, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-atom2-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 80, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-atom2-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+    ]
+  },
+  {
+    id: 'atom-vx-line-4ch',
+    name: 'PT-BOT ATOM-VX Speed Runner 4 ch',
+    boardType: 'ATOM-VX',
+    bodyWidth: 150,
+    bodyLength: 170,
+    wheelBase: 150,
+    wheelRadius: 32,
+    maxSpeed: 850,
+    accelRate: 2500,
+    decelRate: 3000,
+    frictionCoeff: 0.92,
+    color: '#f43f5e',
+    presetType: 'speed',
+    isCustom: false,
+    description: 'หุ่นยนต์ทำความเร็วบอร์ด PT-BOT ATOM-VX เซนเซอร์ 4 ช่องสำหรับการแทร็กเส้นและถอนโค้งความเร็วสูง',
+    defaultSensors: [
+      { id: 's-atom4-0', type: 'IR_LINE', pin: 0, offsetX: 75, offsetY: -45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-atom4-1', type: 'IR_LINE', pin: 1, offsetX: 75, offsetY: -15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-atom4-2', type: 'IR_LINE', pin: 2, offsetX: 75, offsetY: 15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-atom4-3', type: 'IR_LINE', pin: 3, offsetX: 75, offsetY: 45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-atom4-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 85, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-atom4-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+    ]
+  },
+  {
+    id: 'nano-line-2ch',
+    name: 'Arduino Nano Standard 2 ch',
+    boardType: 'NANO',
+    bodyWidth: 130,
+    bodyLength: 150,
+    wheelBase: 130,
+    wheelRadius: 28,
+    maxSpeed: 550,
+    accelRate: 1600,
+    decelRate: 2200,
+    frictionCoeff: 0.88,
+    color: '#3b82f6',
+    presetType: 'standard',
+    isCustom: false,
+    description: 'หุ่นยนต์บอร์ด Arduino Nano (ATmega328P) น้ำหนักเบา ควบคุมด้วย I/O มาตรฐาน',
+    defaultSensors: [
+      { id: 's-nano-0', type: 'IR_LINE', pin: 0, offsetX: 65, offsetY: -20, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-nano-1', type: 'IR_LINE', pin: 1, offsetX: 65, offsetY: 20, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-nano-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 75, offsetY: 0, angle: 0, enabled: true }
+    ]
+  },
+  {
+    id: 'esp32-line-4ch',
+    name: 'ESP32 High Speed 4 ch',
+    boardType: 'ESP32',
+    bodyWidth: 160,
+    bodyLength: 180,
+    wheelBase: 160,
+    wheelRadius: 35,
+    maxSpeed: 950,
+    accelRate: 3000,
+    decelRate: 3600,
+    frictionCoeff: 0.95,
+    color: '#10b981',
+    presetType: 'speed',
+    isCustom: false,
+    description: 'หุ่นยนต์พลังประมวลผลสูงบอร์ด ESP32 รองรับการประมวลผลเซนเซอร์หลายทิศทางอย่างรวดเร็ว',
+    defaultSensors: [
+      { id: 's-esp4-0', type: 'IR_LINE', pin: 0, offsetX: 80, offsetY: -45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-esp4-1', type: 'IR_LINE', pin: 1, offsetX: 80, offsetY: -15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-esp4-2', type: 'IR_LINE', pin: 2, offsetX: 80, offsetY: 15, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-esp4-3', type: 'IR_LINE', pin: 3, offsetX: 80, offsetY: 45, angle: 0, enabled: true, colorThreshold: 400 },
+      { id: 's-esp4-tof', type: 'DISTANCE_TOF', pin: 8, offsetX: 90, offsetY: 0, angle: 0, enabled: true },
+      { id: 's-esp4-imu', type: 'GYRO_IMU', pin: 9, offsetX: 0, offsetY: 0, angle: 0, enabled: true }
+    ]
   }
 ]
 

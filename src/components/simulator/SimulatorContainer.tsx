@@ -140,9 +140,10 @@ export function SimulatorContainer({
 
         {/* Center/Right Badge: Real-time Telemetry */}
         <div className="flex items-center gap-3 bg-white/90 dark:bg-slate-900/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 pointer-events-auto text-xs font-mono text-slate-700 dark:text-slate-300 shadow-lg">
-          <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400 font-sans">
+          <div className="flex items-center gap-1.5 text-brand-600 dark:text-brand-400 font-sans">
             <Bot className="w-3.5 h-3.5" />
-            <span className="font-bold text-slate-900 dark:text-slate-100">{boardType}</span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">{robotSpec?.name || boardType}</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border border-slate-200 dark:border-slate-700">{boardType}</span>
           </div>
 
           <span className="text-slate-300 dark:text-slate-700">|</span>

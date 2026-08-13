@@ -172,7 +172,7 @@ export interface RobotSpec {
 ### Feature 5: Built-in Competition Maps & Custom Map Uploader
 - **รายละเอียด**: ระบบจัดการสนามแข่งขันจำลอง
 - **Acceptance Criteria (AC)**:
-  - [x] **AC 5.1**: มีสนามมาตรฐานติดมากับระบบครบถ้วน ได้แก่ `Athletics-280x160cm`, `RT-TD-122x244cm`, `Robot120x240cm`, `Wall Line Track`, `QBD Field`, และ `Programmable Line Junior`
+  - [x] **AC 5.1**: มีสนามมาตรฐานติดมากับระบบครบถ้วนรวม 21 สนาม ได้แก่ Line Follower (Basic 1-5, Enhanced), Line Tracer (B1-B2, W1-W4), Move The Can (1-2), Quad Strike, Quick Box Drop, Rescue (1-4, Advanced) จาก `data/Robot Map`
   - [x] **AC 5.2**: ผู้ใช้สามารถอัปโหลดรูปภาพสนาม Custom ของตนเอง (ไฟล์ PNG/JPG) เข้าสู่ระบบ และกำหนดขนาดสนามความกว้างxยาว (cm) ได้
   - [x] **AC 5.3**: เซนเซอร์อ่านค่าสีพื้นผิวสนาม (Pixel Color Sampling) ได้แม่นยำทั้งสนามมาตรฐานและสนามอัปโหลดใหม่
 
@@ -250,7 +250,7 @@ export interface RobotSpec {
 
 ### 📌 Phase 4: Competition Maps & Interactive Sensor Configurator
 เน้นระบบสนามแข่งขัน และระบบจัดตั้งเซนเซอร์บนตัวหุ่นยนต์พร้อม Debug Visualizer
-- [x] 4.1 รวบรวมและติดตั้งสนามมาตรฐานครบถ้วน (`Athletics-280x160cm`, `RT-TD-122x244cm`, `Robot120x240cm`, `Wall Line Track`, `QBD Field`, `Programmable Line Junior`)
+- [x] 4.1 รวบรวมและติดตั้งสนามมาตรฐานครบถ้วนรวม 21 สนามจาก `data/Robot Map` (Line Follower, Line Tracer, Move The Can, Quad Strike, Quick Box Drop, Rescue)
 - [x] 4.2 พัฒนาระบบ Pixel Color Sampling อ่านค่าสีของสนามตามตำแหน่งพิกัด X, Y ของเซนเซอร์
 - [x] 4.3 พัฒนาโมดูลอัปโหลดสนาม Custom (ไฟล์ PNG/JPG) พร้อมระบุขนาดจริง (cm)
 - [x] 4.4 พัฒนาพาเนล **Sensor Configurator Modal** ให้กด เพิ่ม, ลบ, ตั้งค่าพิน และตำแหน่งของเซนเซอร์แต่ละตัว

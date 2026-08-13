@@ -26,7 +26,13 @@ import {
   ExtendedPhysicsState
 } from '@/lib/physics/kinematics'
 import { getMapDefinition } from '@/lib/maps'
-import { DEFAULT_ROBOT_SPEC, getDefaultSensorsForRobot, syncSensorsWithRobotDimensions } from '@/lib/robots'
+import {
+  DEFAULT_ROBOT_SPEC,
+  BUILTIN_ROBOT_PRESETS,
+  getRobotSpec,
+  getDefaultSensorsForRobot,
+  syncSensorsWithRobotDimensions
+} from '@/lib/robots'
 import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab, RobotSpec } from '@/types/project'
 import { loadProjectState, saveProjectState } from '@/lib/storage'
 
@@ -61,12 +67,14 @@ const DEFAULT_SENSORS: SensorConfigItem[] = [
 ]
 
 export default function Home() {
-  const [boardType, setBoardType] = useState<string>('POP32i')
+  const [boardType, setBoardType] = useState<string>(DEFAULT_ROBOT_SPEC.boardType)
   const [robotSpec, setRobotSpec] = useState<RobotSpec>(DEFAULT_ROBOT_SPEC)
   const [customRobots, setCustomRobots] = useState<RobotSpec[]>([])
-  const [mapId, setMapId] = useState<string>('athletics-280x160')
+  const [mapId, setMapId] = useState<string>('line-follower-basic-1')
   const [customMaps, setCustomMaps] = useState<MapDefinition[]>([])
-  const [sensorConfig, setSensorConfig] = useState<SensorConfiguration>({ sensors: DEFAULT_SENSORS })
+  const [sensorConfig, setSensorConfig] = useState<SensorConfiguration>({
+    sensors: getDefaultSensorsForRobot(DEFAULT_ROBOT_SPEC)
+  })
 
   const [isRobotModalOpen, setIsRobotModalOpen] = useState(false)
   const [isSensorModalOpen, setIsSensorModalOpen] = useState(false)
@@ -152,9 +160,22 @@ export default function Home() {
     try {
       const saved = loadProjectState()
       if (saved) {
-        if (saved.boardType) setBoardType(saved.boardType)
-        if (saved.robotSpec) setRobotSpec(saved.robotSpec)
         if (saved.customRobots && Array.isArray(saved.customRobots)) setCustomRobots(saved.customRobots)
+        const customList = saved.customRobots || []
+
+        let loadedRobot: RobotSpec = DEFAULT_ROBOT_SPEC
+        if (saved.robotSpec && saved.robotSpec.id) {
+          loadedRobot = getRobotSpec(saved.robotSpec.id, customList)
+        }
+
+        const loadedBoard = saved.boardType || loadedRobot.boardType || 'POP32i'
+        if (loadedRobot.boardType !== loadedBoard) {
+          loadedRobot = { ...loadedRobot, boardType: loadedBoard as any }
+        }
+
+        setBoardType(loadedBoard)
+        setRobotSpec(loadedRobot)
+
         if (saved.mapId) setMapId(saved.mapId)
         if (saved.files && Array.isArray(saved.files) && saved.files.length > 0) {
           setFiles(saved.files)
@@ -174,7 +195,11 @@ export default function Home() {
           ])
           setActiveTabId('tab-main')
         }
-        if (saved.sensorConfig && Array.isArray(saved.sensorConfig.sensors)) setSensorConfig(saved.sensorConfig)
+        if (saved.sensorConfig && Array.isArray(saved.sensorConfig.sensors) && saved.sensorConfig.sensors.length > 0) {
+          setSensorConfig(saved.sensorConfig)
+        } else {
+          setSensorConfig({ sensors: getDefaultSensorsForRobot(loadedRobot) })
+        }
         if (saved.fontSize) setFontSize(saved.fontSize)
         if (saved.speedMultiplier) setSpeedMultiplier(saved.speedMultiplier)
         if (saved.viewMode) setViewMode(saved.viewMode)
@@ -390,7 +415,7 @@ export default function Home() {
 
     // Fallback to default builtin map if active map was deleted
     if (mapId === targetMapId) {
-      const defaultMapId = 'athletics-280x160'
+      const defaultMapId = 'line-follower-basic-1'
       setMapId(defaultMapId)
       const defaultDef = getMapDefinition(defaultMapId)
       const resetPhysics = createInitialPhysicsState(defaultDef.startX, defaultDef.startY, defaultDef.startHeading)
@@ -513,6 +538,14 @@ export default function Home() {
 
   const handleBoardChange = (board: string) => {
     setBoardType(board)
+    if (robotSpec.boardType !== board) {
+      const matchingPreset = BUILTIN_ROBOT_PRESETS.find((r) => r.boardType === board) || {
+        ...robotSpec,
+        boardType: board as any
+      }
+      setRobotSpec(matchingPreset)
+      setSensorConfig({ sensors: getDefaultSensorsForRobot(matchingPreset) })
+    }
     setLogs((prev) => [...prev, `Board changed to ${board}`])
   }
 

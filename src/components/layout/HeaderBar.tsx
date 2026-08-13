@@ -23,6 +23,7 @@ import {
   Moon
 } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
+import { BUILTIN_MAPS } from '@/lib/maps'
 
 interface HeaderBarProps {
   boardType?: string
@@ -76,16 +77,9 @@ export function HeaderBar({
   theme = 'dark',
   onToggleTheme
 }: HeaderBarProps) {
-  const builtinMaps = [
-    { id: 'athletics-280x160', name: 'สนามกรีฑา (280x160cm)' },
-    { id: 'rt-td-122x244', name: 'สนาม RT-TD (122x244cm)' },
-    { id: 'robot-120x240', name: 'สนามหุ่นยนต์ (120x240cm)' },
-    { id: 'wall-line-track', name: 'สนามแกะเส้นผสมกำแพง' },
-    { id: 'qbd-field', name: 'สนาม QBD Field' },
-    { id: 'line-junior', name: 'สนามซ้อมวิ่งเส้น Line Junior' }
-  ]
-
   const speeds = [1, 2, 5]
+
+  const activeMapName = customMaps.find((m) => m.id === mapId)?.name || BUILTIN_MAPS.find((m) => m.id === mapId)?.name || 'สนามมาตรฐาน'
 
   return (
     <header className="h-14 glass-header px-4 flex items-center justify-between gap-3 text-slate-800 dark:text-slate-200 z-20 shrink-0 select-none border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 font-sans">
@@ -122,7 +116,7 @@ export function HeaderBar({
         <button
           onClick={onOpenMapSelectModal}
           className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs group flex items-center justify-center"
-          title={`เลือกสนามแข่งขัน (${customMaps.find((m) => m.id === mapId)?.name || builtinMaps.find((m) => m.id === mapId)?.name || 'สนามมาตรฐาน'})`}
+          title={`เลือกสนามแข่งขัน (${activeMapName})`}
         >
           <Map className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
         </button>
