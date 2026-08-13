@@ -16,7 +16,8 @@ import {
   Check,
   FileText,
   Trash2,
-  Code
+  Code,
+  BookOpen
 } from 'lucide-react'
 import { CodeTab } from '@/types/project'
 
@@ -32,6 +33,7 @@ interface CodeEditorProps {
   onFontSizeChange: (size: number | ((prev: number) => number)) => void
   boardType: string
   theme?: 'dark' | 'light'
+  onOpenCodeTemplatesModal?: () => void
 }
 
 function CodeEditorSkeleton() {
@@ -66,7 +68,8 @@ export function CodeEditor({
   fontSize,
   onFontSizeChange,
   boardType,
-  theme = 'dark'
+  theme = 'dark',
+  onOpenCodeTemplatesModal
 }: CodeEditorProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null)
@@ -478,6 +481,18 @@ export function CodeEditor({
             <Plus className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400" />
             <span>Tab</span>
           </button>
+
+          {/* Preset Code Examples Button */}
+          {onOpenCodeTemplatesModal && (
+            <button
+              onClick={onOpenCodeTemplatesModal}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/50 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800/60 transition-all shrink-0 font-mono font-medium"
+              title="คลังตัวอย่างโค้ดมาตรฐาน (Code Examples)"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-brand-500" />
+              <span>ตัวอย่างโค้ด</span>
+            </button>
+          )}
         </div>
 
         {/* Right Controls: Font Size & Monaco Retry */}

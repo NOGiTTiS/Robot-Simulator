@@ -13,6 +13,8 @@ import { MapSelectModal } from '@/components/layout/MapSelectModal'
 import { MapDrawerModal } from '@/components/layout/MapDrawerModal'
 import { MapEditModal } from '@/components/layout/MapEditModal'
 import { RobotModal } from '@/components/layout/RobotModal'
+import { CodeTemplatesModal } from '@/components/layout/CodeTemplatesModal'
+import { CodeTemplate } from '@/lib/templates'
 import {
   InterpreterRunner,
   bindBoardApis,
@@ -82,6 +84,7 @@ export default function Home() {
   const [isMapDrawerModalOpen, setIsMapDrawerModalOpen] = useState(false)
   const [isMapEditModalOpen, setIsMapEditModalOpen] = useState(false)
   const [isCustomMapModalOpen, setIsCustomMapModalOpen] = useState(false)
+  const [isCodeTemplatesModalOpen, setIsCodeTemplatesModalOpen] = useState(false)
   const [editingMap, setEditingMap] = useState<MapDefinition | null>(null)
 
   const [files, setFiles] = useState<CodeTab[]>(DEFAULT_FILES)
@@ -536,6 +539,24 @@ export default function Home() {
     setLogs((prev) => [...prev, `Renamed tab to ${newName}`])
   }
 
+  const handleSelectTemplate = (template: CodeTemplate, mode: 'replace' | 'newTab') => {
+    if (mode === 'replace') {
+      const activeTab = files.find((f) => f.id === activeTabId) || files[0]
+      if (activeTab) {
+        handleCodeChange(activeTab.id, template.code)
+      }
+      setLogs((prev) => [...prev, `Loaded template "${template.name}" into ${activeTab?.name || 'editor'} 📚`])
+    } else {
+      const newId = `tab-${Date.now()}`
+      setFiles((prev) => [
+        ...prev,
+        { id: newId, name: template.fileName, code: template.code, isMain: false }
+      ])
+      setActiveTabId(newId)
+      setLogs((prev) => [...prev, `Created tab "${template.fileName}" from template "${template.name}" 📚`])
+    }
+  }
+
   const handleBoardChange = (board: string) => {
     setBoardType(board)
     if (robotSpec.boardType !== board) {
@@ -689,6 +710,7 @@ export default function Home() {
         onOpenMapSelectModal={() => setIsMapSelectModalOpen(true)}
         onOpenCustomMapModal={() => setIsCustomMapModalOpen(true)}
         onOpenSensorModal={() => setIsSensorModalOpen(true)}
+        onOpenCodeTemplatesModal={() => setIsCodeTemplatesModalOpen(true)}
         isRunning={isRunning}
         onToggleRun={handleToggleRun}
         onReset={handleReset}
@@ -724,6 +746,7 @@ export default function Home() {
               onFontSizeChange={handleFontSizeChange}
               boardType={boardType}
               theme={theme}
+              onOpenCodeTemplatesModal={() => setIsCodeTemplatesModalOpen(true)}
             />
           }
           rightComponent={
@@ -810,6 +833,13 @@ export default function Home() {
         isOpen={isCustomMapModalOpen}
         onClose={() => setIsCustomMapModalOpen(false)}
         onAddMap={handleAddCustomMap}
+      />
+
+      <CodeTemplatesModal
+        isOpen={isCodeTemplatesModalOpen}
+        onClose={() => setIsCodeTemplatesModalOpen(false)}
+        onSelectTemplate={handleSelectTemplate}
+        currentTabName={files.find((f) => f.id === activeTabId)?.name || 'main.ino'}
       />
     </div>
   )

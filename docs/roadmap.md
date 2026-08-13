@@ -6,16 +6,16 @@
 
 ## 📌 แผนงานพัฒนาในอนาคต (Future Enhancement Roadmap)
 
-### 1. 📚 Preset Code Templates Selector (คลังตัวอย่างโค้ดมาตรฐาน)
+### 1. 📚 Preset Code Templates Selector (คลังตัวอย่างโค้ดมาตรฐาน) - [x] Completed
 - **วัตถุประสงค์**: ช่วยให้นักเรียนเริ่มต้นฝึกเขียนโค้ดและทดลองระบบจำลองได้อย่างรวดเร็วโดยไม่ต้องเริ่มจากหน้าว่างเปล่า
 - **รายละเอียด**:
-  - เพิ่มปุ่มเมนู **"ตัวอย่างโค้ด (Code Examples)"** บน HeaderBar หรือ Toolbar ของ Monaco Editor
-  - มีชุดตัวอย่างโค้ดครอบคลุมโจทย์พื้นฐานถึงขั้นสูง:
-    - `01_Basic_Movement.ino`: การเดินหน้า ถอยหลัง เลี้ยวมุมฉาก หมุนตัว (Pivot & Spin Turns)
-    - `02_Line_Tracking_Analog.ino`: การอ่านค่าเซนเซอร์ IR อ่านสีเส้นสนามและเปรียบเทียบค่า Threshold
-    - `03_PID_Line_Follower.ino`: การควบคุมหุ่นยนต์เดินตามเส้นสมูทด้วยอัลกอริทึม PID
-    - `04_Obstacle_Avoidance.ino`: การวัดระยะทางด้วย Distance Sensor (TOF) และหลบสิ่งกีดขวาง
-    - `05_Sumo_Attack_Logic.ino`: ลอจิกหุ่นยนต์ซูโม่ค้นหาศัตรูและพุ่งชน
+  - [x] เพิ่มปุ่มเมนู **"ตัวอย่างโค้ด (Code Examples)"** บน HeaderBar และ Toolbar ของ Monaco Editor
+  - [x] มีชุดตัวอย่างโค้ดครอบคลุมโจทย์พื้นฐานถึงขั้นสูง:
+    - [x] `01_Basic_Movement.ino`: การเดินหน้า ถอยหลัง เลี้ยวมุมฉาก หมุนตัว (Pivot & Spin Turns)
+    - [x] `02_Line_Tracking_Analog.ino`: การอ่านค่าเซนเซอร์ IR อ่านสีเส้นสนามและเปรียบเทียบค่า Threshold
+    - [x] `03_PID_Line_Follower.ino`: การควบคุมหุ่นยนต์เดินตามเส้นสมูทด้วยอัลกอริทึม PID
+    - [x] `04_Obstacle_Avoidance.ino`: การวัดระยะทางด้วย Distance Sensor (TOF) และหลบสิ่งกีดขวาง
+    - [x] `05_Sumo_Attack_Logic.ino`: ลอจิกหุ่นยนต์ซูโม่ค้นหาศัตรูและพุ่งชน
 
 ---
 

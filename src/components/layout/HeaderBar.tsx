@@ -20,7 +20,8 @@ import {
   Code2,
   Tv,
   Sun,
-  Moon
+  Moon,
+  BookOpen
 } from 'lucide-react'
 import { MapDefinition } from '@/types/project'
 import { BUILTIN_MAPS } from '@/lib/maps'
@@ -36,6 +37,7 @@ interface HeaderBarProps {
   onOpenMapSelectModal?: () => void
   onOpenCustomMapModal?: () => void
   onOpenSensorModal?: () => void
+  onOpenCodeTemplatesModal?: () => void
   isRunning: boolean
   onToggleRun: () => void
   onReset: () => void
@@ -61,6 +63,7 @@ export function HeaderBar({
   customMaps = [],
   onOpenMapSelectModal,
   onOpenSensorModal,
+  onOpenCodeTemplatesModal,
   isRunning,
   onToggleRun,
   onReset,
@@ -101,8 +104,18 @@ export function HeaderBar({
         </div>
       </div>
 
-      {/* 2. Selectors Section (Robot, Map, Sensors) */}
+      {/* 2. Selectors Section (Robot, Map, Sensors, Code Examples) */}
       <div className="flex items-center gap-1.5">
+        {/* Code Examples Modal Button */}
+        <button
+          onClick={onOpenCodeTemplatesModal}
+          className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 group"
+          title="คลังตัวอย่างโค้ดมาตรฐาน (Code Examples)"
+        >
+          <BookOpen className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="hidden lg:inline">ตัวอย่างโค้ด</span>
+        </button>
+
         {/* Robot Spec / Management Modal Button */}
         <button
           onClick={onOpenRobotModal}
