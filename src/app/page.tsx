@@ -30,33 +30,14 @@ import { DEFAULT_ROBOT_SPEC, getDefaultSensorsForRobot, syncSensorsWithRobotDime
 import { MapDefinition, SensorConfigItem, SensorConfiguration, CodeTab, RobotSpec } from '@/types/project'
 import { loadProjectState, saveProjectState } from '@/lib/storage'
 
-const DEFAULT_CODE = `#include <ATOM_VX.h>
+const DEFAULT_CODE = `#include <POP32.h>
 
 void setup() {
-  // Initialize robot configuration
-  Serial.begin(9600);
-  Serial.println("TUNorth Robot Initialized!");
+
 }
 
 void loop() {
-  // Line following demo & distance detection
-  int lineCenter = analog(2);
-  int dist = analog(8);
 
-  if (dist > 0 && dist < 15) {
-    // Obstacle detected close by
-    ao();
-    Serial.println("Obstacle Warning!");
-    delay(500);
-    tr(60);
-    delay(400);
-  } else if (lineCenter < 400) {
-    // Sensed line at center sensor
-    fd(70);
-  } else {
-    // Searching line
-    fd(50);
-  }
 }
 `
 
@@ -80,7 +61,7 @@ const DEFAULT_SENSORS: SensorConfigItem[] = [
 ]
 
 export default function Home() {
-  const [boardType, setBoardType] = useState<string>('ATOM-VX')
+  const [boardType, setBoardType] = useState<string>('POP32i')
   const [robotSpec, setRobotSpec] = useState<RobotSpec>(DEFAULT_ROBOT_SPEC)
   const [customRobots, setCustomRobots] = useState<RobotSpec[]>([])
   const [mapId, setMapId] = useState<string>('athletics-280x160')
@@ -109,7 +90,7 @@ export default function Home() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [logs, setLogs] = useState<string[]>([
     'TUNorth Robot Simulator System v1.0 Ready',
-    'Board ATOM-VX selected.'
+    'Board POP32i selected.'
   ])
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
@@ -168,41 +149,46 @@ export default function Home() {
 
   // 1. Auto Load Saved State on Mount
   useEffect(() => {
-    const saved = loadProjectState()
-    if (saved) {
-      if (saved.boardType) setBoardType(saved.boardType)
-      if (saved.robotSpec) setRobotSpec(saved.robotSpec)
-      if (saved.customRobots && Array.isArray(saved.customRobots)) setCustomRobots(saved.customRobots)
-      if (saved.mapId) setMapId(saved.mapId)
-      if (saved.files && Array.isArray(saved.files) && saved.files.length > 0) {
-        setFiles(saved.files)
-        if (saved.activeTabId && saved.files.some((f) => f.id === saved.activeTabId)) {
-          setActiveTabId(saved.activeTabId)
-        } else {
-          setActiveTabId(saved.files[0].id)
-        }
-      } else if (saved.code) {
-        setFiles([
-          {
-            id: 'tab-main',
-            name: 'main.ino',
-            code: saved.code,
-            isMain: true
+    try {
+      const saved = loadProjectState()
+      if (saved) {
+        if (saved.boardType) setBoardType(saved.boardType)
+        if (saved.robotSpec) setRobotSpec(saved.robotSpec)
+        if (saved.customRobots && Array.isArray(saved.customRobots)) setCustomRobots(saved.customRobots)
+        if (saved.mapId) setMapId(saved.mapId)
+        if (saved.files && Array.isArray(saved.files) && saved.files.length > 0) {
+          setFiles(saved.files)
+          if (saved.activeTabId && saved.files.some((f) => f.id === saved.activeTabId)) {
+            setActiveTabId(saved.activeTabId)
+          } else {
+            setActiveTabId(saved.files[0].id)
           }
-        ])
-        setActiveTabId('tab-main')
+        } else if (saved.code) {
+          setFiles([
+            {
+              id: 'tab-main',
+              name: 'main.ino',
+              code: saved.code,
+              isMain: true
+            }
+          ])
+          setActiveTabId('tab-main')
+        }
+        if (saved.sensorConfig && Array.isArray(saved.sensorConfig.sensors)) setSensorConfig(saved.sensorConfig)
+        if (saved.fontSize) setFontSize(saved.fontSize)
+        if (saved.speedMultiplier) setSpeedMultiplier(saved.speedMultiplier)
+        if (saved.viewMode) setViewMode(saved.viewMode)
+        if (typeof saved.showSensorsOverlay === 'boolean') setShowSensorsOverlay(saved.showSensorsOverlay)
+        if (typeof saved.showTrail === 'boolean') setShowTrail(saved.showTrail)
+        if (saved.customMaps && Array.isArray(saved.customMaps)) setCustomMaps(saved.customMaps)
+        if (saved.theme) setTheme(saved.theme)
+        setLogs((prev) => [...prev, 'Loaded saved project state from LocalStorage 💾'])
       }
-      if (saved.sensorConfig) setSensorConfig(saved.sensorConfig)
-      if (saved.fontSize) setFontSize(saved.fontSize)
-      if (saved.speedMultiplier) setSpeedMultiplier(saved.speedMultiplier)
-      if (saved.viewMode) setViewMode(saved.viewMode)
-      if (typeof saved.showSensorsOverlay === 'boolean') setShowSensorsOverlay(saved.showSensorsOverlay)
-      if (typeof saved.showTrail === 'boolean') setShowTrail(saved.showTrail)
-      if (saved.customMaps && Array.isArray(saved.customMaps)) setCustomMaps(saved.customMaps)
-      if (saved.theme) setTheme(saved.theme)
-      setLogs((prev) => [...prev, 'Loaded saved project state from LocalStorage 💾'])
+    } catch (err) {
+      console.error('Error auto-loading project state:', err)
+    } finally {
+      setIsLoaded(true)
     }
-    setIsLoaded(true)
   }, [])
 
   // Combine code from all tabs for evaluation (Arduino IDE Style)
@@ -247,14 +233,14 @@ export default function Home() {
   const mapDef = customMaps.find((m) => m.id === mapId) || getMapDefinition(mapId)
 
   const [physicsState, setPhysicsState] = useState<ExtendedPhysicsState>(() =>
-    createInitialPhysicsState(mapDef.startX, mapDef.startY, mapDef.startHeading)
+    createInitialPhysicsState(mapDef?.startX ?? 1400, mapDef?.startY ?? 800, mapDef?.startHeading ?? 0)
   )
 
   // Align physics state with active map when loaded or changed
   useEffect(() => {
     if (!isLoaded) return
     const currentMap = customMaps.find((m) => m.id === mapId) || getMapDefinition(mapId)
-    const initialPhysics = createInitialPhysicsState(currentMap.startX, currentMap.startY, currentMap.startHeading)
+    const initialPhysics = createInitialPhysicsState(currentMap?.startX ?? 1400, currentMap?.startY ?? 800, currentMap?.startHeading ?? 0)
     setPhysicsState(initialPhysics)
     physicsRef.current = initialPhysics
   }, [mapId, customMaps, isLoaded])
@@ -645,7 +631,7 @@ export default function Home() {
             <h1 className="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
               TUNorth Robot Simulator
             </h1>
-            <p className="text-xs text-slate-400 mt-1">โรงเรียนเตรียมอุดมศึกษาภาคเหนือ</p>
+            <p className="text-xs text-slate-400 mt-1">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
           </div>
           <div className="flex items-center gap-2 text-xs text-cyan-400 mt-2 font-mono">
             <Sparkles className="w-4 h-4 animate-spin" />
@@ -690,6 +676,7 @@ export default function Home() {
       {/* 2. Main Resizable Panels */}
       <div className="flex-1 w-full overflow-hidden relative">
         <ResizableSplit
+          initialRatio={35}
           panelMode={panelMode}
           leftComponent={
             <CodeEditor

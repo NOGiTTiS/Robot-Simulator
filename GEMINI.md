@@ -1,7 +1,7 @@
 # 🧠 TUNorth-RobotSimulator: Project Brain & Memory (GEMINI.md)
 
 ## 📌 1. ภาพรวมโปรเจกต์ (Project Overview)
-**TUNorth-RobotSimulator** คือแพลตฟอร์มจำลองการเขียนโปรแกรมควบคุมหุ่นยนต์ผ่านเว็บแอปพลิเคชัน (Web-Based Robot Programming Simulator) ออกแบบเพื่อการเรียนการสอนและการฝึกฝนการเขียนโค้ดภาษา **C++ / Arduino** สำหรับ **โรงเรียนเตรียมอุดมศึกษาภาคเหนือ** 
+**TUNorth-RobotSimulator** คือแพลตฟอร์มจำลองการเขียนโปรแกรมควบคุมหุ่นยนต์ผ่านเว็บแอปพลิเคชัน (Web-Based Robot Programming Simulator) ออกแบบเพื่อการเรียนการสอนและการฝึกฝนการเขียนโค้ดภาษา **C++ / Arduino** สำหรับ **โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ** 
 - ทำงานแบบ **Client-side 100% (Offline Capable)**
 - ฐานข้อมูลหลักและลำดับแผนงานอ้างอิงจาก [`docs/spec.md`](file:///D:/RobotSIM/docs/spec.md)
 
@@ -12,10 +12,12 @@
 2. **การพัฒนาอิงตาม `docs/spec.md` เป็นหลัก**: เมื่อทำแต่ละขั้นตอนเสร็จแล้ว ต้องทำ Checkmark (`[x]`) ใน [`docs/spec.md`](file:///D:/RobotSIM/docs/spec.md)
 3. **การส่งมอบตาม Phase**: เมื่อทำเสร็จสิ้นในแต่ละ Phase ให้หยุดพัก และรายงานสรุปให้ผู้ใช้ทดสอบก่อนดำเนินการใน Phase ต่อไป
 4. **ความสวยงามและ UX/UI**: ใช้สไตล์ Modern Dark Glassmorphism, Responsive, Smooth Transitions และ Rich Aesthetics
+5. **ใช้ `bun` ทุกกรณี**: ใช้ `bun` สำหรับจัดการ Package และรันคำสั่งสคริปต์ทั้งหมด (`bun dev`, `bun run build`, `bun add <pkg>`) **ห้ามใช้ `npm`, `pnpm`, หรือ `yarn` เด็ดขาด**
 
 ---
 
 ## 🛠️ 3. สถาปัตยกรรมทางเทคนิค (Tech Stack)
+- **Package Manager & Runtime**: **Bun** (ใช้ `bun` สำหรับทุกคำสั่ง ห้ามใช้ npm/pnpm/yarn)
 - **Framework**: Next.js 16 (App Router) + React 19 + Tailwind CSS v4
 - **Editor**: Monaco Editor (`@monaco-editor/react`) รองรับ C++ Syntax Highlighting และ Autocomplete
 - **Icons**: Lucide Icons (`lucide-react`)

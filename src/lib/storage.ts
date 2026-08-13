@@ -42,7 +42,10 @@ export function loadProjectState(): StoredProjectState | null {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as StoredProjectState
-    if (parsed && typeof parsed.boardType === 'string') {
+    if (parsed && typeof parsed === 'object') {
+      if (!parsed.boardType || typeof parsed.boardType !== 'string') {
+        parsed.boardType = 'POP32i'
+      }
       if (!parsed.files || !Array.isArray(parsed.files) || parsed.files.length === 0) {
         parsed.files = [
           {
@@ -53,6 +56,18 @@ export function loadProjectState(): StoredProjectState | null {
           }
         ]
         parsed.activeTabId = 'tab-main'
+      }
+      if (!parsed.activeTabId || !parsed.files.some((f) => f.id === parsed.activeTabId)) {
+        parsed.activeTabId = parsed.files[0]?.id || 'tab-main'
+      }
+      if (!parsed.sensorConfig || typeof parsed.sensorConfig !== 'object' || !Array.isArray(parsed.sensorConfig.sensors)) {
+        parsed.sensorConfig = { sensors: [] }
+      }
+      if (!parsed.customMaps || !Array.isArray(parsed.customMaps)) {
+        parsed.customMaps = []
+      }
+      if (!parsed.customRobots || !Array.isArray(parsed.customRobots)) {
+        parsed.customRobots = []
       }
       return parsed
     }

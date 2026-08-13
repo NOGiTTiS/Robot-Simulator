@@ -95,7 +95,7 @@ export function updateHardwareSensors(
   mapCanvas: HTMLCanvasElement | null,
   mapDef: MapDefinition
 ) {
-  if (!hwState) return
+  if (!hwState || !Array.isArray(sensors)) return
 
   const cosH = Math.cos(physicsState.heading)
   const sinH = Math.sin(physicsState.heading)

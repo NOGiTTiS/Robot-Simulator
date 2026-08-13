@@ -16,7 +16,7 @@ interface ResizableSplitProps {
 export function ResizableSplit({
   leftComponent,
   rightComponent,
-  initialRatio = 50,
+  initialRatio = 35,
   storageKey = 'tunorth_editor_split_ratio',
   minRatio = 20,
   maxRatio = 80,

@@ -103,7 +103,7 @@ export function HeaderBar({
               v1.0
             </span>
           </div>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษาภาคเหนือ</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
         </div>
       </div>
 
