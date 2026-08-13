@@ -114,20 +114,19 @@ void loop() {
     name: '03. หุ่นยนต์เดินตามเส้น PID',
     fileName: '03_PID_Line_Follower.ino',
     category: 'Algorithm',
-    description: 'การควบคุมหุ่นยนต์เดินตามเส้นแบบสมูทต่อเนื่องด้วยอัลกอริทึม PID (Proportional-Integral-Derivative)',
+    description: 'การควบคุมหุ่นยนต์เดินตามเส้นแบบสมูทต่อเนื่องด้วยอัลกอริทึม PID/PD Damping ลดการส่ายหลุดสนาม',
     difficulty: 'ขั้นสูง',
     code: `#include <POP32.h>
 
-// ตัวอย่างที่ 3: การควบคุมหุ่นยนต์เดินตามเส้นสมูทด้วยอัลกอริทึม PID
-// คำนวณ Error สัดส่วน (P), ผลรวมสะสม (I), และอัตราการเปลี่ยนแปลง (D)
+// ตัวอย่างที่ 3: การควบคุมหุ่นยนต์เดินตามเส้นสมูทด้วยอัลกอริทึม PID (PD Line Follower)
+// ใช้ค่า Kp ควบคุมแรงตอบสนอง และ Kd ลดอาการส่าย (Damping) ป้องกันหุ่นยนต์ส่ายหลุดสนาม
 
-float Kp = 0.8;  // ค่า Proportional Gain
-float Ki = 0.01; // ค่า Integral Gain
-float Kd = 1.2;  // ค่า Derivative Gain
+float Kp = 0.12;  // ค่า Proportional Gain (ปรับความไวตามระดับอนาล็อก -800 ถึง 800)
+float Kd = 0.5;   // ค่า Derivative Gain (ช่วยเบรกการหมุนล่วงหน้า ลดอาการส่ายสะสม)
+float Ki = 0.0;   // ค่า Integral Gain (ตั้งเป็น 0 เพื่อป้องกันการสะสมค่าสะท้อนโค้งจนหลุดสนาม)
 
-int baseSpeed = 60; // ความเร็วพื้นฐาน
+int baseSpeed = 50; // ความเร็วพื้นฐานการเดินตามเส้น
 int lastError = 0;
-long integral = 0;
 
 void setup() {
   delay(1000);
@@ -137,16 +136,16 @@ void loop() {
   int sL = analog(0); // เซนเซอร์ซ้าย (พิน 0)
   int sR = analog(1); // เซนเซอร์ขวา (พิน 1)
 
-  // คำนวณค่า Error (ความต่างของแสงระหว่างซ้าย-ขวา)
+  // คำนวณค่า Error (ความต่างระดับแสงระหว่างเซนเซอร์ซ้ายและขวา)
+  // บนพื้นขาว sL ~= 900, sR ~= 900 -> error = 0
+  // ทับเส้นดำซ้าย sL ~= 100, sR ~= 900 -> error = -800
   int error = sL - sR;
 
-  // คำนวณส่วนประกอบ PID
-  integral += error;
-  integral = constrain(integral, -1000, 1000); // จำกัดผลรวมสะสม
+  // คำนวณอัตราการเปลี่ยนแปลงของ Error (Derivative) เพื่อลดการส่าย
   int derivative = error - lastError;
 
-  // คำนวณค่าการปรับแต่งความเร็วมอเตอร์ (PID Output)
-  int motorAdjust = (Kp * error) + (Ki * integral) + (Kd * derivative);
+  // คำนวณค่าการปรับแต่งความเร็วมอเตอร์ (PD Output)
+  int motorAdjust = (Kp * error) + (Kd * derivative);
 
   // ปรับความเร็วล้อซ้ายและขวา
   int leftSpeed = baseSpeed + motorAdjust;
@@ -156,11 +155,13 @@ void loop() {
   leftSpeed = constrain(leftSpeed, -100, 100);
   rightSpeed = constrain(rightSpeed, -100, 100);
 
-  // ส่งคำสั่งควบคุมมอเตอร์แบบแยกความเร็ว
+  // สั่งงานมอเตอร์ล้อซ้ายและขวา
   fd2(leftSpeed, rightSpeed);
 
+  // บันทึกค่า Error สำหรับรอบถัดไป
   lastError = error;
-  delay(10);
+
+  delay(10); // หน่วงเวลาการประมวลผลลูป
 }
 `
   },
@@ -249,7 +250,7 @@ void loop() {
   }
 
   // 2. ลอจิกค้นหาและโจมตี (Search & Attack)
-  if (enemyDist > 0 && enemyDist < ENEMY_DETECTED_DIST) {
+  if (enemyDist > 40 && enemyDist < ENEMY_DETECTED_DIST) {
     // เจอคู่ต่อสู้! พุ่งชนด้วยความเร็วสูงสุด (Full Speed Attack)
     Serial.println("Enemy spotted! FULL ATTACK!");
     fd(100);
