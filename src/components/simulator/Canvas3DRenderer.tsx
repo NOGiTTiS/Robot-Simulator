@@ -291,7 +291,7 @@ export function Canvas3DRenderer({
         const w = obs.width / 1000
         const l = obs.height / 1000
         const h = obs.type === 'wall' ? 0.08 : 0.06
-        const geo = new THREE.BoxGeometry(l, h, w)
+        const geo = new THREE.BoxGeometry(w, h, l)
         const mat = new THREE.MeshStandardMaterial({
           color: isSelected ? 0x38bdf8 : parseInt((obs.color || '#d97706').replace('#', '0x'), 16),
           roughness: 0.5,
