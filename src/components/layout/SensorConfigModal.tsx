@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Plus, Trash2, Sliders, Eye, EyeOff, Radio, RefreshCw, Bot } from 'lucide-react'
 import { SensorConfigItem, SensorConfiguration, RobotSpec } from '@/types/project'
 import { getDefaultSensorsForRobot } from '@/lib/robots'
+import { NumberStepper } from '@/components/common/NumberStepper'
 
 interface SensorConfigModalProps {
   isOpen: boolean
@@ -216,52 +217,43 @@ export function SensorConfigModal({
                       </button>
                     </div>
 
-                    {/* Sensor parameters */}
-                    <div className="grid grid-cols-4 gap-2 pt-1">
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Pin / Channel</label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="32"
-                          value={sensor.pin}
-                          onChange={(e) => handleUpdateSensor(sensor.id, { pin: Number(e.target.value) })}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Offset X (มม.)</label>
-                        <input
-                          type="number"
-                          min="-150"
-                          max="200"
-                          value={sensor.offsetX}
-                          onChange={(e) => handleUpdateSensor(sensor.id, { offsetX: Number(e.target.value) })}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Offset Y (มม.)</label>
-                        <input
-                          type="number"
-                          min="-150"
-                          max="150"
-                          value={sensor.offsetY}
-                          onChange={(e) => handleUpdateSensor(sensor.id, { offsetY: Number(e.target.value) })}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Angle (องศา)</label>
-                        <input
-                          type="number"
-                          min="-180"
-                          max="180"
-                          value={sensor.angle}
-                          onChange={(e) => handleUpdateSensor(sensor.id, { angle: Number(e.target.value) })}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-brand-500 font-mono"
-                        />
-                      </div>
+                    {/* Sensor parameters with iOS-friendly Touch NumberSteppers & negative value support */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                      <NumberStepper
+                        label="Pin"
+                        value={sensor.pin}
+                        min={0}
+                        max={32}
+                        step={1}
+                        onChange={(v) => handleUpdateSensor(sensor.id, { pin: v })}
+                      />
+                      <NumberStepper
+                        label="Offset X"
+                        unit="มม."
+                        value={sensor.offsetX}
+                        min={-200}
+                        max={200}
+                        step={5}
+                        onChange={(v) => handleUpdateSensor(sensor.id, { offsetX: v })}
+                      />
+                      <NumberStepper
+                        label="Offset Y"
+                        unit="มม."
+                        value={sensor.offsetY}
+                        min={-200}
+                        max={200}
+                        step={5}
+                        onChange={(v) => handleUpdateSensor(sensor.id, { offsetY: v })}
+                      />
+                      <NumberStepper
+                        label="Angle"
+                        unit="°"
+                        value={sensor.angle}
+                        min={-180}
+                        max={180}
+                        step={5}
+                        onChange={(v) => handleUpdateSensor(sensor.id, { angle: v })}
+                      />
                     </div>
                   </div>
                 ))
