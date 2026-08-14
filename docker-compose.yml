@@ -1,0 +1,13 @@
+services:
+  robot-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: robot-simulator-app
+    restart: always
+    networks:
+      - tunorth-net
+
+networks:
+  tunorth-net:
+    external: true

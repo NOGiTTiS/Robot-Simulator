@@ -475,22 +475,22 @@ export function CodeEditor({
           {/* New Tab Button (+) */}
           <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs bg-slate-200/80 hover:bg-brand-100 dark:bg-slate-800/60 dark:hover:bg-brand-950/60 text-slate-700 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-300 border border-slate-300/80 dark:border-slate-700/60 hover:border-brand-400 transition-all shrink-0 font-mono font-medium"
+            className="flex items-center gap-1 px-2 2xl:px-2.5 py-1 rounded-xl text-xs bg-slate-200/80 hover:bg-brand-100 dark:bg-slate-800/60 dark:hover:bg-brand-950/60 text-slate-700 dark:text-slate-300 hover:text-brand-700 dark:hover:text-brand-300 border border-slate-300/80 dark:border-slate-700/60 hover:border-brand-400 transition-all shrink-0 font-mono font-medium"
             title="เพิ่ม Tab โค้ดใหม่"
           >
             <Plus className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400" />
-            <span>Tab</span>
+            <span className="hidden 2xl:inline">Tab</span>
           </button>
 
           {/* Preset Code Examples Button */}
           {onOpenCodeTemplatesModal && (
             <button
               onClick={onOpenCodeTemplatesModal}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/50 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800/60 transition-all shrink-0 font-mono font-medium"
+              className="flex items-center gap-1 px-2 2xl:px-2.5 py-1 rounded-xl text-xs bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/50 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800/60 transition-all shrink-0 font-mono font-medium"
               title="คลังตัวอย่างโค้ดมาตรฐาน (Code Examples)"
             >
               <BookOpen className="w-3.5 h-3.5 text-brand-500" />
-              <span>ตัวอย่างโค้ด</span>
+              <span className="hidden 2xl:inline">ตัวอย่างโค้ด</span>
             </button>
           )}
         </div>
@@ -503,7 +503,8 @@ export function CodeEditor({
               className="text-[11px] px-2 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center gap-1 transition-all"
               title="ลองโหลด Monaco Editor อีกครั้ง"
             >
-              <RefreshCw className="w-3 h-3 text-brand-500" /> โหลด Monaco อีกครั้ง
+              <RefreshCw className="w-3 h-3 text-brand-500" />
+              <span className="hidden 2xl:inline">โหลด Monaco อีกครั้ง</span>
             </button>
           )}
 

@@ -117,11 +117,11 @@ export function HeaderBar({
                 title="คลิกเพื่อดูคำแนะนำขนาดหน้าจอ"
               >
                 <Smartphone className="w-3 h-3 animate-pulse" />
-                <span>หน้าจอเล็ก</span>
+                <span className="hidden 2xl:inline">หน้าจอเล็ก</span>
               </button>
             )}
           </div>
-          <p className="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
+          <p className="hidden 2xl:block text-[11px] text-slate-500 dark:text-slate-400 font-medium">โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ</p>
         </div>
       </div>
 
@@ -130,31 +130,31 @@ export function HeaderBar({
         {/* Robot Spec / Management Modal Button */}
         <button
           onClick={onOpenRobotModal}
-          className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 transition-all shadow-xs group flex items-center gap-1.5 font-semibold text-xs"
+          className="px-2 2xl:px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 transition-all shadow-xs group flex items-center gap-1.5 font-semibold text-xs"
           title={`เลือกหุ่นยนต์ (${robotName} - ${boardType || 'บอร์ดควบคุม'})`}
         >
           <Bot className="w-4 h-4 text-brand-500 dark:text-brand-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="hidden sm:inline">หุ่นยนต์</span>
+          <span className="hidden 2xl:inline">หุ่นยนต์</span>
         </button>
 
         {/* Map Selector Modal Button */}
         <button
           onClick={onOpenMapSelectModal}
-          className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs group flex items-center gap-1.5 font-semibold text-xs"
+          className="px-2 2xl:px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs group flex items-center gap-1.5 font-semibold text-xs"
           title={`เลือกสนามแข่งขัน (${activeMapName})`}
         >
           <Map className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
-          <span className="hidden sm:inline">สนาม</span>
+          <span className="hidden 2xl:inline">สนาม</span>
         </button>
 
         {/* Sensors Configurator Modal Button */}
         <button
           onClick={onOpenSensorModal}
-          className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs flex items-center gap-1.5 font-semibold text-xs"
+          className="px-2 2xl:px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-xs flex items-center gap-1.5 font-semibold text-xs"
           title="เลือกและปรับแต่งตำแหน่งเซนเซอร์"
         >
           <Sliders className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-          <span className="hidden sm:inline">เซนเซอร์</span>
+          <span className="hidden 2xl:inline">เซนเซอร์</span>
         </button>
       </div>
 
@@ -163,21 +163,22 @@ export function HeaderBar({
         {/* Run / Pause Button */}
         <button
           onClick={onToggleRun}
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 ${
+          className={`flex items-center gap-1.5 px-2.5 2xl:px-4 py-1.5 rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 ${
             isRunning
               ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-900/20'
               : 'bg-brand-500 hover:bg-brand-600 text-white shadow-brand-900/20'
           }`}
+          title={isRunning ? 'หยุดชั่วคราว' : 'เริ่มทำงาน'}
         >
           {isRunning ? (
             <>
               <Pause className="w-3.5 h-3.5 fill-current" />
-              <span>หยุดชั่วคราว</span>
+              <span className="hidden 2xl:inline">หยุดชั่วคราว</span>
             </>
           ) : (
             <>
               <Play className="w-3.5 h-3.5 fill-current" />
-              <span>เริ่มทำงาน</span>
+              <span className="hidden 2xl:inline">เริ่มทำงาน</span>
             </>
           )}
         </button>
@@ -186,10 +187,10 @@ export function HeaderBar({
         <button
           onClick={onReset}
           title="รีเซ็ตการจำลองหุ่นยนต์"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all active:scale-95 shadow-xs"
+          className="flex items-center gap-1.5 px-2.5 2xl:px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all active:scale-95 shadow-xs"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>รีเซ็ต</span>
+          <span className="hidden 2xl:inline">รีเซ็ต</span>
         </button>
 
         {/* Speed Multipliers */}
@@ -253,25 +254,27 @@ export function HeaderBar({
         <div className="flex items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => onViewModeChange('2D')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+            title="มุมมอง 2D"
+            className={`flex items-center gap-1 px-2 2xl:px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               viewMode === '2D'
                 ? 'bg-brand-500 text-white shadow-xs'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Monitor className="w-3.5 h-3.5" />
-            <span>2D</span>
+            <span className="hidden 2xl:inline">2D</span>
           </button>
           <button
             onClick={() => onViewModeChange('3D')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+            title="มุมมอง 3D"
+            className={`flex items-center gap-1 px-2 2xl:px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               viewMode === '3D'
                 ? 'bg-brand-500 text-white shadow-xs'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Box className="w-3.5 h-3.5" />
-            <span>3D</span>
+            <span className="hidden 2xl:inline">3D</span>
           </button>
         </div>
 
@@ -351,17 +354,17 @@ export function HeaderBar({
               id="themeToggle"
               onClick={onToggleTheme}
               title={theme === 'dark' ? 'เปลี่ยนเป็น Light Mode (โหมดสว่าง)' : 'เปลี่ยนเป็น Dark Mode (โหมดมืด)'}
-              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-200 dark:border-slate-700 shadow-xs active:scale-95 ml-1"
+              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 2xl:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-200 dark:border-slate-700 shadow-xs active:scale-95 ml-1"
             >
               {theme === 'light' ? (
                 <>
                   <Sun className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span className="hidden sm:inline">Light Mode</span>
+                  <span className="hidden 2xl:inline">Light Mode</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-4 h-4 text-brand-300 fill-brand-300" />
-                  <span className="hidden sm:inline">Dark Mode</span>
+                  <span className="hidden 2xl:inline">Dark Mode</span>
                 </>
               )}
             </button>

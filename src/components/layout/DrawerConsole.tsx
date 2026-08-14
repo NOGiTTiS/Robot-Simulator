@@ -49,14 +49,15 @@ export function DrawerConsole({
               setIsOpen(true)
               setActiveTab('serial')
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-xl text-xs font-semibold transition-all ${
+            title="Serial Monitor (คอนโซล)"
+            className={`flex items-center gap-1.5 px-2 2xl:px-3 py-1.5 rounded-t-xl text-xs font-semibold transition-all ${
               activeTab === 'serial' && isOpen
                 ? 'bg-white dark:bg-slate-950 text-brand-600 dark:text-brand-300 border-t-2 border-brand-500 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
-            <span>Serial Monitor (คอนโซล)</span>
+            <span className="hidden 2xl:inline">Serial Monitor (คอนโซล)</span>
           </button>
 
           <button
@@ -64,14 +65,15 @@ export function DrawerConsole({
               setIsOpen(true)
               setActiveTab('sensors')
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-xl text-xs font-semibold transition-all ${
+            title="ตรวจสอบเซนเซอร์"
+            className={`flex items-center gap-1.5 px-2 2xl:px-3 py-1.5 rounded-t-xl text-xs font-semibold transition-all ${
               activeTab === 'sensors' && isOpen
                 ? 'bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 border-t-2 border-emerald-500 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Activity className="w-3.5 h-3.5" />
-            <span>ตรวจสอบเซนเซอร์</span>
+            <span className="hidden 2xl:inline">ตรวจสอบเซนเซอร์</span>
             {sensors.filter((s) => s.enabled).length > 0 && (
               <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-mono font-bold">
                 {sensors.filter((s) => s.enabled).length}
@@ -84,14 +86,15 @@ export function DrawerConsole({
               setIsOpen(true)
               setActiveTab('telemetry')
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-xl text-xs font-semibold transition-all ${
+            title="สถานะมอเตอร์และการเคลื่อนที่"
+            className={`flex items-center gap-1.5 px-2 2xl:px-3 py-1.5 rounded-t-xl text-xs font-semibold transition-all ${
               activeTab === 'telemetry' && isOpen
                 ? 'bg-white dark:bg-slate-950 text-indigo-600 dark:text-indigo-400 border-t-2 border-indigo-500 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Gauge className="w-3.5 h-3.5" />
-            <span>สถานะมอเตอร์และการเคลื่อนที่</span>
+            <span className="hidden 2xl:inline">สถานะมอเตอร์และการเคลื่อนที่</span>
           </button>
         </div>
 
@@ -101,24 +104,24 @@ export function DrawerConsole({
             <button
               onClick={() => setAutoScroll(!autoScroll)}
               title="สลับการเลื่อนจอลงอัตโนมัติ"
-              className={`flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`flex items-center gap-1 text-[11px] px-2 2xl:px-2.5 py-1 rounded-lg font-semibold transition-all ${
                 autoScroll
                   ? 'text-brand-600 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800'
                   : 'hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <ArrowDownCircle className="w-3.5 h-3.5" />
-              <span>เลื่อนลงอัตโนมัติ</span>
+              <span className="hidden 2xl:inline">เลื่อนลงอัตโนมัติ</span>
             </button>
 
             {onClearLogs && (
               <button
                 onClick={onClearLogs}
                 title="ล้างข้อความในคอนโซล"
-                className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 transition-all font-semibold"
+                className="flex items-center gap-1 text-[11px] px-2 2xl:px-2.5 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-600 dark:hover:text-rose-400 transition-all font-semibold"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>ล้างข้อมูล</span>
+                <span className="hidden 2xl:inline">ล้างข้อมูล</span>
               </button>
             )}
           </div>

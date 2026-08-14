@@ -65,18 +65,18 @@ cd ~/TUNorth/apps/robot-simulator
 
 #### 📄 2.1 ไฟล์ `~/TUNorth/apps/robot-simulator/Dockerfile`
 ```dockerfile
-# 1. Builder Stage: Build Next.js Static Export
-FROM oven/bun:1-alpine AS builder
+# 1. Builder Stage: Build Next.js Static Export (ใช้ node:20-alpine เพื่อรองรับ CPU รุ่นเก่าที่ไม่มี AVX)
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # คัดลอก Dependency และติดตั้ง
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+COPY package.json package-lock.json* bun.lock* ./
+RUN npm install
 
 # คัดลอก Source Code ทั้งหมดและสร้าง Static Files (out/)
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN bun run build
+RUN npm run build
 
 # 2. Production Stage: Nginx Web Server
 FROM nginx:alpine AS runner
